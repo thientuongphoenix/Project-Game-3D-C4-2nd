@@ -35,15 +35,24 @@ public abstract class TowerCtrl : PoolObj
     [SerializeField] protected TowerDespawn towerDespawn;
     public TowerDespawn TowerDespawn => towerDespawn;
 
+    [SerializeField] protected EnemyTargetable enemyTargetable;
+    public EnemyTargetable EnemyTargetable => enemyTargetable;
+
     protected override void Awake()
     {
         base.Awake();
         this.HidePrefabs();
     }
 
+    protected override void Start()
+    {
+        this.SetActiveEnemyTargetable();
+    }
+
     protected virtual void OnEnable()
     {
         this.level.ResetLevel();
+        this.SetActiveEnemyTargetable();
     }
 
     protected override void LoadComponents()
@@ -60,6 +69,15 @@ public abstract class TowerCtrl : PoolObj
         this.LoadLevel();
         this.LoadTowerDamageReceiver();
         this.LoadTowerDespawn();
+        this.LoadEnemyTargetable();
+    }
+
+    protected virtual void LoadEnemyTargetable()
+    {
+        if(this.enemyTargetable != null) return;
+        this.enemyTargetable = GetComponentInChildren<EnemyTargetable>();
+        
+        Debug.Log(transform.name + ": LoadEnemyTargetable", gameObject);
     }
 
     protected virtual void LoadTowerDespawn()
@@ -148,5 +166,17 @@ public abstract class TowerCtrl : PoolObj
         if (this.transform.parent == null) return false;
         if (this.transform.parent.name != "PoolHolder") return false;
         return true;
+    }
+
+    protected virtual void SetActiveEnemyTargetable()
+    {
+        if (this.transform.parent != null && this.transform.parent.name == "PoolHolder")
+        {
+            this.enemyTargetable.gameObject.SetActive(true);
+        }
+        else
+        {
+            this.enemyTargetable.gameObject.SetActive(false);
+        }
     }
 }
