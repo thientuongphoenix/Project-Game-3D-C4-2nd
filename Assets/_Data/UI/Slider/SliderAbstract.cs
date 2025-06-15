@@ -1,0 +1,30 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SliderAbstract : SaiMonoBehaviour
+{
+    [SerializeField] protected Slider slider;
+
+    protected override void Start()
+    {
+        this.slider.onValueChanged.AddListener(OnSliderValueChanged); // Call Event
+    }
+
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadSlider();
+    }
+
+    protected virtual void LoadSlider()
+    {
+        if (this.slider != null) return;
+        this.slider = GetComponent<Slider>();
+        Debug.Log(transform.name + ": LoadSlider", gameObject);
+    }
+
+    protected virtual void OnSliderValueChanged(float value)
+    {
+        //
+    }
+}
