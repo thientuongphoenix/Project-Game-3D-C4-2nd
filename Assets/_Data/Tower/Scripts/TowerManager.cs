@@ -46,6 +46,7 @@ public class TowerManager : SaiSingleton<TowerManager>
       this.towerPlaced = true;
 
       TowerCtrl newTower = this.Spawn(this.towerPrefab);
+      //newTower.Level.ResetLevel();
       newTower.TowerShooting.Active();
       newTower.SetActive(true);
         

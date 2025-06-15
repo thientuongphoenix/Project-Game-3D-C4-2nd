@@ -41,6 +41,11 @@ public abstract class TowerCtrl : PoolObj
         this.HidePrefabs();
     }
 
+    protected virtual void OnEnable()
+    {
+        this.level.ResetLevel();
+    }
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -135,5 +140,13 @@ public abstract class TowerCtrl : PoolObj
     protected virtual void HidePrefabs()
     {
         this.bullet.gameObject.SetActive(false);
+    }
+
+    public bool CanLevelUp()
+    {
+        // Chỉ cho phép lên cấp nếu object cha là PoolHolder
+        if (this.transform.parent == null) return false;
+        if (this.transform.parent.name != "PoolHolder") return false;
+        return true;
     }
 }
