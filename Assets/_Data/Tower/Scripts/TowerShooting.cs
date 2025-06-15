@@ -18,6 +18,7 @@ public class TowerShooting : TowerAbstract
 
     [SerializeField] protected SoundName shootSFXName = SoundName.BerettaM9Shot;
     
+    [SerializeField] protected bool isDisable = true;
 
     protected override void Start()
     {
@@ -47,6 +48,7 @@ public class TowerShooting : TowerAbstract
 
     protected virtual void Looking()
     {
+        if (this.isDisable) return;
         if (this.target == null) return;
 
         Vector3 directionToTarget = this.target.TowerTargetable.transform.position - this.towerCtrl.Rotator.position;
@@ -65,6 +67,8 @@ public class TowerShooting : TowerAbstract
 
     protected virtual void Shooting()
     {
+        if (this.isDisable) return;
+
         Invoke(nameof(this.Shooting), this.shootingSpeed);
         if (this.target == null) return;
 
@@ -136,5 +140,15 @@ public class TowerShooting : TowerAbstract
         SFXCtrl newSfx = SoundManager.Instance.CreateSfx(this.shootSFXName);
         newSfx.transform.position = position;
         newSfx.gameObject.SetActive(true);
+    }
+
+    public virtual void Active()
+    {
+        this.isDisable = false;
+    }
+
+    public virtual void Disable()
+    {
+        this.isDisable = true;
     }
 }

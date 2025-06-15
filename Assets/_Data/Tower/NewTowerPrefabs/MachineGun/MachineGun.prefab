@@ -595,7 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98808681dc2303458bdbbf3132685ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCtrl: {fileID: 0}
+  towerCtrl: {fileID: 3335712140486263482}
   currentFirePoint: 0
   targetLoadSpeed: 1
   shootingSpeed: 0.7
@@ -1032,7 +1032,7 @@ MonoBehaviour:
   currentLevel: 1
   maxLevel: 100
   nextLevelExp: 0
-  towerCtrl: {fileID: 0}
+  towerCtrl: {fileID: 3335712140486263482}
 --- !u!1 &5089973527897419863
 GameObject:
   m_ObjectHideFlags: 0

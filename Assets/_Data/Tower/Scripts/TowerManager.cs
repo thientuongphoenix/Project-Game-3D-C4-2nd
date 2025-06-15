@@ -4,14 +4,17 @@ public class TowerManager : SaiSingleton<TowerManager>
 {
     [SerializeField] protected TowerCode newTowerId = TowerCode.NoTower;
     [SerializeField] protected TowerCtrl towerPrefab;
+    [SerializeField] protected bool towerPlaced = false;
 
-    protected virtual void LateUpdate()
+    protected virtual void Update()
     {
       this.ShowTowerToPlace();
     }
 
     protected virtual void ShowTowerToPlace()
     {
+      if(this.towerPlaced) return;
+
       this.newTowerId = this.MapKeyCodeToTowerCode(InputHotkeys.Instance.KeyCode);
 
       if(this.newTowerId == TowerCode.NoTower) return;
@@ -21,20 +24,42 @@ public class TowerManager : SaiSingleton<TowerManager>
         this.towerPrefab = this.GetTowerPrefab(this.newTowerId);
         if(this.towerPrefab == null) return;
 
-        // Vector3 prefabPos = PlayerCtrl.Instance.transform.position;
-        // prefabPos.x += 2f;
-        // this.towerPrefab.transform.position = prefabPos;
+        this.towerPrefab.TowerShooting.Disable();
         this.towerPrefab.SetActive(true);
       }
 
       this.towerPrefab.transform.position = PlayerCtrl.Instance.CrosshairPointer.transform.position;
 
-      Debug.Log("Placing tower: " + this.newTowerId.ToString());
+      if(InputHotkeys.Instance.IsPlaceTower)
+      {
+        this.towerPlaced = true;
+        
+        TowerCtrl newTower = this.Spawn(this.towerPrefab);
+        newTower.TowerShooting.Active();
+        newTower.SetActive(true);
+
+        
+        this.towerPrefab.SetActive(false);
+        this.newTowerId = TowerCode.NoTower;
+        this.towerPrefab = null;
+
+        Invoke(nameof(this.PlaceFinish), 0.5f);
+      }
+    }
+
+    protected virtual void PlaceFinish()
+    {
+      this.towerPlaced = false;
     }
 
     protected virtual TowerCtrl GetTowerPrefab(TowerCode towerCode)
     {
       return TowerSpawnerCtrl.Instance.Prefabs.GetByName(towerCode.ToString());
+    }
+
+    protected virtual TowerCtrl Spawn(TowerCtrl prefab)
+    {
+      return TowerSpawnerCtrl.Instance.Spawner.Spawn(prefab, prefab.transform.position);
     }
 
     protected virtual TowerCode MapKeyCodeToTowerCode(KeyCode keyCode)

@@ -12,6 +12,9 @@ public class InputHotkeys : SaiSingleton<InputHotkeys>
     [SerializeField] protected KeyCode keyCode;
     public KeyCode KeyCode => keyCode;
 
+    [SerializeField] protected bool isPlaceTower;
+    public bool IsPlaceTower => isPlaceTower;
+
     protected virtual void Update()
     {
         this.OpenInventory();
@@ -27,6 +30,8 @@ public class InputHotkeys : SaiSingleton<InputHotkeys>
 
     protected virtual void ToggleNumber()
     {
+        this.isPlaceTower = Input.GetKeyUp(KeyCode.F);
+
         for (int i = 1; i <= 9; i++) // Duyệt qua các phím số từ 1 đến 9
         {
             KeyCode key = (KeyCode)System.Enum.Parse(typeof(KeyCode), "Alpha" + i);
