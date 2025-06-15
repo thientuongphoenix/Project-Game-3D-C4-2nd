@@ -19,12 +19,13 @@ public class TowerShooting : TowerAbstract
     [SerializeField] protected SoundName shootSFXName = SoundName.BerettaM9Shot;
     
     [SerializeField] protected bool isDisable = true;
+    [SerializeField] protected float shootingTimer = 0f;
 
     protected override void Start()
     {
         base.Start();
         Invoke(nameof(this.TargetLoading), this.targetLoadSpeed);
-        Invoke(nameof(this.Shooting), this.shootingSpeed);
+        //Invoke(nameof(this.Shooting), this.shootingSpeed);
     }
 
     protected void FixedUpdate()
@@ -33,10 +34,15 @@ public class TowerShooting : TowerAbstract
         this.IsTargetDead();
     }
 
-    protected override void LoadComponents()
+    protected void Update()
     {
-        base.LoadComponents();
-        this.LoadEffectSpawner();
+        if (this.isDisable) return;
+        this.shootingTimer += Time.deltaTime;
+        if (this.shootingTimer >= this.shootingSpeed)
+        {
+            this.shootingTimer = 0f;
+            this.Shooting();
+        }
     }
 
     protected virtual void LoadEffectSpawner()
@@ -69,7 +75,7 @@ public class TowerShooting : TowerAbstract
     {
         if (this.isDisable) return;
 
-        Invoke(nameof(this.Shooting), this.shootingSpeed);
+        //Invoke(nameof(this.Shooting), this.shootingSpeed);
         if (this.target == null) return;
 
         FirePoint firePoint = this.GetFirePoint();
@@ -150,5 +156,5 @@ public class TowerShooting : TowerAbstract
     public virtual void Disable()
     {
         this.isDisable = true;
-    }
+    }    
 }
