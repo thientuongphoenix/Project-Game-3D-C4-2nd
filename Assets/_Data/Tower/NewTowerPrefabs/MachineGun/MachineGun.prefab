@@ -70,7 +70,56 @@ MonoBehaviour:
   currentHP: 10
   isImmotal: 0
   sphereCollider: {fileID: 5765779829081273853}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
+--- !u!1 &1656241092038661663
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8775435691647410261}
+  - component: {fileID: 1897629841600954226}
+  m_Layer: 0
+  m_Name: Despawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8775435691647410261
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656241092038661663}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8641950689438236673}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1897629841600954226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656241092038661663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c2e007d8f98e084ebed5b6330bd6492, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 3335712140486263482}
+  spawner: {fileID: 0}
+  isDespawnByTime: 1
+  timeLife: 7
+  currentTime: 7
 --- !u!1 &1994158054925884681
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,7 +550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 295102060318286515}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
 --- !u!1 &4200001845877636720
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98808681dc2303458bdbbf3132685ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
   currentFirePoint: 0
   targetLoadSpeed: 1
   shootingSpeed: 0.7
@@ -623,6 +672,37 @@ Transform:
   - {fileID: 3190674693451974743}
   - {fileID: 461574607812210792}
   m_Father: {fileID: 8758524675513806584}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4520607834045959611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8240898907222309472}
+  m_Layer: 0
+  m_Name: PoolHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8240898907222309472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4520607834045959611}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 18.25, y: -0.8, z: 16.58}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8641950689438236673}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4527298035941975845
 GameObject:
@@ -860,7 +940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textPro: {fileID: 68250348583430237}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
 --- !u!1 &4937576206386087133
 GameObject:
   m_ObjectHideFlags: 0
@@ -952,7 +1032,7 @@ MonoBehaviour:
   currentLevel: 1
   maxLevel: 100
   nextLevelExp: 0
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
 --- !u!1 &5089973527897419863
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,7 +1042,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8641950689438236673}
-  - component: {fileID: 3290729655338659269}
+  - component: {fileID: 6310128148380876592}
+  - component: {fileID: 3926112089103692814}
+  - component: {fileID: 3335712140486263482}
   m_Layer: 0
   m_Name: MachineGun
   m_TagString: Untagged
@@ -978,7 +1060,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5089973527897419863}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -18.25, y: 0.8, z: -16.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -991,9 +1073,11 @@ Transform:
   - {fileID: 6207246416621391461}
   - {fileID: 3443487518719148890}
   - {fileID: 6132955243131336784}
+  - {fileID: 8240898907222309472}
+  - {fileID: 8775435691647410261}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3290729655338659269
+--- !u!114 &6310128148380876592
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1002,9 +1086,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 5089973527897419863}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9fa1d7caa3311f479ad85f709ed4d51, type: 3}
+  m_Script: {fileID: 11500000, guid: 173d05c522df8034abcd6e7a209ac65c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnCount: 0
+  poolHolder: {fileID: 8240898907222309472}
+  poolPrefabs: {fileID: 0}
+  inPoolObjs: []
+--- !u!114 &3926112089103692814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089973527897419863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b918814a263ba429cb1bccb9c73e40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3335712140486263482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089973527897419863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 575dfa56b35e4624ba0ee03b815fe126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  despawn: {fileID: 1897629841600954226}
   model: {fileID: 8758524675513806584}
   rotator: {fileID: 8426502973993146887}
   towerTargeting: {fileID: 6245731361568095844}

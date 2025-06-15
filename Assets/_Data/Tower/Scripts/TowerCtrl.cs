@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerCtrl : SaiMonoBehaviour
+public abstract class TowerCtrl : PoolObj
 {
     [SerializeField] protected Transform model;
     [SerializeField] protected Transform rotator;
