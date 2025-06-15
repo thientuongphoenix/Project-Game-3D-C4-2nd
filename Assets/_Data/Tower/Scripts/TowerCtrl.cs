@@ -32,6 +32,9 @@ public abstract class TowerCtrl : PoolObj
     [SerializeField] protected TowerDamageReceiver towerDamageReceiver;
     public TowerDamageReceiver TowerDamageReceiver => towerDamageReceiver;
 
+    [SerializeField] protected TowerDespawn towerDespawn;
+    public TowerDespawn TowerDespawn => towerDespawn;
+
     protected override void Awake()
     {
         base.Awake();
@@ -51,6 +54,14 @@ public abstract class TowerCtrl : PoolObj
         this.LoadTowerShootings();
         this.LoadLevel();
         this.LoadTowerDamageReceiver();
+        this.LoadTowerDespawn();
+    }
+
+    protected virtual void LoadTowerDespawn()
+    {
+        if(this.towerDespawn != null) return;
+        this.towerDespawn = GetComponentInChildren<TowerDespawn>();
+        Debug.Log(transform.name + ": LoadTowerDespawn", gameObject);
     }
 
     protected virtual void LoadTowerDamageReceiver()

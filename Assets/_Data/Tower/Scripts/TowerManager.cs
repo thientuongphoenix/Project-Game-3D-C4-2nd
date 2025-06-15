@@ -17,7 +17,12 @@ public class TowerManager : SaiSingleton<TowerManager>
 
       this.newTowerId = this.MapKeyCodeToTowerCode(InputHotkeys.Instance.KeyCode);
 
-      if(this.newTowerId == TowerCode.NoTower) return;
+      if(this.newTowerId == TowerCode.NoTower) 
+      {
+        if(this.towerPrefab != null) this.towerPrefab.SetActive(false);
+        this.towerPrefab = null;
+        return;
+      }
 
       if(this.towerPrefab == null) 
       {
@@ -32,19 +37,23 @@ public class TowerManager : SaiSingleton<TowerManager>
 
       if(InputHotkeys.Instance.IsPlaceTower)
       {
-        this.towerPlaced = true;
-        
-        TowerCtrl newTower = this.Spawn(this.towerPrefab);
-        newTower.TowerShooting.Active();
-        newTower.SetActive(true);
-
-        
-        this.towerPrefab.SetActive(false);
-        this.newTowerId = TowerCode.NoTower;
-        this.towerPrefab = null;
-
-        Invoke(nameof(this.PlaceFinish), 0.5f);
+        this.PlaceTower();
       }
+    }
+
+    protected virtual void PlaceTower()
+    {
+      this.towerPlaced = true;
+
+      TowerCtrl newTower = this.Spawn(this.towerPrefab);
+      newTower.TowerShooting.Active();
+      newTower.SetActive(true);
+        
+      //this.towerPrefab.SetActive(false);
+      // this.newTowerId = TowerCode.NoTower;
+      // this.towerPrefab = null;
+
+      Invoke(nameof(this.PlaceFinish), 0.5f);
     }
 
     protected virtual void PlaceFinish()

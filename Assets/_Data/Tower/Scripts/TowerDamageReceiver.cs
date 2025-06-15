@@ -46,7 +46,7 @@ public class TowerDamageReceiver : DamageReceiver
 
     protected virtual void Disappear()
     {
-        Destroy(this.towerCtrl.gameObject);
+        this.towerCtrl.TowerDespawn.DoDespawn();
         //this.enemyCtrl.Despawn.DoDespawn();
     }
 
