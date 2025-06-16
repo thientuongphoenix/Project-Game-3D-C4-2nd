@@ -47,11 +47,12 @@ public abstract class TowerCtrl : PoolObj
     protected override void Start()
     {
         this.SetActiveEnemyTargetable();
+        //this.level.ResetLevel();
     }
 
     protected virtual void OnEnable()
     {
-        this.level.ResetLevel();
+        //this.level.ResetLevel();
         this.SetActiveEnemyTargetable();
     }
 

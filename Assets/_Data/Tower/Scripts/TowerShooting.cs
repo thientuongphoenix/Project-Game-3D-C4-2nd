@@ -156,5 +156,13 @@ public class TowerShooting : TowerAbstract
     public virtual void Disable()
     {
         this.isDisable = true;
-    }    
+    }
+
+    public void ResetShootingState()
+    {
+        this.killCount = 0;
+        this.totalKill = 0;
+        this.currentFirePoint = 0;
+        this.shootingTimer = 0f;
+    }
 }
