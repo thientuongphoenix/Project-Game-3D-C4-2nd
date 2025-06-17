@@ -72,5 +72,7 @@ public class EnemyDamageReceiver : DamageReceiver
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Gold, 10, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Wand, 1, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.PlayerExp, 10, transform.position);
+        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.HealthPotion, 1, transform.position);
+        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.ManaPotion, 1, transform.position);
     }
 }
