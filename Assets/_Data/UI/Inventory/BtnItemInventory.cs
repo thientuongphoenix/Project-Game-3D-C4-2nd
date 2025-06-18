@@ -103,7 +103,10 @@ public class BtnItemInventory : ButttonAbstract
 
     public virtual void ToggleSelect()
     {
-        if (isSelected) Deselect();
+        if (isSelected) {
+            Deselect();
+            InventoryUI.Instance.DeselectCurrentItem();
+        }
         else Select();
     }
 
