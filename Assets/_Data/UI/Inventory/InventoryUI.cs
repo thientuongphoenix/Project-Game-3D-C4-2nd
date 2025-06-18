@@ -11,6 +11,10 @@ public class InventoryUI : SaiSingleton<InventoryUI>
     [SerializeField] protected BtnItemInventory defaultItemInventoryUI;
     protected List<BtnItemInventory> btnItems = new();
 
+    [Header("Selected Item")]
+    [SerializeField] protected BtnItemInventory selectedItem;
+    public BtnItemInventory SelectedItem => selectedItem;
+
     protected override void Start()
     {
         base.Start();
@@ -61,6 +65,12 @@ public class InventoryUI : SaiSingleton<InventoryUI>
         this.isShow = false;
         this.showHide.gameObject.SetActive(this.isShow);
         HideMouse.Instance.isCursorVisible = this.isShow;
+        // Khi đóng inventory, bỏ chọn item đang chọn
+        if (this.selectedItem != null)
+        {
+            this.selectedItem.Deselect();
+            this.selectedItem = null;
+        }
     }
 
     public virtual void Toggle()
@@ -110,5 +120,11 @@ public class InventoryUI : SaiSingleton<InventoryUI>
     protected virtual void HotkeyToggleInventory()
     {
         if(InputHotkeys.Instance.IsToggleInventoryUI) this.Toggle();
+    }
+
+    public virtual void OnItemSelected(BtnItemInventory selectedButton)
+    {
+        this.selectedItem = selectedButton;
+        Debug.Log($"Selected item in inventory: {selectedButton.ItemInventory.GetItemName()}");
     }
 }

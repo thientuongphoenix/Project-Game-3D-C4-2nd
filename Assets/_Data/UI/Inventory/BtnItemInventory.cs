@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BtnItemInventory : ButttonAbstract
 {
@@ -8,6 +9,27 @@ public class BtnItemInventory : ButttonAbstract
 
     [SerializeField] protected ItemInventory itemInventory;
     public ItemInventory ItemInventory => itemInventory;
+
+    [Header("Selected State")]
+    [SerializeField] protected bool isSelected = false;
+    public bool IsSelected => isSelected;
+
+    [Header("Visual")]
+    [SerializeField] protected Image buttonImage;
+    protected Color defaultColor;
+    protected Color selectedColor = Color.yellow;
+
+    protected override void Start()
+    {
+        base.Start();
+        this.LoadDefaultColor();
+    }
+
+    protected virtual void LoadDefaultColor()
+    {
+        if (this.buttonImage != null)
+            this.defaultColor = this.buttonImage.color;
+    }
 
     protected virtual void FixedUpdate()
     {
@@ -19,6 +41,14 @@ public class BtnItemInventory : ButttonAbstract
         base.LoadComponents();
         this.LoadItemName();
         this.LoadItemCount();
+        this.LoadButtonImage();
+    }
+
+    protected virtual void LoadButtonImage()
+    {
+        if (this.buttonImage != null) return;
+        this.buttonImage = GetComponent<Image>();
+        Debug.Log(transform.name + ": LoadButtonImage", gameObject);
     }
 
     protected virtual void LoadItemName()
@@ -42,7 +72,39 @@ public class BtnItemInventory : ButttonAbstract
 
     protected override void OnClick()
     {
-        Debug.Log("Item Click");
+        // Bỏ chọn tất cả các item khác
+        BtnItemInventory[] allItems = transform.parent.GetComponentsInChildren<BtnItemInventory>();
+        foreach (BtnItemInventory item in allItems)
+        {
+            if (item != this) item.Deselect();
+        }
+
+        // Toggle trạng thái chọn của item hiện tại
+        this.ToggleSelect();
+        
+        Debug.Log($"Item {itemInventory.GetItemName()} is {(isSelected ? "selected" : "deselected")}");
+    }
+
+    public virtual void Select()
+    {
+        isSelected = true;
+        if (this.buttonImage != null)
+            this.buttonImage.color = this.selectedColor;
+        // Thông báo cho InventoryUI biết item nào đang được chọn
+        InventoryUI.Instance.OnItemSelected(this);
+    }
+
+    public virtual void Deselect()
+    {
+        isSelected = false;
+        if (this.buttonImage != null)
+            this.buttonImage.color = this.defaultColor;
+    }
+
+    public virtual void ToggleSelect()
+    {
+        if (isSelected) Deselect();
+        else Select();
     }
 
     protected virtual void ItemUpdating()
