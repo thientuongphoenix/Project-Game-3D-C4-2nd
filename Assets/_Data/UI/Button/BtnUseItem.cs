@@ -19,13 +19,13 @@ public class BtnUseItem : ButttonAbstract
         {
             case ItemCode.HealthPotion:
                 Debug.Log($"Using Health Potion - Healing player...");
-                // TODO: Implement healing logic
+                
                 this.UseHealthPotion(item);
                 break;
 
             case ItemCode.ManaPotion:
                 Debug.Log($"Using Mana Potion - Restoring mana...");
-                // TODO: Implement mana restore logic
+                
                 this.UseManaPotion(item);
                 break;
 
@@ -43,11 +43,10 @@ public class BtnUseItem : ButttonAbstract
     {
         if (item.itemCount <= 0) return;
 
-        Debug.Log($"Health Potion used! Healing for X amount");
-        // TODO: Add healing amount to player's health
-        // PlayerManager.Instance.Heal(healAmount);
+        int healAmount = 10;
+        PlayerCtrl.Instance.PlayerDamageReceiver.Heal(healAmount);
+        Debug.Log($"Health Potion used! Healing for {healAmount} HP");
 
-        // Giảm số lượng item sau khi sử dụng
         InventoryManager.Instance.RemoveItem(item.ItemProfile.itemCode, 1);
     }
 
@@ -55,11 +54,10 @@ public class BtnUseItem : ButttonAbstract
     {
         if (item.itemCount <= 0) return;
 
-        Debug.Log($"Mana Potion used! Restoring X mana");
-        // TODO: Add mana amount to player's mana
-        // PlayerManager.Instance.RestoreMana(manaAmount);
+        float manaAmount = 10f;
+        PlayerCtrl.Instance.PlayerMana.AddMana(manaAmount);
+        Debug.Log($"Mana Potion used! Restoring {manaAmount} mana");
 
-        // Giảm số lượng item sau khi sử dụng
         InventoryManager.Instance.RemoveItem(item.ItemProfile.itemCode, 1);
     }
 }
