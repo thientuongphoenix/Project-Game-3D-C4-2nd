@@ -17,7 +17,7 @@ public class BtnItemInventory : ButttonAbstract
     [Header("Visual")]
     [SerializeField] protected Image buttonImage;
     protected Color defaultColor;
-    protected Color selectedColor = Color.yellow;
+    protected Color selectedColor = Color.gray;
 
     protected override void Start()
     {
@@ -68,6 +68,15 @@ public class BtnItemInventory : ButttonAbstract
     public virtual void SetItem(ItemInventory itemInventory)
     {
         this.itemInventory = itemInventory;
+        // Lấy sprite từ ItemProfileSO và set cho buttonImage
+        if (this.buttonImage != null && this.itemInventory != null && this.itemInventory.ItemProfile != null)
+        {
+            Sprite sprite = this.itemInventory.ItemProfile.itemSprite;
+            if (sprite != null)
+            {
+                this.buttonImage.sprite = sprite;
+            }
+        }
     }
 
     protected override void OnClick()
