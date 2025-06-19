@@ -29,6 +29,9 @@ public class PlayerCtrl : SaiSingleton<PlayerCtrl>
     [SerializeField] protected PlayerDamageReceiver playerDamageReceiver;
     public PlayerDamageReceiver PlayerDamageReceiver => playerDamageReceiver;
 
+    [SerializeField] protected PlayerMana playerMana;
+    public PlayerMana PlayerMana => playerMana;
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -40,6 +43,14 @@ public class PlayerCtrl : SaiSingleton<PlayerCtrl>
         this.LoadWeapons();
         this.LoadLevel();
         this.LoadPlayerDamageReceiver();
+        this.LoadPlayerMana();
+    }
+
+    protected virtual void LoadPlayerMana()
+    {
+        if (this.playerMana != null) return;
+        this.playerMana = GetComponentInChildren<PlayerMana>();
+        Debug.Log(transform.name + ": LoadPlayerMana", gameObject);
     }
 
     protected virtual void LoadPlayerDamageReceiver()

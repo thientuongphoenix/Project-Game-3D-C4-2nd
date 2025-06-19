@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6132955243131336784}
   - component: {fileID: 5765779829081273853}
   - component: {fileID: 8448367809963729868}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: DamageReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,56 @@ MonoBehaviour:
   currentHP: 10
   isImmotal: 0
   sphereCollider: {fileID: 5765779829081273853}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 3335712140486263482}
+--- !u!1 &1656241092038661663
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8775435691647410261}
+  - component: {fileID: 8204364797240221742}
+  m_Layer: 2
+  m_Name: Despawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8775435691647410261
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656241092038661663}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8641950689438236673}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8204364797240221742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656241092038661663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464c81bad54f76242a397c5e6f45197d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 3335712140486263482}
+  spawner: {fileID: 0}
+  isDespawnByTime: 0
+  timeLife: 7
+  currentTime: 7
 --- !u!1 &1994158054925884681
 GameObject:
   m_ObjectHideFlags: 0
@@ -83,7 +132,7 @@ GameObject:
   - component: {fileID: 8777420481066409033}
   - component: {fileID: 167158999207920107}
   - component: {fileID: 7263180673823480147}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Swivel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6226477782893869864}
   - component: {fileID: 1521453956754140512}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: FirePoint_1
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -334,7 +383,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3965317383601576019}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,7 +419,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 870241601035909097}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -408,7 +457,7 @@ GameObject:
   - component: {fileID: 4774356415703102412}
   - component: {fileID: 295102060318286515}
   - component: {fileID: 7499596007675411784}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -501,7 +550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 295102060318286515}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 3335712140486263482}
 --- !u!1 &4200001845877636720
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2542405093617045157}
   - component: {fileID: 1239474789990659433}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TowerShooting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -546,7 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98808681dc2303458bdbbf3132685ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 3335712140486263482}
   currentFirePoint: 0
   targetLoadSpeed: 1
   shootingSpeed: 0.7
@@ -558,6 +607,7 @@ MonoBehaviour:
   killCount: 0
   totalKill: 0
   shootSFXName: 100
+  isDisable: 1
 --- !u!1 &4225958482567457028
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,7 +617,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8758524675513806584}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -583,7 +633,7 @@ Transform:
   m_GameObject: {fileID: 4225958482567457028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.63, z: 0}
   m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -600,7 +650,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8426502973993146887}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Rotator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -624,6 +674,37 @@ Transform:
   - {fileID: 461574607812210792}
   m_Father: {fileID: 8758524675513806584}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4520607834045959611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8240898907222309472}
+  m_Layer: 2
+  m_Name: PoolHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8240898907222309472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4520607834045959611}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 18.25, y: -0.8, z: 16.58}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8641950689438236673}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4527298035941975845
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,7 +715,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5847428305235594587}
   - component: {fileID: 1794188043648482483}
-  m_Layer: 6
+  m_Layer: 2
   m_Name: TowerHp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -650,7 +731,7 @@ Transform:
   m_GameObject: {fileID: 4527298035941975845}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.27, z: 0}
+  m_LocalPosition: {x: 0, y: 1.977, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -682,7 +763,7 @@ GameObject:
   - component: {fileID: 4594157550939499643}
   - component: {fileID: 68250348583430237}
   - component: {fileID: 2711331270790785815}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TextLevelNumber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -860,7 +941,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textPro: {fileID: 68250348583430237}
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 0}
 --- !u!1 &4937576206386087133
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +952,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8237945195063273994}
   - component: {fileID: 5500526047044065456}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: FirePoint_0
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
@@ -915,7 +996,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3442118799077457635}
   - component: {fileID: 8081761012111580964}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -952,7 +1033,7 @@ MonoBehaviour:
   currentLevel: 1
   maxLevel: 100
   nextLevelExp: 0
-  towerCtrl: {fileID: 3290729655338659269}
+  towerCtrl: {fileID: 3335712140486263482}
 --- !u!1 &5089973527897419863
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,8 +1043,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8641950689438236673}
-  - component: {fileID: 3290729655338659269}
-  m_Layer: 0
+  - component: {fileID: 3335712140486263482}
+  m_Layer: 2
   m_Name: MachineGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -978,7 +1059,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5089973527897419863}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -18.25, y: 0.8, z: -16.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -991,9 +1072,11 @@ Transform:
   - {fileID: 6207246416621391461}
   - {fileID: 3443487518719148890}
   - {fileID: 6132955243131336784}
+  - {fileID: 8240898907222309472}
+  - {fileID: 8775435691647410261}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3290729655338659269
+--- !u!114 &3335712140486263482
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1002,9 +1085,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5089973527897419863}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9fa1d7caa3311f479ad85f709ed4d51, type: 3}
+  m_Script: {fileID: 11500000, guid: 575dfa56b35e4624ba0ee03b815fe126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  despawn: {fileID: 8204364797240221742}
   model: {fileID: 8758524675513806584}
   rotator: {fileID: 8426502973993146887}
   towerTargeting: {fileID: 6245731361568095844}
@@ -1017,6 +1101,7 @@ MonoBehaviour:
   - {fileID: 5500526047044065456}
   - {fileID: 1521453956754140512}
   towerDamageReceiver: {fileID: 8448367809963729868}
+  towerDespawn: {fileID: 8204364797240221742}
 --- !u!1 &5163535987095862575
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,7 +1112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6207246416621391461}
   - component: {fileID: 227320265564597725}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LevelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1043,7 +1128,7 @@ Transform:
   m_GameObject: {fileID: 5163535987095862575}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.707, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1076,7 +1161,7 @@ GameObject:
   - component: {fileID: 2808519121043935443}
   - component: {fileID: 4183055029404585796}
   - component: {fileID: 534112207651763663}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: MGMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1186,7 +1271,7 @@ GameObject:
   - component: {fileID: 3788413511356789262}
   - component: {fileID: 1809765642576906552}
   - component: {fileID: 4723820442842766807}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TextLevelLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1363,7 +1448,7 @@ GameObject:
   - component: {fileID: 2425814250667898807}
   - component: {fileID: 8560287801160218250}
   - component: {fileID: 7768805316079094724}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Stand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1471,7 +1556,7 @@ GameObject:
   - component: {fileID: 1968600885057696106}
   - component: {fileID: 221966489951380283}
   - component: {fileID: 3301874523564933331}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1546,7 +1631,7 @@ GameObject:
   - component: {fileID: 482937871307265164}
   - component: {fileID: 5228077151279253189}
   - component: {fileID: 3392791503697007295}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1621,7 +1706,7 @@ GameObject:
   - component: {fileID: 6377855273062496530}
   - component: {fileID: 6661712078650478223}
   - component: {fileID: 6243979710186259673}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1698,7 +1783,7 @@ GameObject:
   - component: {fileID: 3101752710382679995}
   - component: {fileID: 8298716043171071571}
   - component: {fileID: 2552672069977577792}
-  m_Layer: 5
+  m_Layer: 2
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1812,7 +1897,7 @@ GameObject:
   - component: {fileID: 3443487518719148890}
   - component: {fileID: 7155407184905179681}
   - component: {fileID: 1543496579285253586}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: EnemyTargetable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
