@@ -17,3 +17,4 @@ MonoBehaviour:
   itemName: Health Potion
   isStackable: 1
   isAutoPickup: 0
+  itemSprite: {fileID: 21300000, guid: 2928cb42dd37d664ba1193c8c7826527, type: 3}

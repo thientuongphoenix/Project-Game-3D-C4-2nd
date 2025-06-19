@@ -51,4 +51,11 @@ public abstract class DamageReceiver : SaiMonoBehaviour
     {
         this.currentHP = this.maxHP;
     }
+
+    public virtual void Heal(int amount)
+    {
+        if (this.isDead) return;
+        this.currentHP += amount;
+        if (this.currentHP > this.maxHP) this.currentHP = this.maxHP;
+    }
 }
