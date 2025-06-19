@@ -9,6 +9,8 @@ public class ItemProfileSO : ScriptableObject
     public bool isStackable = false;
     public bool isAutoPickup = false;
 
+    public Sprite itemSprite;
+
     protected virtual void Reset()
     {
         this.ResetValue();
