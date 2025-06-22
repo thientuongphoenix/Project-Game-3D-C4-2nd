@@ -64,10 +64,17 @@ public class TowerShooting : TowerAbstract
         if (this.target == null) return;
 
         Vector3 directionToTarget = this.target.TowerTargetable.transform.position - this.towerCtrl.Rotator.position;
-        Vector3 newDirection = Vector3.RotateTowards(this.towerCtrl.Rotator.forward, directionToTarget, this.rotationSpeed * Time.fixedDeltaTime, 0f);
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        Vector3 eulerAngles = targetRotation.eulerAngles;
+        
+        float pitch = eulerAngles.x;
+        if (pitch > 180f) pitch -= 360f;
 
-        this.towerCtrl.Rotator.rotation = Quaternion.LookRotation(newDirection);
-        //this.towerCtrl.Rotator.LookAt(this.target.TowerTargetable.transform.position);
+        float clampedPitch = Mathf.Clamp(pitch, -45f, 45f);
+
+        Quaternion clampedRotation = Quaternion.Euler(clampedPitch, eulerAngles.y, 0);
+
+        this.towerCtrl.Rotator.rotation = Quaternion.Slerp(this.towerCtrl.Rotator.rotation, clampedRotation, this.rotationSpeed * Time.fixedDeltaTime);
     }
 
     protected virtual void TargetLoading()
