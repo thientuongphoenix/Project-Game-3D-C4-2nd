@@ -79,7 +79,7 @@ public class TowerManager : SaiSingleton<TowerManager>
         switch (keyCode)
         {
             case KeyCode.Alpha1: return TowerCode.MachineGun;
-            case KeyCode.Alpha2: return TowerCode.LaserGun;
+            case KeyCode.Alpha2: return TowerCode.OneGunBarrel;
             default: return TowerCode.NoTower;
         }
     }
