@@ -174,10 +174,12 @@ public abstract class TowerCtrl : PoolObj
         if (this.transform.parent != null && this.transform.parent.name == "PoolHolder")
         {
             this.enemyTargetable.gameObject.SetActive(true);
+            this.towerDamageReceiver.gameObject.SetActive(true);
         }
         else
         {
             this.enemyTargetable.gameObject.SetActive(false);
+            this.towerDamageReceiver.gameObject.SetActive(false);
         }
     }
 }

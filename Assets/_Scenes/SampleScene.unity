@@ -1380,6 +1380,10 @@ PrefabInstance:
       propertyPath: bulletSpawner
       value: 
       objectReference: {fileID: 1600690249}
+    - target: {fileID: 2452696320449029385, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2624776522238642818, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1434,7 +1438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4379588755407911237, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4792222851522661536, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
       propertyPath: effectSpawner
@@ -1471,13 +1475,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1661113828082918071, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7582309477517576256, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
 --- !u!4 &234729919 stripped
 Transform:
@@ -14835,7 +14833,7 @@ MonoBehaviour:
   enemyPath: {fileID: 3959231983631872375}
   currentPoint: {fileID: 0}
   pointDistance: Infinity
-  stopDistance: 1.5
+  stopDistance: 1
   canMove: 1
   isMoving: 0
   isFinish: 0
