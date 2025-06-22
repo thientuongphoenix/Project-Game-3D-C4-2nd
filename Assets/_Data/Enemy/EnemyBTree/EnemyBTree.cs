@@ -123,10 +123,15 @@ public class EnemyBTree : BTAgent
         enemyCtrl.Agent.isStopped = false;
         enemyCtrl.Agent.SetDestination(point.transform.position);
 
-        float distance = Vector3.Distance(enemyCtrl.transform.position, point.transform.position);
-        if (distance < enemyCtrl.EnemyMoving.StopDistance)
+        // float distance = Vector3.Distance(enemyCtrl.transform.position, point.transform.position);
+        // if (distance < enemyCtrl.EnemyMoving.StopDistance)
+        // {
+        //     // Đã đến nơi, lần tick sau sẽ FindNextPoint tiếp
+        //     return Node.Status.SUCCESS;
+        // }
+        enemyCtrl.Agent.stoppingDistance = enemyCtrl.EnemyMoving.StopDistance;
+        if (!enemyCtrl.Agent.pathPending && enemyCtrl.Agent.remainingDistance <= enemyCtrl.Agent.stoppingDistance)
         {
-            // Đã đến nơi, lần tick sau sẽ FindNextPoint tiếp
             return Node.Status.SUCCESS;
         }
         return Node.Status.RUNNING;
@@ -147,12 +152,19 @@ public class EnemyBTree : BTAgent
         if (tower.TowerDamageReceiver != null && tower.TowerDamageReceiver.IsDead()) return Node.Status.FAILURE;
         enemyCtrl.Agent.isStopped = false;
         enemyCtrl.Agent.SetDestination(tower.transform.position);
-        float distance = Vector3.Distance(enemyCtrl.transform.position, tower.transform.position);
-        if (distance < enemyCtrl.EnemyMoving.StopDistance)
+
+        // float distance = Vector3.Distance(enemyCtrl.transform.position, tower.transform.position);
+        // if (distance < enemyCtrl.EnemyMoving.StopDistance)
+        // {
+        //     // Logic tấn công tower
+        //     //enemyCtrl.Agent.isStopped = true;
+        //     //enemyCtrl.Animator.SetBool("isAttack", true);
+        //     Debug.Log("Enemy đã đến gần Tower: " + tower.name);
+        //     return Node.Status.SUCCESS;
+        // }
+        enemyCtrl.Agent.stoppingDistance = enemyCtrl.EnemyMoving.StopDistance;
+        if (!enemyCtrl.Agent.pathPending && enemyCtrl.Agent.remainingDistance <= enemyCtrl.Agent.stoppingDistance)
         {
-            // Logic tấn công tower
-            //enemyCtrl.Agent.isStopped = true;
-            //enemyCtrl.Animator.SetBool("isAttack", true);
             Debug.Log("Enemy đã đến gần Tower: " + tower.name);
             return Node.Status.SUCCESS;
         }
@@ -174,10 +186,16 @@ public class EnemyBTree : BTAgent
         // Có thể kiểm tra player chết không nếu cần
         enemyCtrl.Agent.isStopped = false;
         enemyCtrl.Agent.SetDestination(player.transform.position);
-        float distance = Vector3.Distance(enemyCtrl.transform.position, player.transform.position);
-        if (distance < enemyCtrl.EnemyMoving.StopDistance)
+
+        // float distance = Vector3.Distance(enemyCtrl.transform.position, player.transform.position);
+        // if (distance < enemyCtrl.EnemyMoving.StopDistance)
+        // {
+        //     // Có thể bổ sung logic tấn công player ở đây
+        //     return Node.Status.SUCCESS;
+        // }
+        enemyCtrl.Agent.stoppingDistance = enemyCtrl.EnemyMoving.StopDistance;
+        if (!enemyCtrl.Agent.pathPending && enemyCtrl.Agent.remainingDistance <= enemyCtrl.Agent.stoppingDistance)
         {
-            // Có thể bổ sung logic tấn công player ở đây
             return Node.Status.SUCCESS;
         }
         return Node.Status.RUNNING;

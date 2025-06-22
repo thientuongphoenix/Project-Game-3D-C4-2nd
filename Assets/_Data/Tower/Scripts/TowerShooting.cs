@@ -45,6 +45,12 @@ public class TowerShooting : TowerAbstract
         }
     }
 
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadEffectSpawner();
+    }
+
     protected virtual void LoadEffectSpawner()
     {
         if (this.effectSpawner != null) return;
