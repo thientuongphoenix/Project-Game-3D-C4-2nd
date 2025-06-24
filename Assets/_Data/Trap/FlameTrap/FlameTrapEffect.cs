@@ -6,6 +6,7 @@ public class FlameTrapEffect : DamageSender
     //[SerializeField] protected ParticleSystem flameParticle;
     [SerializeField] protected float flameDuration = 2f;
     [SerializeField] protected FlameTrapCtrl flameTrapCtrl;
+    [SerializeField] protected SoundName flameSFXName = SoundName.Flame;
 
     protected override void LoadComponents()
     {
@@ -43,13 +44,32 @@ public class FlameTrapEffect : DamageSender
     protected virtual void ActivateFlame()
     {
         if (this.flameTrapCtrl.FlameParticle != null) this.flameTrapCtrl.FlameParticle.Play();
-        this.boxCollider.enabled = true;
+        this.boxCollider.enabled = true;  
+        
+        this.SpawnSound(this.transform.position);
+        
         Invoke(nameof(DeactivateFlame), flameDuration);
+    }
+
+    protected virtual void SpawnSound(Vector3 position)
+    {
+        SFXCtrl newSfx = SoundManager.Instance.CreateSfx(this.flameSFXName);
+        newSfx.transform.position = position;
+        newSfx.gameObject.SetActive(true);
     }
 
     protected virtual void DeactivateFlame()
     {
         this.boxCollider.enabled = false;
         Invoke(nameof(ActivateFlame), flameDuration);
+    }
+
+    protected override void Send(DamageReceiver damageReceiver, Collider collider)
+    {
+        if (damageReceiver is PlayerDamageReceiver || damageReceiver is TowerDamageReceiver)
+        {
+            return;
+        }
+        damageReceiver.Deduct(this.damage);
     }
 }
