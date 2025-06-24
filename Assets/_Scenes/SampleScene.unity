@@ -8116,6 +8116,7 @@ Transform:
   m_Children:
   - {fileID: 1073350225614243492}
   - {fileID: 234729919}
+  - {fileID: 2146279528}
   m_Father: {fileID: 587807826}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1053002495
@@ -8133,6 +8134,7 @@ MonoBehaviour:
   prefabs:
   - {fileID: 948725983671553485}
   - {fileID: 234729920}
+  - {fileID: 2146279529}
 --- !u!1 &1070474337
 GameObject:
   m_ObjectHideFlags: 0
@@ -12624,6 +12626,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2041160675}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1677225628
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1677225629}
+  - component: {fileID: 1677225630}
+  m_Layer: 2
+  m_Name: Despawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1677225629
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677225628}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -3.43, z: 0}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2146279528}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1677225630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677225628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464c81bad54f76242a397c5e6f45197d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 2146279529}
+  spawner: {fileID: 587807827}
+  isDespawnByTime: 0
+  timeLife: 7
+  currentTime: 7
 --- !u!1 &1685940353
 GameObject:
   m_ObjectHideFlags: 0
@@ -15245,7 +15296,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.43772864, g: 0.89816046, b: 0.9547169, a: 0.27450982}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.19607843}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -15694,7 +15745,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 1, y: 1, z: 1}
+    m_Scale: {x: 2, y: 2, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -20296,13 +20347,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2146279528}
+  - component: {fileID: 2146279529}
   m_Layer: 0
   m_Name: IceTrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2146279528
 Transform:
   m_ObjectHideFlags: 0
@@ -20311,15 +20363,41 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2146279527}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.43, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 122885567}
   - {fileID: 2062625513}
-  m_Father: {fileID: 0}
+  - {fileID: 1677225629}
+  m_Father: {fileID: 1053002494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2146279529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146279527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c2813b3a4cf174783de917f1d05d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  despawn: {fileID: 0}
+  model: {fileID: 122885567}
+  rotator: {fileID: 0}
+  towerTargeting: {fileID: 0}
+  bulletSpawner: {fileID: 1600690249}
+  towerShooting: {fileID: 0}
+  level: {fileID: 0}
+  bullet: {fileID: 1487375494}
+  bulletPrefabs: {fileID: 2129044057}
+  firePoints: []
+  towerDamageReceiver: {fileID: 0}
+  towerDespawn: {fileID: 0}
+  enemyTargetable: {fileID: 0}
 --- !u!1 &9171100673508076
 GameObject:
   m_ObjectHideFlags: 0
@@ -250852,4 +250930,3 @@ SceneRoots:
   - {fileID: 841189475}
   - {fileID: 1191117805}
   - {fileID: 1870858048}
-  - {fileID: 2146279528}
