@@ -84,6 +84,7 @@ public class TowerManager : SaiSingleton<TowerManager>
             case KeyCode.Alpha1: return TowerCode.MachineGun;
             case KeyCode.Alpha2: return TowerCode.OneGunBarrel;
             case KeyCode.Alpha3: return TowerCode.IceTrap;
+            case KeyCode.Alpha4: return TowerCode.FlameTrap;
             default: return TowerCode.NoTower;
         }
     }

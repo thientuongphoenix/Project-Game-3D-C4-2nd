@@ -850,7 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464c81bad54f76242a397c5e6f45197d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parent: {fileID: 2004373370}
+  parent: {fileID: 0}
   spawner: {fileID: 587807827}
   isDespawnByTime: 0
   timeLife: 7
@@ -2967,7 +2967,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 414678802}
   serializedVersion: 8
-  lengthInSec: 3
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -3042,7 +3042,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.3
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -13224,6 +13224,7 @@ MonoBehaviour:
   - {fileID: 948725983671553485}
   - {fileID: 234729920}
   - {fileID: 2146279529}
+  - {fileID: 2004373370}
 --- !u!1 &1070474337
 GameObject:
   m_ObjectHideFlags: 0
@@ -19534,7 +19535,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2004373369
 Transform:
   m_ObjectHideFlags: 0
@@ -19563,10 +19564,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2004373368}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1c2813b3a4cf174783de917f1d05d0e, type: 3}
+  m_Script: {fileID: 11500000, guid: e606b0c6a854cef4a9a25952a9c93fa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  despawn: {fileID: 0}
+  despawn: {fileID: 134959378}
   model: {fileID: 631834893}
   rotator: {fileID: 0}
   towerTargeting: {fileID: 0}
@@ -19577,9 +19578,10 @@ MonoBehaviour:
   bulletPrefabs: {fileID: 2129044057}
   firePoints: []
   towerDamageReceiver: {fileID: 0}
-  towerDespawn: {fileID: 0}
+  towerDespawn: {fileID: 134959378}
   enemyTargetable: {fileID: 0}
   towerType: 1
+  flameParticle: {fileID: 414678805}
 --- !u!1 &2004648930
 GameObject:
   m_ObjectHideFlags: 0
@@ -19591,7 +19593,7 @@ GameObject:
   - component: {fileID: 2004648931}
   - component: {fileID: 2004648934}
   - component: {fileID: 2004648933}
-  - component: {fileID: 2004648932}
+  - component: {fileID: 2004648935}
   m_Layer: 2
   m_Name: DebuffEffect
   m_TagString: Untagged
@@ -19614,22 +19616,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2004373369}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2004648932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2004648930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a0816ea07b57e8428f9d66f2858e5d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rigid: {fileID: 2004648933}
-  damage: 0
-  boxCollider: {fileID: 2004648934}
-  slowAmount: 0.5
 --- !u!54 &2004648933
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -19674,10 +19660,27 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 1.9024043, y: 1.9154797, z: 1.9015656}
-  m_Center: {x: -0.00089895725, y: 0.9339943, z: 0.0002591908}
+  m_Size: {x: 1.9024043, y: 3.8826332, z: 1.9015656}
+  m_Center: {x: -0.00089895725, y: 1.9175711, z: 0.000259161}
+--- !u!114 &2004648935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2004648930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369ac0e7491b3cf46b4add890d4a0aea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rigid: {fileID: 2004648933}
+  damage: 1
+  boxCollider: {fileID: 2004648934}
+  flameDuration: 2
+  flameTrapCtrl: {fileID: 2004373370}
 --- !u!1 &2007677433
 GameObject:
   m_ObjectHideFlags: 0
