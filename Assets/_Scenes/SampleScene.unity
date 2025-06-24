@@ -710,7 +710,7 @@ GameObject:
   - component: {fileID: 122885570}
   - component: {fileID: 122885569}
   - component: {fileID: 122885568}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15007,7 +15007,7 @@ GameObject:
   - component: {fileID: 2062625513}
   - component: {fileID: 2062625515}
   - component: {fileID: 2062625514}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: IceFrogEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20348,7 +20348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2146279528}
   - component: {fileID: 2146279529}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: IceTrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20398,6 +20398,7 @@ MonoBehaviour:
   towerDamageReceiver: {fileID: 0}
   towerDespawn: {fileID: 0}
   enemyTargetable: {fileID: 0}
+  towerType: 1
 --- !u!1 &9171100673508076
 GameObject:
   m_ObjectHideFlags: 0

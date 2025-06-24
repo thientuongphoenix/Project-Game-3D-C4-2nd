@@ -29,7 +29,8 @@ public class TowerManager : SaiSingleton<TowerManager>
         this.towerPrefab = this.GetTowerPrefab(this.newTowerId);
         if(this.towerPrefab == null) return;
 
-        this.towerPrefab.TowerShooting.Disable();
+        if (this.towerPrefab.TowerType == TowerType.Tower && this.towerPrefab.TowerShooting != null)
+            this.towerPrefab.TowerShooting.Disable();
         this.towerPrefab.SetActive(true);
       }
 
@@ -46,11 +47,13 @@ public class TowerManager : SaiSingleton<TowerManager>
       this.towerPlaced = true;
 
       TowerCtrl newTower = this.Spawn(this.towerPrefab);
-      newTower.TowerShooting.ResetShootingState();
-      newTower.TowerShooting.Active();
+      if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
+      {
+        newTower.TowerShooting.ResetShootingState();
+        newTower.TowerShooting.Active();
+      }
       newTower.SetActive(true);
-
-      newTower.Level.ResetLevel();
+      if (newTower.Level != null) newTower.Level.ResetLevel();
         
       //this.towerPrefab.SetActive(false);
       // this.newTowerId = TowerCode.NoTower;
