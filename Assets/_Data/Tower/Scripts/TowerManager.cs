@@ -29,7 +29,8 @@ public class TowerManager : SaiSingleton<TowerManager>
         this.towerPrefab = this.GetTowerPrefab(this.newTowerId);
         if(this.towerPrefab == null) return;
 
-        this.towerPrefab.TowerShooting.Disable();
+        if (this.towerPrefab.TowerType == TowerType.Tower && this.towerPrefab.TowerShooting != null)
+            this.towerPrefab.TowerShooting.Disable();
         this.towerPrefab.SetActive(true);
       }
 
@@ -46,11 +47,13 @@ public class TowerManager : SaiSingleton<TowerManager>
       this.towerPlaced = true;
 
       TowerCtrl newTower = this.Spawn(this.towerPrefab);
-      newTower.TowerShooting.ResetShootingState();
-      newTower.TowerShooting.Active();
+      if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
+      {
+        newTower.TowerShooting.ResetShootingState();
+        newTower.TowerShooting.Active();
+      }
       newTower.SetActive(true);
-
-      newTower.Level.ResetLevel();
+      if (newTower.Level != null) newTower.Level.ResetLevel();
         
       //this.towerPrefab.SetActive(false);
       // this.newTowerId = TowerCode.NoTower;
@@ -79,7 +82,9 @@ public class TowerManager : SaiSingleton<TowerManager>
         switch (keyCode)
         {
             case KeyCode.Alpha1: return TowerCode.MachineGun;
-            case KeyCode.Alpha2: return TowerCode.LaserGun;
+            case KeyCode.Alpha2: return TowerCode.OneGunBarrel;
+            case KeyCode.Alpha3: return TowerCode.IceTrap;
+            case KeyCode.Alpha4: return TowerCode.FlameTrap;
             default: return TowerCode.NoTower;
         }
     }
