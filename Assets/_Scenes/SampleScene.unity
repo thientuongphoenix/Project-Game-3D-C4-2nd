@@ -2583,7 +2583,7 @@ MonoBehaviour:
   - {fileID: 1043716544}
   - {fileID: 1780259818}
   - {fileID: 687691619}
-  - {fileID: 1166115272}
+  - {fileID: 1166115274}
 --- !u!1 &394730307
 GameObject:
   m_ObjectHideFlags: 0
@@ -7894,7 +7894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f418f561deeb747bba1379dc5e579b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parent: {fileID: 1166115272}
+  parent: {fileID: 0}
   spawner: {fileID: 1796759408}
   isDespawnByTime: 1
   timeLife: 3
@@ -14067,7 +14067,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1166115271}
-  - component: {fileID: 1166115272}
+  - component: {fileID: 1166115274}
   - component: {fileID: 1166115273}
   m_Layer: 0
   m_Name: Flame
@@ -14092,20 +14092,6 @@ Transform:
   - {fileID: 458567714}
   m_Father: {fileID: 394205730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1166115272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1166115270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9610ef251334b924d8a54ae0b31ff8a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  despawn: {fileID: 458567715}
-  audioSource: {fileID: 1166115273}
 --- !u!82 &1166115273
 AudioSource:
   m_ObjectHideFlags: 0
@@ -14203,6 +14189,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1166115274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1166115270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2e7930ba511a8c4eaaaec3a13df9e5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  despawn: {fileID: 458567715}
+  audioSource: {fileID: 1166115273}
 --- !u!1 &1169576994
 GameObject:
   m_ObjectHideFlags: 0
