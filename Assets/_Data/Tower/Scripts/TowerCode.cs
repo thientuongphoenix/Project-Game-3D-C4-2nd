@@ -4,5 +4,7 @@ public enum TowerCode
 {
     NoTower = 0,
     MachineGun = 1,
-    LaserGun = 2,
+    OneGunBarrel = 2,
+    IceTrap = 3,
+    FlameTrap = 4,
 }
