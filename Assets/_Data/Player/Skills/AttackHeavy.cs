@@ -9,23 +9,21 @@ public class AttackHeavy : AttackAbstract
     protected float currentCooldown;
     protected bool isOnCooldown;
 
+    [SerializeField] protected float manaCost = 2f;
+
     protected override void Attacking()
     {
         if(!InputManager.Instance.IsAttackHeavy()) return;
-        if(isOnCooldown) return; // Đang hồi chiêu
+        if(isOnCooldown) return;
+        
+        if (!this.playerCtrl.PlayerMana.UseMana(this.manaCost)) return;
 
         AttackPoint attackPoint = this.GetAttackPoint();
-
         EffectCtrl effect = this.spawner.Spawn(this.GetEffect(), attackPoint.transform.position);
-
         EffectFlyAbstract effectFly = (EffectFlyAbstract)effect;
         effectFly.FlyToTarget.SetTarget(this.playerCtrl.CrosshairPointer.transform);
-
         effect.gameObject.SetActive(true);
-        //Debug.Log("Attack Light");
-
         this.SpawnSound(effectFly.transform.position);
-
         StartCooldown();
     }
 

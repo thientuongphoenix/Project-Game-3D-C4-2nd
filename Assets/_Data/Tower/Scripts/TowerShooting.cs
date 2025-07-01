@@ -18,12 +18,14 @@ public class TowerShooting : TowerAbstract
 
     [SerializeField] protected SoundName shootSFXName = SoundName.BerettaM9Shot;
     
+    [SerializeField] protected bool isDisable = true;
+    [SerializeField] protected float shootingTimer = 0f;
 
     protected override void Start()
     {
         base.Start();
         Invoke(nameof(this.TargetLoading), this.targetLoadSpeed);
-        Invoke(nameof(this.Shooting), this.shootingSpeed);
+        //Invoke(nameof(this.Shooting), this.shootingSpeed);
     }
 
     protected void FixedUpdate()
@@ -32,10 +34,15 @@ public class TowerShooting : TowerAbstract
         this.IsTargetDead();
     }
 
-    protected override void LoadComponents()
+    protected void Update()
     {
-        base.LoadComponents();
-        this.LoadEffectSpawner();
+        if (this.isDisable) return;
+        this.shootingTimer += Time.deltaTime;
+        if (this.shootingTimer >= this.shootingSpeed)
+        {
+            this.shootingTimer = 0f;
+            this.Shooting();
+        }
     }
 
     protected virtual void LoadEffectSpawner()
@@ -47,6 +54,7 @@ public class TowerShooting : TowerAbstract
 
     protected virtual void Looking()
     {
+        if (this.isDisable) return;
         if (this.target == null) return;
 
         Vector3 directionToTarget = this.target.TowerTargetable.transform.position - this.towerCtrl.Rotator.position;
@@ -65,7 +73,9 @@ public class TowerShooting : TowerAbstract
 
     protected virtual void Shooting()
     {
-        Invoke(nameof(this.Shooting), this.shootingSpeed);
+        if (this.isDisable) return;
+
+        //Invoke(nameof(this.Shooting), this.shootingSpeed);
         if (this.target == null) return;
 
         FirePoint firePoint = this.GetFirePoint();
@@ -136,5 +146,23 @@ public class TowerShooting : TowerAbstract
         SFXCtrl newSfx = SoundManager.Instance.CreateSfx(this.shootSFXName);
         newSfx.transform.position = position;
         newSfx.gameObject.SetActive(true);
+    }
+
+    public virtual void Active()
+    {
+        this.isDisable = false;
+    }
+
+    public virtual void Disable()
+    {
+        this.isDisable = true;
+    }
+
+    public void ResetShootingState()
+    {
+        this.killCount = 0;
+        this.totalKill = 0;
+        this.currentFirePoint = 0;
+        this.shootingTimer = 0f;
     }
 }

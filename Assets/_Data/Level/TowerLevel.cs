@@ -31,4 +31,17 @@ public class TowerLevel : LevelAbstract
     {
         return this.nextLevelExp = this.currentLevel * 2;
     }
+
+    protected override void Leveling()
+    {
+        if (this.towerCtrl != null && !this.towerCtrl.CanLevelUp())
+        {
+            //this.currentLevel = 1;
+            return;
+        } 
+        if (this.currentLevel >= this.maxLevel) return;
+        if (this.GetCurrentExp() < this.GetNextLevelExp()) return;
+        if (!this.DeductExp(this.GetNextLevelExp())) return;
+        this.currentLevel++;
+    }
 }

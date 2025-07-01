@@ -28,4 +28,9 @@ public abstract class LevelAbstract : SaiMonoBehaviour
     {
         return this.nextLevelExp = this.currentLevel * 10;
     }
+
+    public virtual void ResetLevel()
+    {
+        this.currentLevel = 1;
+    }
 }

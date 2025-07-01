@@ -27,4 +27,9 @@ public class SaiMonoBehaviour : MonoBehaviour
     {
         //For override
     }
+
+    public virtual void SetActive(bool status)
+    {
+        this.gameObject.SetActive(status);
+    }
 }

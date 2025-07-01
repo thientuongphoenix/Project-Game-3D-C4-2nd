@@ -31,6 +31,7 @@ public class EnemyTargeting : SaiMonoBehaviour
             this.nearestTower = null;
             return;
         }
+        this.RemoveDeadTower();
         this.FindNearestTower();
         //this.FindPlayer();
         //this.RemoveDeadTower();
@@ -148,12 +149,17 @@ public class EnemyTargeting : SaiMonoBehaviour
 
     protected virtual void RemoveDeadTower()
     {
-        foreach (TowerCtrl towerCtrl in this.towers)
+        for (int i = towers.Count - 1; i >= 0; i--)
         {
-            //if(towerCtrl.TowerDamageReceiver != null && towerCtrl.TowerDamageReceiver.IsDead()) 
+            TowerCtrl towerCtrl = towers[i];
+            if (towerCtrl == null) 
             {
-                this.towers.Remove(towerCtrl);
-                return;
+                towers.RemoveAt(i);
+                continue;
+            }
+            if (towerCtrl.TowerDamageReceiver != null && towerCtrl.TowerDamageReceiver.IsDead())
+            {
+                towers.RemoveAt(i);
             }
         }
     }
@@ -162,17 +168,19 @@ public class EnemyTargeting : SaiMonoBehaviour
     {
         float nearestDistance = Mathf.Infinity;
         float towerDistance;
-        
+        TowerCtrl foundTower = null;
         foreach(TowerCtrl towerCtrl in this.towers)
         {
             if(towerCtrl == null) continue;
+            if(towerCtrl.TowerDamageReceiver != null && towerCtrl.TowerDamageReceiver.IsDead()) continue;
             towerDistance = Vector3.Distance(transform.position, towerCtrl.transform.position);
             if(towerDistance < nearestDistance)
             {
                 nearestDistance = towerDistance;
-                this.nearestTower = towerCtrl;
+                foundTower = towerCtrl;
             }
         }
+        this.nearestTower = foundTower;
     }
 
     protected virtual void OnReborn()

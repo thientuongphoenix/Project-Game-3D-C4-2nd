@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4a7d3c416eca7c4b999fdc4e7eaabf2, type: 3}
-  m_Name: PotionMana
+  m_Name: HealthPotion
   m_EditorClassIdentifier: 
   invCodeName: 2
-  itemCode: 200
-  itemName: Potion Mana
+  itemCode: 201
+  itemName: Health Potion
   isStackable: 1
+  isAutoPickup: 0
