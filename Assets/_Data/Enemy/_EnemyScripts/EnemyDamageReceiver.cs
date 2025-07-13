@@ -46,6 +46,28 @@ public class EnemyDamageReceiver : DamageReceiver
     {
         base.OnHurt();
         this.enemyCtrl.Animator.SetTrigger("isHurt");
+        // Hiển thị DamageText
+        ShowDamageText();
+    }
+
+    // Hàm mới để hiển thị DamageText
+    protected void ShowDamageText()
+    {
+        // Tìm Canvas chứa DamageText (giả sử đặt tên là DamageTextCanvas)
+        var canvas = GameObject.Find("CanvasDamageText");
+        if (canvas == null) return;
+        // Load prefab DamageText
+        var prefab = Resources.Load<GameObject>("DamageText");
+        if (prefab == null) return;
+        // Lấy vị trí world
+        Vector3 worldPos = transform.position + Vector3.up * 1.5f;
+        // Chuyển sang vị trí canvas (nếu canvas là World Space thì dùng luôn worldPos)
+        var go = GameObject.Instantiate(prefab, worldPos, Quaternion.identity, canvas.transform);
+        var effect = go.GetComponent<_Data.UI.DamageText.DamageTextEffect>();
+        if (effect != null)
+        {
+            effect.Play(this.lastDamage.ToString(), worldPos);
+        }
     }
 
     protected virtual void Disappear()
