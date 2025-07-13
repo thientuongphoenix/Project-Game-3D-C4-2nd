@@ -43,6 +43,9 @@ public abstract class TowerCtrl : PoolObj
     [SerializeField] protected TowerType towerType = TowerType.Tower;
     public TowerType TowerType => towerType;
 
+    [Header("Tower/Trap Price")]
+    public int price = 100;
+
     protected override void Awake()
     {
         base.Awake();

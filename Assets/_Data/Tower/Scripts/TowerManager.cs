@@ -44,22 +44,33 @@ public class TowerManager : SaiSingleton<TowerManager>
 
     protected virtual void PlaceTower()
     {
-      this.towerPlaced = true;
+        // Kiểm tra và trừ tiền trước khi đặt
+        int price = this.towerPrefab.price;
+        var gold = InventoryManager.Instance.Monies().FindItem(ItemCode.Gold);
+        if (gold == null || gold.itemCount < price)
+        {
+            Debug.LogWarning($"Không đủ tiền để đặt {this.towerPrefab.name}, cần {price} vàng!");
+            // Hiện UI thông báo ở đây
+            return;
+        }
+        InventoryManager.Instance.RemoveItem(ItemCode.Gold, price);
+        // ---
+        this.towerPlaced = true;
 
-      TowerCtrl newTower = this.Spawn(this.towerPrefab);
-      if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
-      {
-        newTower.TowerShooting.ResetShootingState();
-        newTower.TowerShooting.Active();
-      }
-      newTower.SetActive(true);
-      if (newTower.Level != null) newTower.Level.ResetLevel();
+        TowerCtrl newTower = this.Spawn(this.towerPrefab);
+        if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
+        {
+            newTower.TowerShooting.ResetShootingState();
+            newTower.TowerShooting.Active();
+        }
+        newTower.SetActive(true);
+        if (newTower.Level != null) newTower.Level.ResetLevel();
         
-      //this.towerPrefab.SetActive(false);
-      // this.newTowerId = TowerCode.NoTower;
-      // this.towerPrefab = null;
+        //this.towerPrefab.SetActive(false);
+        // this.newTowerId = TowerCode.NoTower;
+        // this.towerPrefab = null;
 
-      Invoke(nameof(this.PlaceFinish), 0.5f);
+        Invoke(nameof(this.PlaceFinish), 0.5f);
     }
 
     protected virtual void PlaceFinish()
