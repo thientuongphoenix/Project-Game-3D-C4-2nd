@@ -17,13 +17,17 @@ namespace _Data.UI.DamageText
         private Vector3 endPos;
         private float timer;
         private bool isPlaying = false;
+        private Color[] colorOptions = new Color[] { Color.white, Color.red, Color.green, Color.blue };
 
         public void Play(string text, Vector3 worldPosition)
         {
             if (textMesh == null)
                 textMesh = GetComponent<TextMeshProUGUI>();
             textMesh.text = text;
-            textMesh.color = startColor;
+            // Random màu: trắng, đỏ, xanh lá, xanh dương
+            Color randomColor = colorOptions[Random.Range(0, colorOptions.Length)];
+            textMesh.color = randomColor;
+            startColor = randomColor; // Để fade out đúng màu
             startPos = worldPosition;
             endPos = worldPosition + Vector3.up * moveUpDistance;
             timer = 0f;
