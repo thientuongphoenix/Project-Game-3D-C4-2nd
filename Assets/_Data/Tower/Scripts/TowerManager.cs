@@ -5,6 +5,23 @@ public class TowerManager : SaiSingleton<TowerManager>
     [SerializeField] protected TowerCode newTowerId = TowerCode.NoTower;
     [SerializeField] protected TowerCtrl towerPrefab;
     [SerializeField] protected bool towerPlaced = false;
+    [Header("UI")] public CheckMoney checkMoneyUI;
+
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadCheckMoney();
+    }
+
+    protected virtual void LoadCheckMoney()
+    {
+        if (this.checkMoneyUI != null) return;
+        this.checkMoneyUI = GameObject.FindObjectOfType<CheckMoney>(true); // true: tìm cả object đang ẩn
+        if (this.checkMoneyUI == null)
+        {
+            Debug.LogWarning("Không tìm thấy CheckMoney UI trong scene!");
+        }
+    }
 
     protected virtual void Update()
     {
@@ -49,8 +66,9 @@ public class TowerManager : SaiSingleton<TowerManager>
         var gold = InventoryManager.Instance.Monies().FindItem(ItemCode.Gold);
         if (gold == null || gold.itemCount < price)
         {
-            Debug.LogWarning($"Không đủ tiền để đặt {this.towerPrefab.name}, cần {price} vàng!");
+            //Debug.LogWarning($"Không đủ tiền để đặt {this.towerPrefab.name}, cần {price} vàng!");
             // Hiện UI thông báo ở đây
+            if (this.checkMoneyUI != null) this.checkMoneyUI.ShowNotEnoughMoney();
             return;
         }
         InventoryManager.Instance.RemoveItem(ItemCode.Gold, price);
