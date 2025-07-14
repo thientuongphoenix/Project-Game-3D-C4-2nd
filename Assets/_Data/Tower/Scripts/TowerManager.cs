@@ -93,6 +93,9 @@ public class TowerManager : SaiSingleton<TowerManager>
         
         // --- Cập nhật thời gian đặt gần nhất để cooldown ---
         this.towerPrefab.SetLastPlacedTime();
+
+        // --- Hiển thị cooldown trên thanh bar ---
+        TowerbarUIManager.Instance?.StartCooldownFor(this.newTowerId, this.towerPrefab.CooldownTime);
         //this.towerPrefab.SetActive(false);
         // this.newTowerId = TowerCode.NoTower;
         // this.towerPrefab = null;
