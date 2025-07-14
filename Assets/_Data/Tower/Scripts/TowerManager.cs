@@ -61,6 +61,13 @@ public class TowerManager : SaiSingleton<TowerManager>
 
     protected virtual void PlaceTower()
     {
+        // --- Kiểm tra cooldown ---
+        if (!this.towerPrefab.IsCooldownReady())
+        {
+            Debug.LogWarning($"Tower {this.towerPrefab.name} đang cooldown, vui lòng chờ {Mathf.Ceil(this.towerPrefab.CooldownTime - (Time.time - this.towerPrefab.lastPlacedTime))} giây nữa!");
+            // Nếu muốn hiện UI thông báo cooldown thì thêm ở đây
+            return;
+        }
         // Kiểm tra và trừ tiền trước khi đặt
         int price = this.towerPrefab.price;
         var gold = InventoryManager.Instance.Monies().FindItem(ItemCode.Gold);
@@ -84,6 +91,8 @@ public class TowerManager : SaiSingleton<TowerManager>
         newTower.SetActive(true);
         if (newTower.Level != null) newTower.Level.ResetLevel();
         
+        // --- Cập nhật thời gian đặt gần nhất để cooldown ---
+        this.towerPrefab.SetLastPlacedTime();
         //this.towerPrefab.SetActive(false);
         // this.newTowerId = TowerCode.NoTower;
         // this.towerPrefab = null;

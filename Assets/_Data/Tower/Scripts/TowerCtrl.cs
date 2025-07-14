@@ -46,6 +46,20 @@ public abstract class TowerCtrl : PoolObj
     [Header("Tower/Trap Price")]
     public int price = 100;
 
+    // --- Cooldown ---
+    [Header("Cooldown Settings")]
+    [SerializeField] protected float cooldownTime = 2f; // Thời gian cooldown
+    public float lastPlacedTime = -999f; // Thời điểm đặt gần nhất
+    public virtual float CooldownTime => cooldownTime;
+    public virtual bool IsCooldownReady()
+    {
+        return Time.time >= lastPlacedTime + cooldownTime;
+    }
+    public virtual void SetLastPlacedTime()
+    {
+        lastPlacedTime = Time.time;
+    }
+
     protected override void Awake()
     {
         base.Awake();
