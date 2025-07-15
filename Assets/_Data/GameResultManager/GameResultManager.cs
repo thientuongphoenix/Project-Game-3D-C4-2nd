@@ -88,6 +88,7 @@ public class GameResultManager : MonoBehaviour
         isGameEnded = true;
         if (winPanel != null) winPanel.SetActive(true);
         if (losePanel != null) losePanel.SetActive(false);
+        HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
         // Có thể bổ sung hiệu ứng, âm thanh,... ở đây
     }
 
@@ -96,6 +97,7 @@ public class GameResultManager : MonoBehaviour
         isGameEnded = true;
         if (losePanel != null) losePanel.SetActive(true);
         if (winPanel != null) winPanel.SetActive(false);
+        HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
         // Có thể bổ sung hiệu ứng, âm thanh,... ở đây
     }
 }
