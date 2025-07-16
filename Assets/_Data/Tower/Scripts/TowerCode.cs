@@ -7,4 +7,5 @@ public enum TowerCode
     OneGunBarrel = 2,
     IceTrap = 3,
     FlameTrap = 4,
+    Core = 5,
 }
