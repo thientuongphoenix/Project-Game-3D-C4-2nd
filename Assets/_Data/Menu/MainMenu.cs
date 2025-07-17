@@ -3,9 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [Header("Scene Names")]
+    public string mapSelectionSceneName = "MapSelect_Hai";
+    
     public void PlayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        // Load map selection scene instead of next scene
+        SceneManager.LoadScene(mapSelectionSceneName);
     }
 
     public void QuitGame()
