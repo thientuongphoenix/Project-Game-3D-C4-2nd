@@ -89,7 +89,21 @@ public class GameResultManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(true);
         if (losePanel != null) losePanel.SetActive(false);
         HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
+        
+        // Hoàn thành map hiện tại
+        this.CompleteCurrentMap();
+        
         // Có thể bổ sung hiệu ứng, âm thanh,... ở đây
+    }
+    
+    protected virtual void CompleteCurrentMap()
+    {
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (MapProgressManager.Instance != null)
+        {
+            MapProgressManager.Instance.CompleteMap(currentSceneName);
+            Debug.Log($"Map {currentSceneName} completed!");
+        }
     }
 
     protected virtual void ShowLosePanel()
