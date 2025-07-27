@@ -2008,6 +2008,7 @@ MonoBehaviour:
   winPanel: {fileID: 2047671839}
   losePanel: {fileID: 1581190116}
   defendTime: 180
+  fadeInDuration: 3
 --- !u!4 &158627880
 Transform:
   m_ObjectHideFlags: 0
@@ -15500,6 +15501,7 @@ GameObject:
   - component: {fileID: 736339513}
   - component: {fileID: 736339512}
   - component: {fileID: 736339511}
+  - component: {fileID: 736339514}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -15594,6 +15596,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!225 &736339514
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736339509}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &738159209
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI; // Thêm để sử dụng CanvasGroup
 
 public class GameResultManager : MonoBehaviour
 {
@@ -29,6 +30,11 @@ public class GameResultManager : MonoBehaviour
     [SerializeField] protected GameObject winPanel;
     [SerializeField] protected GameObject losePanel;
     [SerializeField] protected float defendTime = 60f;
+    
+    // Thêm biến cho hiệu ứng fade
+    [SerializeField] protected float fadeInDuration = 3f;
+    protected CanvasGroup winPanelCanvasGroup;
+    protected CanvasGroup losePanelCanvasGroup;
 
     protected virtual void Init()
     {
@@ -36,8 +42,37 @@ public class GameResultManager : MonoBehaviour
         this.core = FindObjectOfType<CoreCtrl>();
         this.winPanel = GameObject.Find("WinPanel");
         this.losePanel = GameObject.Find("LosePanel");
+        
+        // Khởi tạo CanvasGroup cho fade effect
+        this.InitializeCanvasGroups();
+        
         if (this.winPanel != null) this.winPanel.SetActive(false);
         if (this.losePanel != null) this.losePanel.SetActive(false);
+    }
+    
+    protected virtual void InitializeCanvasGroups()
+    {
+        // Khởi tạo CanvasGroup cho WinPanel
+        if (this.winPanel != null)
+        {
+            this.winPanelCanvasGroup = this.winPanel.GetComponent<CanvasGroup>();
+            if (this.winPanelCanvasGroup == null)
+            {
+                this.winPanelCanvasGroup = this.winPanel.AddComponent<CanvasGroup>();
+            }
+            this.winPanelCanvasGroup.alpha = 0f;
+        }
+        
+        // Khởi tạo CanvasGroup cho LosePanel
+        if (this.losePanel != null)
+        {
+            this.losePanelCanvasGroup = this.losePanel.GetComponent<CanvasGroup>();
+            if (this.losePanelCanvasGroup == null)
+            {
+                this.losePanelCanvasGroup = this.losePanel.AddComponent<CanvasGroup>();
+            }
+            this.losePanelCanvasGroup.alpha = 0f;
+        }
     }
 
     protected virtual void UpdateTimer()
@@ -51,7 +86,13 @@ public class GameResultManager : MonoBehaviour
         if (IsPlayerDead() || IsCoreDead())
         {
             isLose = true;
-            StartCoroutine(ShowLosePanelAfterDelay(3f));
+            // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.VolumeSfxUpdating(0f);
+                Debug.Log("Đã tắt tất cả SFX, giữ lại nhạc nền");
+            }
+            StartCoroutine(ShowLosePanelAfterDelay(2f));
         }
     }
 
@@ -86,7 +127,11 @@ public class GameResultManager : MonoBehaviour
     protected virtual void ShowWinPanel()
     {
         isGameEnded = true;
-        if (winPanel != null) winPanel.SetActive(true);
+        if (winPanel != null) 
+        {
+            winPanel.SetActive(true);
+            StartCoroutine(FadeInPanel(winPanelCanvasGroup));
+        }
         if (losePanel != null) losePanel.SetActive(false);
         HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
         
@@ -109,9 +154,33 @@ public class GameResultManager : MonoBehaviour
     protected virtual void ShowLosePanel()
     {
         isGameEnded = true;
-        if (losePanel != null) losePanel.SetActive(true);
+        if (losePanel != null) 
+        {
+            losePanel.SetActive(true);
+            StartCoroutine(FadeInPanel(losePanelCanvasGroup));
+        }
         if (winPanel != null) winPanel.SetActive(false);
         HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
         // Có thể bổ sung hiệu ứng, âm thanh,... ở đây
+    }
+    
+    // Thêm hàm fade in cho panel
+    protected virtual IEnumerator FadeInPanel(CanvasGroup canvasGroup)
+    {
+        if (canvasGroup == null) yield break;
+        
+        canvasGroup.alpha = 0f;
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < fadeInDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeInDuration);
+            yield return null;
+        }
+        
+        canvasGroup.alpha = 1f;
+        
+        
     }
 }
