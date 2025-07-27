@@ -38,6 +38,9 @@ public class GameResultManager : MonoBehaviour
 
     protected virtual void Init()
     {
+        // Reset trạng thái game
+        this.ResetGameState();
+        
         this.player = PlayerCtrl.Instance;
         this.core = FindObjectOfType<CoreCtrl>();
         this.winPanel = GameObject.Find("WinPanel");
@@ -48,6 +51,16 @@ public class GameResultManager : MonoBehaviour
         
         if (this.winPanel != null) this.winPanel.SetActive(false);
         if (this.losePanel != null) this.losePanel.SetActive(false);
+        
+        Debug.Log("GameResultManager: Initialized for new scene");
+    }
+    
+    protected virtual void ResetGameState()
+    {
+        this.timer = 0f;
+        this.isGameEnded = false;
+        this.isLose = false;
+        this.isWin = false;
     }
     
     protected virtual void InitializeCanvasGroups()
