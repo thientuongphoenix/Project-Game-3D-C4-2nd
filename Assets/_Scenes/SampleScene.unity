@@ -4150,11 +4150,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 627383585}
-  m_Father: {fileID: 1278403135}
+  m_Father: {fileID: 580698046}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1, y: -277.0001}
+  m_AnchoredPosition: {x: 32, y: -134}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &324263148
@@ -12567,12 +12567,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1278403135}
+  - {fileID: 324263147}
   m_Father: {fileID: 1619428618}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -21.437012, y: 0.00012207031}
-  m_SizeDelta: {x: 819.9624, y: 589.5155}
+  m_AnchoredPosition: {x: -5.6417, y: -3.1602}
+  m_SizeDelta: {x: 1995.5, y: 1158.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &580698047
 MonoBehaviour:
@@ -12587,7 +12588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -12649,7 +12650,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -51, y: -112.00009}
+  m_AnchoredPosition: {x: 7, y: -115}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &581179224
@@ -15518,11 +15519,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1619428618}
   - {fileID: 1788910610}
   - {fileID: 55306793}
   - {fileID: 1029789732}
   - {fileID: 229978943}
+  - {fileID: 1619428618}
   m_Father: {fileID: 537833380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -20169,8 +20170,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -21.437012, y: 0.00012207031}
-  m_SizeDelta: {x: 819.9624, y: 589.5155}
+  m_AnchoredPosition: {x: -5.6366997, y: -3.16}
+  m_SizeDelta: {x: 1995.4937, y: 1158.3209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1048185841
 MonoBehaviour:
@@ -20185,7 +20186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -22842,13 +22843,12 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 324263147}
+  m_Children: []
   m_Father: {fileID: 580698046}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -46.263, y: 165}
+  m_AnchoredPosition: {x: 34, y: 217}
   m_SizeDelta: {x: 591.6937, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1278403136
@@ -22880,8 +22880,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294901503
+  m_fontColor: {r: 1, g: 0.99433964, b: 0.99433964, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -32954,7 +32954,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -46.263, y: 165}
+  m_AnchoredPosition: {x: 17, y: 237}
   m_SizeDelta: {x: 591.6937, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2036085296
@@ -32986,8 +32986,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
