@@ -49,7 +49,15 @@ public class SoundManager : SaiSingleton<SoundManager>
 
     public virtual void StartMusicBackground()
     {
-        if (this.bgMusic == null) this.bgMusic = this.CreateMusic(this.bgName);
+        if (this.bgMusic == null) 
+        {
+            this.bgMusic = this.CreateMusic(this.bgName);
+            if (this.bgMusic == null)
+            {
+                Debug.LogError("SoundManager: Failed to create background music");
+                return;
+            }
+        }
         this.bgMusic.gameObject.SetActive(true);
     }
 
@@ -75,15 +83,41 @@ public class SoundManager : SaiSingleton<SoundManager>
 
     public virtual MusicCtrl CreateMusic(SoundName soundName)
     {
+        if (this.ctrl == null)
+        {
+            //Debug.LogError("SoundManager: ctrl is null, trying to reload...");
+            this.LoadSoundSpawnerCtrl();
+            if (this.ctrl == null)
+            {
+                Debug.LogError("SoundManager: Failed to load SoundSpawnerCtrl");
+                return null;
+            }
+        }
+        
         MusicCtrl soundPrefab = (MusicCtrl)this.ctrl.Prefabs.GetByName(soundName.ToString());
         return this.CreateMusic(soundPrefab);
     }
 
     public virtual MusicCtrl CreateMusic(MusicCtrl musicPrefab)
     {
+        if (this.ctrl == null)
+        {
+            Debug.LogError("SoundManager: ctrl is null in CreateMusic(MusicCtrl)");
+            return null;
+        }
+        
+        if (musicPrefab == null)
+        {
+            Debug.LogError("SoundManager: musicPrefab is null");
+            return null;
+        }
+        
         MusicCtrl newMusic = (MusicCtrl)this.ctrl.Spawner.Spawn(musicPrefab, Vector3.zero);
-        newMusic.AudioSource.volume = this.volumeMusic;
-        this.AddMusic(newMusic);
+        if (newMusic != null && newMusic.AudioSource != null)
+        {
+            newMusic.AudioSource.volume = this.volumeMusic;
+            this.AddMusic(newMusic);
+        }
         return newMusic;
     }
 

@@ -103,7 +103,7 @@ public class GameResultManager : MonoBehaviour
             if (SoundManager.Instance != null)
             {
                 SoundManager.Instance.VolumeSfxUpdating(0f);
-                Debug.Log("Đã tắt tất cả SFX, giữ lại nhạc nền");
+                //Debug.Log("Đã tắt tất cả SFX, giữ lại nhạc nền");
             }
             StartCoroutine(ShowLosePanelAfterDelay(2f));
         }
@@ -115,6 +115,12 @@ public class GameResultManager : MonoBehaviour
         if (timer >= defendTime)
         {
             isWin = true;
+            // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.VolumeSfxUpdating(0f);
+                //Debug.Log("Đã tắt tất cả SFX, giữ lại nhạc nền");
+            }
             ShowWinPanel();
         }
     }

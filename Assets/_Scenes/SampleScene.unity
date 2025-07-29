@@ -12899,7 +12899,7 @@ MonoBehaviour:
   newTowerId: 0
   towerPrefab: {fileID: 0}
   towerPlaced: 0
-  checkMoneyUI: {fileID: 371881820}
+  checkMoneyUI: {fileID: 2029479251}
 --- !u!1001 &591538126
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23139,7 +23139,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 31.994995, y: -19.000244}
+  m_AnchoredPosition: {x: 7, y: -19.000244}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1279320193
@@ -76175,6 +76175,10 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 5510716577936077168}
+    - target: {fileID: 3335712140486263482, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
+      propertyPath: price
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3335712140486263482, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
       propertyPath: bullet
       value: 
