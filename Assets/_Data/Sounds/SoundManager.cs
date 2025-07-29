@@ -49,7 +49,15 @@ public class SoundManager : SaiSingleton<SoundManager>
 
     public virtual void StartMusicBackground()
     {
-        if (this.bgMusic == null) this.bgMusic = this.CreateMusic(this.bgName);
+        if (this.bgMusic == null) 
+        {
+            this.bgMusic = this.CreateMusic(this.bgName);
+            if (this.bgMusic == null)
+            {
+                Debug.LogError("SoundManager: Failed to create background music");
+                return;
+            }
+        }
         this.bgMusic.gameObject.SetActive(true);
     }
 
@@ -75,15 +83,41 @@ public class SoundManager : SaiSingleton<SoundManager>
 
     public virtual MusicCtrl CreateMusic(SoundName soundName)
     {
+        if (this.ctrl == null)
+        {
+            //Debug.LogError("SoundManager: ctrl is null, trying to reload...");
+            this.LoadSoundSpawnerCtrl();
+            if (this.ctrl == null)
+            {
+                Debug.LogError("SoundManager: Failed to load SoundSpawnerCtrl");
+                return null;
+            }
+        }
+        
         MusicCtrl soundPrefab = (MusicCtrl)this.ctrl.Prefabs.GetByName(soundName.ToString());
         return this.CreateMusic(soundPrefab);
     }
 
     public virtual MusicCtrl CreateMusic(MusicCtrl musicPrefab)
     {
+        if (this.ctrl == null)
+        {
+            Debug.LogError("SoundManager: ctrl is null in CreateMusic(MusicCtrl)");
+            return null;
+        }
+        
+        if (musicPrefab == null)
+        {
+            Debug.LogError("SoundManager: musicPrefab is null");
+            return null;
+        }
+        
         MusicCtrl newMusic = (MusicCtrl)this.ctrl.Spawner.Spawn(musicPrefab, Vector3.zero);
-        newMusic.AudioSource.volume = this.volumeMusic;
-        this.AddMusic(newMusic);
+        if (newMusic != null && newMusic.AudioSource != null)
+        {
+            newMusic.AudioSource.volume = this.volumeMusic;
+            this.AddMusic(newMusic);
+        }
         return newMusic;
     }
 
@@ -95,21 +129,54 @@ public class SoundManager : SaiSingleton<SoundManager>
 
     public virtual SFXCtrl CreateSfx(SoundName soundName)
     {
+        if (this.ctrl == null)
+        {
+            //Debug.LogError("SoundManager: ctrl is null, trying to reload...");
+            this.LoadSoundSpawnerCtrl();
+            if (this.ctrl == null)
+            {
+                Debug.LogError("SoundManager: Failed to load SoundSpawnerCtrl");
+                return null;
+            }
+        }
+        
         SFXCtrl soundPrefab = (SFXCtrl)this.ctrl.Prefabs.GetByName(soundName.ToString());
         return this.CreateSfx(soundPrefab);
     }
 
     public virtual SFXCtrl CreateSfx(SFXCtrl sfxPrefab)
     {
+        if (this.ctrl == null)
+        {
+            Debug.LogError("SoundManager: ctrl is null in CreateSfx(SFXCtrl)");
+            return null;
+        }
+        
+        if (sfxPrefab == null)
+        {
+            Debug.LogError("SoundManager: sfxPrefab is null");
+            return null;
+        }
+        
         SFXCtrl newSound = (SFXCtrl)this.ctrl.Spawner.Spawn(sfxPrefab, Vector3.zero);
         //Điều này đảm bảo rằng sfx mới cũng được cập nhật giá trị volume, vì set volume chỉ ảnh hưởng tới sfx đã sinh ra rồi và được add vào listSfx.
-        newSound.AudioSource.volume = this.volumeSfx;
-        this.AddSfx(newSound);
+        if (newSound != null && newSound.AudioSource != null)
+        {
+            newSound.AudioSource.volume = this.volumeSfx;
+            this.AddSfx(newSound);
+        }
         return newSound;
     }
 
     public virtual void AddSfx(SFXCtrl newSound)
     {
+        if (this.listSfx == null)
+        {
+            this.listSfx = new System.Collections.Generic.List<SFXCtrl>();
+        }
+        
+        if (newSound == null) return;
+        
         if (this.listSfx.Contains(newSound)) return;
         this.listSfx.Add(newSound);
     }
@@ -126,9 +193,19 @@ public class SoundManager : SaiSingleton<SoundManager>
     public virtual void VolumeSfxUpdating(float volume)
     {
         this.volumeSfx = volume;
+        if (this.listSfx == null)
+        {
+            Debug.LogWarning("SoundManager: listSfx is null, initializing...");
+            this.listSfx = new System.Collections.Generic.List<SFXCtrl>();
+            return;
+        }
+        
         foreach(SFXCtrl sfxCtrl in this.listSfx)
         {
-            sfxCtrl.AudioSource.volume = this.volumeSfx;
+            if (sfxCtrl != null && sfxCtrl.AudioSource != null)
+            {
+                sfxCtrl.AudioSource.volume = this.volumeSfx;
+            }
         }
     }
 }
