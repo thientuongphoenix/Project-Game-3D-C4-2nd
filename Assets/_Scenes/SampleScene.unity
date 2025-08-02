@@ -2007,7 +2007,7 @@ MonoBehaviour:
   core: {fileID: 3510839256487722567}
   winPanel: {fileID: 2047671839}
   losePanel: {fileID: 1581190116}
-  defendTime: 180
+  defendTime: 10
   fadeInDuration: 3
 --- !u!4 &158627880
 Transform:
