@@ -2007,7 +2007,7 @@ Transform:
   m_GameObject: {fileID: 231282390}
   serializedVersion: 2
   m_LocalRotation: {x: -0.50000006, y: 0.4999996, z: -0.5000004, w: 0.49999994}
-  m_LocalPosition: {x: 0, y: 0.55, z: 0}
+  m_LocalPosition: {x: -0, y: 0.419, z: -0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2048,10 +2048,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.27
+  m_Radius: 0.08557894
   m_Height: 0.94
   m_Direction: 0
-  m_Center: {x: 0.0050312933, y: -0.050394345, z: 0.015560505}
+  m_Center: {x: 0.0050313133, y: -0.1492816, z: -0.06997329}
 --- !u!54 &231282394
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13052,7 +13052,7 @@ Transform:
   m_GameObject: {fileID: 804502626}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4, y: -0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13641,7 +13641,7 @@ MonoBehaviour:
   enemyPath: {fileID: 3959231983631872375}
   currentPoint: {fileID: 0}
   pointDistance: Infinity
-  stopDistance: 1
+  stopDistance: 2
   canMove: 1
   isMoving: 0
   isFinish: 0
@@ -14497,7 +14497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManagerCtrl: {fileID: 1339449921}
-  spawnSpeed: 2
+  spawnSpeed: 5
   maxSpawn: 6
 --- !u!1 &887037452
 GameObject:
@@ -17189,7 +17189,7 @@ MonoBehaviour:
   enemyPath: {fileID: 3959231983631872375}
   currentPoint: {fileID: 0}
   pointDistance: Infinity
-  stopDistance: 1
+  stopDistance: 2
   canMove: 1
   isMoving: 0
   isFinish: 0
@@ -20984,7 +20984,7 @@ Transform:
   m_GameObject: {fileID: 1638353851}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5000235, y: 0.49997383, z: -0.5000263, w: 0.49997637}
-  m_LocalPosition: {x: 0, y: 0.46, z: -0.03}
+  m_LocalPosition: {x: -0, y: 0.415, z: -0.136}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21025,10 +21025,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.27
-  m_Height: 0.94
+  m_Radius: 0.076724045
+  m_Height: 0.61065704
   m_Direction: 0
-  m_Center: {x: 0.0050312933, y: -0.050394345, z: 0.015560505}
+  m_Center: {x: 0.16970399, y: -0.14576158, z: 0.029507402}
 --- !u!54 &1638353855
 Rigidbody:
   m_ObjectHideFlags: 0
