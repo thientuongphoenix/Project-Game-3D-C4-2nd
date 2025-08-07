@@ -1372,6 +1372,7 @@ MonoBehaviour:
   winPanel: {fileID: 2047671839}
   losePanel: {fileID: 1581190116}
   defendTime: 180
+  fadeInDuration: 3
 --- !u!4 &158627880
 Transform:
   m_ObjectHideFlags: 0
@@ -26978,7 +26979,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 668241146}
   m_HandleRect: {fileID: 668241145}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
