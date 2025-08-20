@@ -114,4 +114,65 @@ public class PlayerCtrl : SaiSingleton<PlayerCtrl>
         this.weapons = GetComponentInChildren<Weapons>();
         Debug.Log(transform.name + ": LoadWeapons", gameObject);
     }
+
+    protected virtual void Start()
+    {
+        // Subscribe to death event
+        if (this.playerDamageReceiver != null)
+        {
+            this.playerDamageReceiver.OnPlayerDeath += HandlePlayerDeath;
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        // Unsubscribe from death event
+        if (this.playerDamageReceiver != null)
+        {
+            this.playerDamageReceiver.OnPlayerDeath -= HandlePlayerDeath;
+        }
+    }
+
+    protected virtual void HandlePlayerDeath()
+    {
+        DisablePlayerComponents();
+        Debug.Log(transform.name + ": Player death handled - Components disabled", gameObject);
+    }
+
+    protected virtual void DisablePlayerComponents()
+    {
+        // Disable GameObject chứa PlayerDamageReceiver
+        if (this.playerDamageReceiver != null)
+        {
+            this.playerDamageReceiver.gameObject.SetActive(false);
+        }
+
+        // Disable GameObject chứa EnemyTargetable
+        var enemyTargetable = GetComponentInChildren<EnemyTargetablePlayer>();
+        if (enemyTargetable != null)
+        {
+            enemyTargetable.gameObject.SetActive(false);
+        }
+
+        Debug.Log(transform.name + ": PlayerDamageReceiver and EnemyTargetable GameObjects disabled", gameObject);
+    }
+
+    // Hàm để enable lại components khi resurrect
+    public virtual void EnablePlayerComponents()
+    {
+        // Enable GameObject chứa PlayerDamageReceiver
+        if (this.playerDamageReceiver != null)
+        {
+            this.playerDamageReceiver.gameObject.SetActive(true);
+        }
+
+        // Enable GameObject chứa EnemyTargetable
+        var enemyTargetable = GetComponentInChildren<EnemyTargetablePlayer>();
+        if (enemyTargetable != null)
+        {
+            enemyTargetable.gameObject.SetActive(true);
+        }
+
+        Debug.Log(transform.name + ": PlayerDamageReceiver and EnemyTargetable GameObjects enabled", gameObject);
+    }
 }

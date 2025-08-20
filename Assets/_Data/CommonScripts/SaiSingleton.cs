@@ -9,7 +9,7 @@ public abstract class SaiSingleton<T> : SaiMonoBehaviour where T : SaiMonoBehavi
         {
             if (_instance == null)
             {
-                Debug.LogError(typeof(T).Name + ": Instance chưa được khởi tạo thì phải :D");
+                //Debug.LogError(typeof(T).Name + ": Instance chưa được khởi tạo thì phải :D");
             }
 
             return _instance;
@@ -32,7 +32,7 @@ public abstract class SaiSingleton<T> : SaiMonoBehaviour where T : SaiMonoBehavi
         }
         else if (_instance != this)
         {
-            Debug.LogError("Có 2 Instance trong 1 scene, chỉ được có 1 cái thôi!");
+            //Debug.LogError("Có 2 Instance trong 1 scene, chỉ được có 1 cái thôi!");
         }
     }
 }

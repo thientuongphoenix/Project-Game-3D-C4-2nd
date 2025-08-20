@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TowerType { Tower, Trap }
+
 public abstract class TowerCtrl : PoolObj
 {
     [SerializeField] protected Transform model;
@@ -37,6 +39,26 @@ public abstract class TowerCtrl : PoolObj
 
     [SerializeField] protected EnemyTargetable enemyTargetable;
     public EnemyTargetable EnemyTargetable => enemyTargetable;
+
+    [SerializeField] protected TowerType towerType = TowerType.Tower;
+    public TowerType TowerType => towerType;
+
+    [Header("Tower/Trap Price")]
+    public int price = 100;
+
+    // --- Cooldown ---
+    [Header("Cooldown Settings")]
+    [SerializeField] protected float cooldownTime = 2f; // Thời gian cooldown
+    public float lastPlacedTime = -999f; // Thời điểm đặt gần nhất
+    public virtual float CooldownTime => cooldownTime;
+    public virtual bool IsCooldownReady()
+    {
+        return Time.time >= lastPlacedTime + cooldownTime;
+    }
+    public virtual void SetLastPlacedTime()
+    {
+        lastPlacedTime = Time.time;
+    }
 
     protected override void Awake()
     {
@@ -173,11 +195,13 @@ public abstract class TowerCtrl : PoolObj
     {
         if (this.transform.parent != null && this.transform.parent.name == "PoolHolder")
         {
-            this.enemyTargetable.gameObject.SetActive(true);
+            if (this.enemyTargetable != null) this.enemyTargetable.gameObject.SetActive(true);
+            if (this.towerDamageReceiver != null) this.towerDamageReceiver.gameObject.SetActive(true);
         }
         else
         {
-            this.enemyTargetable.gameObject.SetActive(false);
+            if (this.enemyTargetable != null) this.enemyTargetable.gameObject.SetActive(false);
+            if (this.towerDamageReceiver != null) this.towerDamageReceiver.gameObject.SetActive(false);
         }
     }
 }

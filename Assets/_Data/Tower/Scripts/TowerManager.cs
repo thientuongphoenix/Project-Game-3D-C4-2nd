@@ -5,6 +5,23 @@ public class TowerManager : SaiSingleton<TowerManager>
     [SerializeField] protected TowerCode newTowerId = TowerCode.NoTower;
     [SerializeField] protected TowerCtrl towerPrefab;
     [SerializeField] protected bool towerPlaced = false;
+    [Header("UI")] public CheckMoney checkMoneyUI;
+
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadCheckMoney();
+    }
+
+    protected virtual void LoadCheckMoney()
+    {
+        if (this.checkMoneyUI != null) return;
+        this.checkMoneyUI = GameObject.FindObjectOfType<CheckMoney>(true); // true: tìm cả object đang ẩn
+        if (this.checkMoneyUI == null)
+        {
+            Debug.LogWarning("Không tìm thấy CheckMoney UI trong scene!");
+        }
+    }
 
     protected virtual void Update()
     {
@@ -29,7 +46,8 @@ public class TowerManager : SaiSingleton<TowerManager>
         this.towerPrefab = this.GetTowerPrefab(this.newTowerId);
         if(this.towerPrefab == null) return;
 
-        this.towerPrefab.TowerShooting.Disable();
+        if (this.towerPrefab.TowerType == TowerType.Tower && this.towerPrefab.TowerShooting != null)
+            this.towerPrefab.TowerShooting.Disable();
         this.towerPrefab.SetActive(true);
       }
 
@@ -43,20 +61,46 @@ public class TowerManager : SaiSingleton<TowerManager>
 
     protected virtual void PlaceTower()
     {
-      this.towerPlaced = true;
+        // --- Kiểm tra cooldown ---
+        if (!this.towerPrefab.IsCooldownReady())
+        {
+            Debug.LogWarning($"Tower {this.towerPrefab.name} đang cooldown, vui lòng chờ {Mathf.Ceil(this.towerPrefab.CooldownTime - (Time.time - this.towerPrefab.lastPlacedTime))} giây nữa!");
+            // Nếu muốn hiện UI thông báo cooldown thì thêm ở đây
+            return;
+        }
+        // Kiểm tra và trừ tiền trước khi đặt
+        int price = this.towerPrefab.price;
+        var gold = InventoryManager.Instance.Monies().FindItem(ItemCode.Gold);
+        if (gold == null || gold.itemCount < price)
+        {
+            //Debug.LogWarning($"Không đủ tiền để đặt {this.towerPrefab.name}, cần {price} vàng!");
+            // Hiện UI thông báo ở đây
+            if (this.checkMoneyUI != null) this.checkMoneyUI.ShowNotEnoughMoney();
+            return;
+        }
+        InventoryManager.Instance.RemoveItem(ItemCode.Gold, price);
+        // ---
+        this.towerPlaced = true;
 
-      TowerCtrl newTower = this.Spawn(this.towerPrefab);
-      newTower.TowerShooting.ResetShootingState();
-      newTower.TowerShooting.Active();
-      newTower.SetActive(true);
-
-      newTower.Level.ResetLevel();
+        TowerCtrl newTower = this.Spawn(this.towerPrefab);
+        if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
+        {
+            newTower.TowerShooting.ResetShootingState();
+            newTower.TowerShooting.Active();
+        }
+        newTower.SetActive(true);
+        if (newTower.Level != null) newTower.Level.ResetLevel();
         
-      //this.towerPrefab.SetActive(false);
-      // this.newTowerId = TowerCode.NoTower;
-      // this.towerPrefab = null;
+        // --- Cập nhật thời gian đặt gần nhất để cooldown ---
+        this.towerPrefab.SetLastPlacedTime();
 
-      Invoke(nameof(this.PlaceFinish), 0.5f);
+        // --- Hiển thị cooldown trên thanh bar ---
+        TowerbarUIManager.Instance?.StartCooldownFor(this.newTowerId, this.towerPrefab.CooldownTime);
+        //this.towerPrefab.SetActive(false);
+        // this.newTowerId = TowerCode.NoTower;
+        // this.towerPrefab = null;
+
+        Invoke(nameof(this.PlaceFinish), 0.5f);
     }
 
     protected virtual void PlaceFinish()
@@ -79,7 +123,9 @@ public class TowerManager : SaiSingleton<TowerManager>
         switch (keyCode)
         {
             case KeyCode.Alpha1: return TowerCode.MachineGun;
-            case KeyCode.Alpha2: return TowerCode.LaserGun;
+            case KeyCode.Alpha2: return TowerCode.OneGunBarrel;
+            case KeyCode.Alpha3: return TowerCode.IceTrap;
+            case KeyCode.Alpha4: return TowerCode.FlameTrap;
             default: return TowerCode.NoTower;
         }
     }
