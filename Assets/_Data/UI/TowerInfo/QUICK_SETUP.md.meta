@@ -1,6 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Data/UI/TowerInfo/QUICK_SETUP.md.meta
 guid: 95fa6c12df15c434c92a202c4cc35cd7
 TextScriptImporter:
+========
+guid: 557172e139dabe24e99883355a4425cf
+folderAsset: yes
+DefaultImporter:
+>>>>>>>> DEV:Assets/_Data/TranslucentCrystals/Resources/Meshes/Materials.meta
   externalObjects: {}
   userData: 
   assetBundleName: 
