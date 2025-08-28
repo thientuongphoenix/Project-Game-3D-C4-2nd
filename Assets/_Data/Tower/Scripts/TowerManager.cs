@@ -1,11 +1,18 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TowerManager : SaiSingleton<TowerManager>
 {
     [SerializeField] protected TowerCode newTowerId = TowerCode.NoTower;
     [SerializeField] protected TowerCtrl towerPrefab;
     [SerializeField] protected bool towerPlaced = false;
-    [Header("UI")] public CheckMoney checkMoneyUI;
+    [Header("UI")] 
+    public CheckMoney checkMoneyUI;
+    
+    [Header("Tower Info")]
+    [SerializeField] protected List<TowerInfoDataSO> towerInfoList = new List<TowerInfoDataSO>();
+    [SerializeField] protected bool showTowerInfo = true;
+    [SerializeField] protected TowerCode currentShowingTower = TowerCode.NoTower;
 
     protected override void LoadComponents()
     {
@@ -22,6 +29,139 @@ public class TowerManager : SaiSingleton<TowerManager>
             Debug.LogWarning("Không tìm thấy CheckMoney UI trong scene!");
         }
     }
+    
+    protected virtual void ShowTowerInfo(TowerCode towerCode)
+    {
+        Debug.Log($"ShowTowerInfo được gọi với TowerCode: {towerCode}");
+        
+        if (!this.showTowerInfo) 
+        {
+            Debug.Log("showTowerInfo = false, không hiển thị");
+            return;
+        }
+        
+        // Nếu bấm cùng phím số lần nữa thì ẩn UI
+        if (this.currentShowingTower == towerCode)
+        {
+            Debug.Log($"Bấm cùng phím số {towerCode}, ẩn UI");
+            this.HideTowerInfo();
+            this.currentShowingTower = TowerCode.NoTower;
+            return;
+        }
+        
+        // Tìm TowerInfoDataSO tương ứng
+        TowerInfoDataSO towerInfo = this.GetTowerInfoByCode(towerCode);
+        if (towerInfo == null) 
+        {
+            Debug.LogWarning($"Không tìm thấy TowerInfoDataSO cho {towerCode}. Hãy kiểm tra towerInfoList!");
+            return;
+        }
+        
+        Debug.Log($"Tìm thấy TowerInfoDataSO: {towerInfo.towerName}");
+        
+        // Convert và hiển thị thông tin
+        TowerInfoData data = towerInfo.ToTowerInfoData();
+        Vector3 customPosition = new Vector3(142, Screen.height - 800, 0f);
+        
+        if (TowerInfoUI.Instance != null)
+        {
+            Debug.Log("Gọi TowerInfoUI.Instance.ShowTowerInfo");
+            TowerInfoUI.Instance.ShowTowerInfo(data, customPosition);
+            this.currentShowingTower = towerCode; // Lưu tower đang hiển thị
+        }
+        else
+        {
+            Debug.LogError("TowerInfoUI.Instance không tồn tại! Hãy đảm bảo đã setup TowerInfoUI.");
+        }
+    }
+    
+    protected virtual TowerInfoDataSO GetTowerInfoByCode(TowerCode towerCode)
+    {
+        Debug.Log($"Tìm kiếm TowerInfoDataSO cho {towerCode}. Số lượng trong list: {this.towerInfoList.Count}");
+        
+        // Debug: In ra tất cả tower trong list
+        for (int i = 0; i < this.towerInfoList.Count; i++)
+        {
+            var tower = this.towerInfoList[i];
+            if (tower != null)
+                Debug.Log($"Element {i}: {tower.towerName}");
+            else
+                Debug.Log($"Element {i}: NULL");
+        }
+        
+        foreach (var towerInfo in this.towerInfoList)
+        {
+            if (towerInfo == null) continue;
+            
+            Debug.Log($"Kiểm tra: '{towerInfo.towerName}' vs '{towerCode}'");
+            
+            // Tìm kiếm chính xác hơn
+            string towerNameLower = towerInfo.towerName.ToLower();
+            string towerCodeLower = towerCode.ToString().ToLower();
+            
+            Debug.Log($"So sánh: '{towerNameLower}' có chứa '{towerCodeLower}' không?");
+            
+            if (towerNameLower.Contains(towerCodeLower))
+            {
+                Debug.Log($"Tìm thấy match: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            // Thử tìm kiếm với từ khóa rút gọn (loại bỏ space)
+            string simplifiedCode = towerCodeLower.Replace("tower", "").Replace("trap", "");
+            string simplifiedName = towerNameLower.Replace(" ", "").Replace("-", "");
+            
+            Debug.Log($"Thử tìm kiếm với từ khóa rút gọn: '{simplifiedCode}' vs '{simplifiedName}'");
+            
+            if (simplifiedName.Contains(simplifiedCode))
+            {
+                Debug.Log($"Tìm thấy match với từ khóa rút gọn: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            // Thử tìm kiếm với từ khóa chính
+            if (simplifiedName.Contains("machinegun") && towerCodeLower.Contains("machinegun"))
+            {
+                Debug.Log($"Tìm thấy match MachineGun: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            if (simplifiedName.Contains("onegunbarrel") && towerCodeLower.Contains("onegunbarrel"))
+            {
+                Debug.Log($"Tìm thấy match OneGunBarrel: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            if (simplifiedName.Contains("icetrap") && towerCodeLower.Contains("icetrap"))
+            {
+                Debug.Log($"Tìm thấy match IceTrap: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            if (simplifiedName.Contains("flametrap") && towerCodeLower.Contains("flametrap"))
+            {
+                Debug.Log($"Tìm thấy match FlameTrap: {towerInfo.towerName}");
+                return towerInfo;
+            }
+            
+            if (simplifiedName.Contains("core") && towerCodeLower.Contains("core"))
+            {
+                Debug.Log($"Tìm thấy match Core: {towerInfo.towerName}");
+                return towerInfo;
+            }
+        }
+        
+        Debug.LogWarning($"Không tìm thấy TowerInfoDataSO nào cho {towerCode}");
+        return null;
+    }
+    
+    protected virtual void HideTowerInfo()
+    {
+        if (TowerInfoUI.Instance != null)
+        {
+            TowerInfoUI.Instance.HideTowerInfo();
+        }
+    }
 
     protected virtual void Update()
     {
@@ -32,13 +172,22 @@ public class TowerManager : SaiSingleton<TowerManager>
     {
       if(this.towerPlaced) return;
 
-      this.newTowerId = this.MapKeyCodeToTowerCode(InputHotkeys.Instance.KeyCode);
+      TowerCode newTowerId = this.MapKeyCodeToTowerCode(InputHotkeys.Instance.KeyCode);
 
-      if(this.newTowerId == TowerCode.NoTower) 
+      if(newTowerId == TowerCode.NoTower) 
       {
         if(this.towerPrefab != null) this.towerPrefab.SetActive(false);
         this.towerPrefab = null;
+        this.newTowerId = TowerCode.NoTower;
         return;
+      }
+      
+      // Chỉ hiển thị thông tin tower khi thay đổi selection
+      if (this.newTowerId != newTowerId)
+      {
+          // Hiển thị thông tin tower mới (không ẩn tower cũ)
+          this.ShowTowerInfo(newTowerId);
+          this.newTowerId = newTowerId;
       }
 
       if(this.towerPrefab == null) 
@@ -96,6 +245,17 @@ public class TowerManager : SaiSingleton<TowerManager>
 
         // --- Hiển thị cooldown trên thanh bar ---
         TowerbarUIManager.Instance?.StartCooldownFor(this.newTowerId, this.towerPrefab.CooldownTime);
+        
+        // --- Thông báo cho hệ thống nhiệm vụ ---
+        if (TowerQuestSystem.Instance != null)
+        {
+            TowerQuestSystem.Instance.OnTowerPlaced(this.newTowerId);
+        }
+        
+        // --- Không ẩn thông tin tower khi đặt (để Bệ Hạ có thể xem thông tin) ---
+        // this.HideTowerInfo();
+        // this.currentShowingTower = TowerCode.NoTower;
+        
         //this.towerPrefab.SetActive(false);
         // this.newTowerId = TowerCode.NoTower;
         // this.towerPrefab = null;
@@ -120,13 +280,72 @@ public class TowerManager : SaiSingleton<TowerManager>
 
     protected virtual TowerCode MapKeyCodeToTowerCode(KeyCode keyCode)
     {
+        TowerCode towerCode = TowerCode.NoTower;
+        
         switch (keyCode)
         {
-            case KeyCode.Alpha1: return TowerCode.MachineGun;
-            case KeyCode.Alpha2: return TowerCode.OneGunBarrel;
-            case KeyCode.Alpha3: return TowerCode.IceTrap;
-            case KeyCode.Alpha4: return TowerCode.FlameTrap;
-            default: return TowerCode.NoTower;
+            case KeyCode.Alpha1: 
+                towerCode = TowerCode.MachineGun;
+                break;
+            case KeyCode.Alpha2: 
+                towerCode = TowerCode.OneGunBarrel;
+                break;
+            case KeyCode.Alpha3: 
+                towerCode = TowerCode.IceTrap;
+                break;
+            case KeyCode.Alpha4: 
+                towerCode = TowerCode.FlameTrap;
+                break;
+            case KeyCode.Alpha5: 
+                towerCode = TowerCode.Core;
+                break;
+            default: 
+                return TowerCode.NoTower;
+        }
+        
+        // Kiểm tra xem tower có được mở khóa chưa (chỉ kiểm tra các tower cần quest)
+        if (TowerQuestSystem.Instance != null && this.IsTowerRequiresQuest(towerCode))
+        {
+            bool isUnlocked = TowerQuestSystem.Instance.IsTowerUnlocked(towerCode);
+            int totalPlaced = TowerQuestSystem.Instance.GetTotalTowersPlaced();
+            
+            Debug.Log($"DEBUG: {towerCode} - IsUnlocked: {isUnlocked}, TotalPlaced: {totalPlaced}");
+            
+            if (!isUnlocked)
+            {
+                Debug.Log($"{towerCode} Tower chưa được mở khóa! Hãy hoàn thành nhiệm vụ trước.");
+                
+                // Hiển thị thông báo UI
+                if (TowerLockedNotifier.Instance != null)
+                {
+                    TowerLockedNotifier.Instance.ShowTowerLockedNotification(towerCode);
+                }
+                
+                return TowerCode.NoTower;
+            }
+            else
+            {
+                Debug.Log($"{towerCode} Tower đã được mở khóa! Cho phép sử dụng.");
+            }
+        }
+        
+        return towerCode;
+    }
+    
+    protected virtual bool IsTowerRequiresQuest(TowerCode towerCode)
+    {
+        // Chỉ các tower này cần quest để mở khóa
+        switch (towerCode)
+        {
+            case TowerCode.OneGunBarrel:  // Cần quest "Tower Builder I"
+            case TowerCode.IceTrap:        // Cần quest "Tower Builder II"
+            case TowerCode.FlameTrap:      // Có thể cần quest trong tương lai
+                return true;
+            
+            case TowerCode.MachineGun:     // Luôn mở khóa từ đầu
+            case TowerCode.Core:           // Luôn mở khóa từ đầu
+            default:
+                return false;
         }
     }
 }
