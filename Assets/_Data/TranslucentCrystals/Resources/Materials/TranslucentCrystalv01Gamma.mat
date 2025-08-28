@@ -73,11 +73,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BumpScale: 3
     - _EmissionPower: 1.875
     - _Metallic: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.08
-    - _Smoothness: 1
+    - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
