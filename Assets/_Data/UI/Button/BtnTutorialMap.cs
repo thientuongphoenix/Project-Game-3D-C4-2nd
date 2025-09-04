@@ -15,7 +15,7 @@ public class BtnTutorialMap : BtnMapLock
     protected override void ExecuteMapAction()
     {
         Debug.Log("Loading Tutorial Map...");
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Hai_SampleScene");
     }
     
     protected override void ShowLockMessage()

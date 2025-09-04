@@ -155,7 +155,7 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     {
         if (this.notificationPanel == null || this.notificationText == null) return;
         
-        this.notificationText.text = $"🎯 New Quest: {questName}\n{description}";
+        this.notificationText.text = $"New Quest: {questName}\n{description}";
         this.notificationPanel.SetActive(true);
         
         // Auto hide after a period of time

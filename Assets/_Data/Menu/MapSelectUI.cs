@@ -5,7 +5,7 @@ public class MapSelectUI : MonoBehaviour
 {
     public void LoadTutorialMap()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Hai_SampleScene");
     }
 
     public void LoadMap1()

@@ -25,6 +25,7 @@ public class SoundManager : SaiSingleton<SoundManager>
     protected override void Start()
     {
         base.Start();
+        this.LoadSettings();
         //this.StartMusicBackground();
     }
 
@@ -188,6 +189,8 @@ public class SoundManager : SaiSingleton<SoundManager>
         {
             musicCtrl.AudioSource.volume = this.volumeMusic;
         }
+        // Lưu settings khi volume thay đổi
+        this.SaveSettings();
     }
 
     public virtual void VolumeSfxUpdating(float volume)
@@ -207,5 +210,81 @@ public class SoundManager : SaiSingleton<SoundManager>
                 sfxCtrl.AudioSource.volume = this.volumeSfx;
             }
         }
+        // Lưu settings khi volume thay đổi
+        this.SaveSettings();
+    }
+    
+    /// <summary>
+    /// Lưu music và SFX settings vào PlayerPrefs
+    /// </summary>
+    protected virtual void SaveSettings()
+    {
+        PlayerPrefs.SetFloat("MusicVolume", this.volumeMusic);
+        PlayerPrefs.SetFloat("SFXVolume", this.volumeSfx);
+        PlayerPrefs.Save();
+        Debug.Log($"SoundManager: Settings saved - Music: {this.volumeMusic}, SFX: {this.volumeSfx}");
+    }
+    
+    /// <summary>
+    /// Load music và SFX settings từ PlayerPrefs
+    /// </summary>
+    protected virtual void LoadSettings()
+    {
+        // Load music volume (default = 1f)
+        this.volumeMusic = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        
+        // Load SFX volume (default = 1f)
+        this.volumeSfx = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        
+        Debug.Log($"SoundManager: Settings loaded - Music: {this.volumeMusic}, SFX: {this.volumeSfx}");
+        
+        // Áp dụng settings ngay lập tức
+        this.ApplyLoadedSettings();
+    }
+    
+    /// <summary>
+    /// Áp dụng settings đã load cho tất cả music và SFX hiện có
+    /// </summary>
+    protected virtual void ApplyLoadedSettings()
+    {
+        // Áp dụng cho music
+        if (this.listMusic != null)
+        {
+            foreach(MusicCtrl musicCtrl in this.listMusic)
+            {
+                if (musicCtrl != null && musicCtrl.AudioSource != null)
+                {
+                    musicCtrl.AudioSource.volume = this.volumeMusic;
+                }
+            }
+        }
+        
+        // Áp dụng cho SFX
+        if (this.listSfx != null)
+        {
+            foreach(SFXCtrl sfxCtrl in this.listSfx)
+            {
+                if (sfxCtrl != null && sfxCtrl.AudioSource != null)
+                {
+                    sfxCtrl.AudioSource.volume = this.volumeSfx;
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Get current music volume (for UI synchronization)
+    /// </summary>
+    public virtual float GetMusicVolume()
+    {
+        return this.volumeMusic;
+    }
+    
+    /// <summary>
+    /// Get current SFX volume (for UI synchronization)
+    /// </summary>
+    public virtual float GetSFXVolume()
+    {
+        return this.volumeSfx;
     }
 }

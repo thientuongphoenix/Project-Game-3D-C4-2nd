@@ -10,6 +10,10 @@ public class MapProgressManager : SaiSingleton<MapProgressManager>
     {
         base.Start();
         this.LoadMapProgress();
+        
+        // Đảm bảo MapProgressManager không bị destroy khi chuyển scene
+        DontDestroyOnLoad(gameObject);
+        Debug.Log("MapProgressManager: DontDestroyOnLoad set");
     }
     
     protected virtual void LoadMapProgress()
@@ -41,16 +45,26 @@ public class MapProgressManager : SaiSingleton<MapProgressManager>
     
     public virtual bool IsMapCompleted(string mapName)
     {
-        return completedMaps.Contains(mapName);
+        bool isCompleted = completedMaps.Contains(mapName);
+        Debug.Log($"IsMapCompleted('{mapName}'): {isCompleted} - Current maps: {string.Join(", ", completedMaps)}");
+        return isCompleted;
     }
     
     public virtual void CompleteMap(string mapName)
     {
+        Debug.Log($"=== COMPLETING MAP: {mapName} ===");
+        Debug.Log($"Before: completedMaps contains '{mapName}': {completedMaps.Contains(mapName)}");
+        
         if (!completedMaps.Contains(mapName))
         {
             completedMaps.Add(mapName);
             SaveMapProgress();
-            Debug.Log($"Map {mapName} completed!");
+            Debug.Log($"Map {mapName} completed and added to list!");
+            Debug.Log($"After: completedMaps now contains: {string.Join(", ", completedMaps)}");
+        }
+        else
+        {
+            Debug.Log($"Map {mapName} already completed!");
         }
     }
     
