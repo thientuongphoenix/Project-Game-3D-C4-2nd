@@ -17,9 +17,9 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     [Header("Quest Settings")]
     [SerializeField] protected List<TowerQuest> towerQuests = new List<TowerQuest>();
     [SerializeField] protected int totalTowersPlaced = 0;
-    [SerializeField] protected int oneGunBarrelTowersPlaced = 0; // Thêm biến đếm OneGunBarrel towers
-    [SerializeField] protected int iceTrapTowersPlaced = 0; // Thêm biến đếm Ice Trap towers
-    [SerializeField] protected int movementTutorialCompleted = 0; // Thêm biến đếm tutorial di chuyển
+    [SerializeField] protected int oneGunBarrelTowersPlaced = 0; // Add variable to count OneGunBarrel towers
+    [SerializeField] protected int iceTrapTowersPlaced = 0; // Add variable to count Ice Trap towers
+    [SerializeField] protected int movementTutorialCompleted = 0; // Add variable to count movement tutorial
     
     [Header("UI")]
     [SerializeField] protected GameObject questNotificationPrefab;
@@ -30,31 +30,31 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         {
             base.LoadComponents();
             
-            Debug.Log("TowerQuestSystem: Bắt đầu LoadComponents");
+            Debug.Log("TowerQuestSystem: Starting LoadComponents");
             
-            // KHÔNG xóa quest cũ nữa - chỉ tạo quest mới nếu cần
+            // DON'T delete old quests anymore - only create new quests if needed
             // this.CleanupOldQuests();
             
             this.InitializeQuests();
             
-            Debug.Log("TowerQuestSystem: LoadComponents hoàn thành thành công");
+            Debug.Log("TowerQuestSystem: LoadComponents completed successfully");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Lỗi nghiêm trọng trong LoadComponents: {e.Message}");
+            Debug.LogError($"Serious error in LoadComponents: {e.Message}");
             Debug.LogError($"Stack trace: {e.StackTrace}");
             
-            // Khởi tạo lại từ đầu nếu có lỗi
+            // Reinitialize from scratch if there's an error
             try
             {
                 towerQuests = new List<TowerQuest>();
                 totalTowersPlaced = 0;
                 this.InitializeQuests();
-                Debug.Log("Đã khôi phục TowerQuestSystem sau lỗi");
+                Debug.Log("Recovered TowerQuestSystem after error");
             }
             catch (System.Exception recoveryError)
             {
-                Debug.LogError($"Không thể khôi phục TowerQuestSystem: {recoveryError.Message}");
+                Debug.LogError($"Cannot recover TowerQuestSystem: {recoveryError.Message}");
             }
         }
     }
@@ -118,9 +118,9 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests.Add(new TowerQuest
                 {
                     questName = "Movement Tutorial",
-                    description = "Di chuyển bằng phím WASD để di chuyển, phím Left Shift để chạy nhanh và phím Space để nhảy làm quen với điều khiển",
+                    description = "Move using WASD keys to move, Left Shift to sprint and Space to jump to get familiar with controls",
                     requiredTowerCount = 1,
-                    unlockedTower = TowerCode.NoTower, // Không mở khóa tower nào
+                    unlockedTower = TowerCode.NoTower, // No tower unlocked
                     isCompleted = false,
                     isUnlocked = false
                 });
@@ -137,11 +137,11 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests.Add(new TowerQuest
                 {
                     questName = "Tower Builder I",
-                    description = "Đặt 3 towers để mở khóa OneGunBarrel Tower",
+                    description = "Place 3 towers to unlock OneGunBarrel Tower",
                     requiredTowerCount = 3,
                     unlockedTower = TowerCode.OneGunBarrel,
                     isCompleted = false,
-                    isUnlocked = false  // QUAN TRỌNG: Quest bắt đầu với isUnlocked = false
+                    isUnlocked = false  // IMPORTANT: Quest starts with isUnlocked = false
                 });
                 
                 Debug.Log("Đã thêm quest mới: Tower Builder I");
@@ -164,12 +164,12 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             var movementQuest = towerQuests.Find(q => q.questName == "Movement Tutorial");
             if (movementQuest != null)
             {
-                Debug.Log($"🎮 MOVEMENT TUTORIAL DEBUG: Found quest '{movementQuest.questName}' - Required: {movementQuest.requiredTowerCount}, Completed: {movementQuest.isCompleted}");
-                Debug.Log($"🎮 MOVEMENT TUTORIAL DEBUG: movementTutorialCompleted = {movementTutorialCompleted}");
+                Debug.Log($"MOVEMENT TUTORIAL DEBUG: Found quest '{movementQuest.questName}' - Required: {movementQuest.requiredTowerCount}, Completed: {movementQuest.isCompleted}");
+                Debug.Log($"MOVEMENT TUTORIAL DEBUG: movementTutorialCompleted = {movementTutorialCompleted}");
             }
             else
             {
-                Debug.LogWarning("⚠️ KHÔNG TÌM THẤY Movement Tutorial quest!");
+                Debug.LogWarning("KHÔNG TÌM THẤY Movement Tutorial quest!");
             }
         }
         catch (System.Exception e)
@@ -191,23 +191,23 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         if (towerType == TowerCode.OneGunBarrel)
         {
             oneGunBarrelTowersPlaced++;
-            Debug.Log($"✅ OneGunBarrel Tower đã được đặt! Tổng số OneGunBarrel: {oneGunBarrelTowersPlaced}");
+            Debug.Log($"OneGunBarrel Tower đã được đặt! Tổng số OneGunBarrel: {oneGunBarrelTowersPlaced}");
         }
         // Đếm riêng Ice Trap towers - KHÔNG đếm vào totalTowersPlaced
         else if (towerType == TowerCode.IceTrap)
         {
             iceTrapTowersPlaced++;
-            Debug.Log($"✅ Ice Trap đã được đặt! Tổng số Ice Trap: {iceTrapTowersPlaced}");
+            Debug.Log($"Ice Trap đã được đặt! Tổng số Ice Trap: {iceTrapTowersPlaced}");
         }
         else if (towerType != TowerCode.NoTower)
         {
             // Chỉ đếm các tower khác vào totalTowersPlaced (không đếm NoTower, OneGunBarrel, IceTrap)
             totalTowersPlaced++;
-            Debug.Log($"✅ Tower {towerType} đã được đặt! Tổng số: {totalTowersPlaced}");
+            Debug.Log($"Tower {towerType} đã được đặt! Tổng số: {totalTowersPlaced}");
         }
         else
         {
-            Debug.LogWarning("⚠️ OnTowerPlaced được gọi với TowerCode.NoTower - có thể có lỗi!");
+            Debug.LogWarning("OnTowerPlaced được gọi với TowerCode.NoTower - có thể có lỗi!");
         }
         
         Debug.Log($"DEBUG: oneGunBarrelTowersPlaced hiện tại: {oneGunBarrelTowersPlaced}");
@@ -243,15 +243,15 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 if (quest.questName == "Movement Tutorial")
                 {
                     canComplete = movementTutorialCompleted >= quest.requiredTowerCount;
-                    Debug.Log($"🔍 MOVEMENT TUTORIAL CHECK: movementTutorialCompleted={movementTutorialCompleted}, required={quest.requiredTowerCount}, canComplete={canComplete}");
+                    Debug.Log($"MOVEMENT TUTORIAL CHECK: movementTutorialCompleted={movementTutorialCompleted}, required={quest.requiredTowerCount}, canComplete={canComplete}");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"🎮 Movement Tutorial có thể hoàn thành!");
+                        Debug.Log($"Movement Tutorial có thể hoàn thành!");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Movement Tutorial chưa hoàn thành. Hãy di chuyển bằng WASD!");
+                        Debug.Log($" Movement Tutorial chưa hoàn thành. Hãy di chuyển bằng WASD!");
                     }
                 }
                 // Quest đầu tiên: đếm tất cả towers
@@ -263,30 +263,30 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 else if (quest.questName == "Tower Builder II")
                 {
                     canComplete = oneGunBarrelTowersPlaced >= quest.requiredTowerCount;
-                    Debug.Log($"🔍 QUEST II CHECK: oneGunBarrelTowersPlaced={oneGunBarrelTowersPlaced}, required={quest.requiredTowerCount}, canComplete={canComplete}");
+                    Debug.Log($" QUEST II CHECK: oneGunBarrelTowersPlaced={oneGunBarrelTowersPlaced}, required={quest.requiredTowerCount}, canComplete={canComplete}");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"🎯 Quest II có thể hoàn thành! Đã đặt đủ {oneGunBarrelTowersPlaced} OneGunBarrel towers");
+                        Debug.Log($" Quest II có thể hoàn thành! Đã đặt đủ {oneGunBarrelTowersPlaced} OneGunBarrel towers");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Quest II chưa hoàn thành. Cần thêm {quest.requiredTowerCount - oneGunBarrelTowersPlaced} OneGunBarrel towers nữa");
+                        Debug.Log($" Quest II chưa hoàn thành. Cần thêm {quest.requiredTowerCount - oneGunBarrelTowersPlaced} OneGunBarrel towers nữa");
                     }
                 }
                 // Quest thứ ba: chỉ đếm Ice Trap towers
                 else if (quest.questName == "Tower Builder III")
                 {
                     canComplete = iceTrapTowersPlaced >= quest.requiredTowerCount;
-                    Debug.Log($"🔍 QUEST III CHECK: iceTrapTowersPlaced={iceTrapTowersPlaced}, required={quest.requiredTowerCount}, canComplete={canComplete}");
+                    Debug.Log($" QUEST III CHECK: iceTrapTowersPlaced={iceTrapTowersPlaced}, required={quest.requiredTowerCount}, canComplete={canComplete}");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"🎯 Quest III có thể hoàn thành! Đã đặt đủ {iceTrapTowersPlaced} Ice Trap towers");
+                        Debug.Log($" Quest III có thể hoàn thành! Đã đặt đủ {iceTrapTowersPlaced} Ice Trap towers");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Quest III chưa hoàn thành. Cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers nữa");
+                        Debug.Log($" Quest III chưa hoàn thành. Cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers nữa");
                     }
                 }
                 // Các quest khác: giữ nguyên logic cũ
@@ -321,7 +321,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         if (quest.questName == "Movement Tutorial")
         {
             // Không cần tạo quest mới, chỉ hiển thị thông báo
-            Debug.Log("🎉 Movement Tutorial hoàn thành! Bắt đầu với Tower Builder I");
+            Debug.Log(" Movement Tutorial hoàn thành! Bắt đầu với Tower Builder I");
         }
         else if (quest.questName == "Tower Builder I")
         {
@@ -393,7 +393,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             towerQuests.Add(new TowerQuest
             {
                 questName = "Tower Builder II",
-                description = "Đặt 2 OneGunBarrel towers để mở khóa Ice Trap",
+                description = "Place 2 OneGunBarrel towers to unlock Ice Trap",
                 requiredTowerCount = 2,
                 unlockedTower = TowerCode.IceTrap,
                 isCompleted = false,
@@ -418,10 +418,10 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 // Hiển thị thông báo quest mới
                 TowerQuestUI.Instance.ShowNewQuestNotification(
                     "Tower Builder II", 
-                    "Đặt 2 OneGunBarrel towers để mở khóa Ice Trap"
+                    "Place 2 OneGunBarrel towers to unlock Ice Trap"
                 );
                 
-                Debug.Log("🎉 UI đã được cập nhật với quest mới và thông báo!");
+                Debug.Log(" UI đã được cập nhật với quest mới và thông báo!");
             }
         }
         else
@@ -445,7 +445,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             towerQuests.Add(new TowerQuest
             {
                 questName = "Tower Builder III",
-                description = "Đặt 4 Ice Trap towers để mở khóa Flame Trap",
+                description = "Place 4 Ice Trap towers to unlock Flame Trap",
                 requiredTowerCount = 4,
                 unlockedTower = TowerCode.FlameTrap,
                 isCompleted = false,
@@ -470,10 +470,10 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 // Hiển thị thông báo quest mới
                 TowerQuestUI.Instance.ShowNewQuestNotification(
                     "Tower Builder III", 
-                    "Đặt 4 Ice Trap towers để mở khóa Flame Trap"
+                    "Place 4 Ice Trap towers to unlock Flame Trap"
                 );
                 
-                Debug.Log("🎉 UI đã được cập nhật với quest mới và thông báo!");
+                Debug.Log(" UI đã được cập nhật với quest mới và thông báo!");
             }
         }
         else
@@ -530,33 +530,33 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     /// </summary>
     public virtual void CompleteMovementTutorial()
     {
-        Debug.Log("🎮 CompleteMovementTutorial được gọi!");
-        Debug.Log($"🎮 Trước khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
+        Debug.Log(" CompleteMovementTutorial được gọi!");
+        Debug.Log($" Trước khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
         
         if (movementTutorialCompleted == 0)
         {
             movementTutorialCompleted = 1;
-            Debug.Log("🎮 Movement Tutorial đã hoàn thành!");
-            Debug.Log($"🎮 Sau khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
+            Debug.Log(" Movement Tutorial đã hoàn thành!");
+            Debug.Log($" Sau khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
             
             // Cập nhật UI
             if (TowerQuestUI.Instance != null)
             {
                 TowerQuestUI.Instance.UpdateQuestDisplay();
-                Debug.Log("🎮 UI đã được cập nhật!");
+                Debug.Log(" UI đã được cập nhật!");
             }
             else
             {
-                Debug.LogWarning("⚠️ TowerQuestUI.Instance là null!");
+                Debug.LogWarning(" TowerQuestUI.Instance là null!");
             }
             
             // Kiểm tra quest
-            Debug.Log("🎮 Bắt đầu kiểm tra quest...");
+            Debug.Log(" Bắt đầu kiểm tra quest...");
             this.CheckQuests();
         }
         else
         {
-            Debug.Log($"🎮 Movement Tutorial đã hoàn thành trước đó (movementTutorialCompleted = {movementTutorialCompleted})");
+            Debug.Log($" Movement Tutorial đã hoàn thành trước đó (movementTutorialCompleted = {movementTutorialCompleted})");
         }
     }
     
@@ -571,24 +571,24 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     [ContextMenu("Test Movement Tutorial")]
     public virtual void TestMovementTutorial()
     {
-        Debug.Log("🧪 === TEST MOVEMENT TUTORIAL ===");
-        Debug.Log($"🧪 movementTutorialCompleted: {movementTutorialCompleted}");
-        Debug.Log($"🧪 Tổng số quest: {towerQuests.Count}");
+        Debug.Log(" === TEST MOVEMENT TUTORIAL ===");
+        Debug.Log($" movementTutorialCompleted: {movementTutorialCompleted}");
+        Debug.Log($" Tổng số quest: {towerQuests.Count}");
         
         var movementQuest = towerQuests.Find(q => q.questName == "Movement Tutorial");
         if (movementQuest != null)
         {
-            Debug.Log($"🧪 Tìm thấy Movement Tutorial quest:");
-            Debug.Log($"🧪 - Required: {movementQuest.requiredTowerCount}");
-            Debug.Log($"🧪 - Completed: {movementQuest.isCompleted}");
-            Debug.Log($"🧪 - Can complete: {movementTutorialCompleted >= movementQuest.requiredTowerCount}");
+            Debug.Log($" Tìm thấy Movement Tutorial quest:");
+            Debug.Log($" - Required: {movementQuest.requiredTowerCount}");
+            Debug.Log($" - Completed: {movementQuest.isCompleted}");
+            Debug.Log($" - Can complete: {movementTutorialCompleted >= movementQuest.requiredTowerCount}");
         }
         else
         {
-            Debug.LogError("❌ KHÔNG TÌM THẤY Movement Tutorial quest!");
+            Debug.LogError(" KHÔNG TÌM THẤY Movement Tutorial quest!");
         }
         
-        Debug.Log("🧪 === END TEST ===");
+        Debug.Log(" === END TEST ===");
     }
     
     public virtual List<TowerQuest> GetActiveQuests()
@@ -677,43 +677,43 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 if (quest.questName == "Movement Tutorial")
                 {
                     bool canComplete = movementTutorialCompleted >= quest.requiredTowerCount;
-                    Debug.Log($"🎮 Movement Tutorial can complete: {canComplete} (Status: {movementTutorialCompleted}/{quest.requiredTowerCount})");
+                    Debug.Log($" Movement Tutorial can complete: {canComplete} (Status: {movementTutorialCompleted}/{quest.requiredTowerCount})");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"✅ Movement Tutorial sẵn sàng hoàn thành!");
+                        Debug.Log($" Movement Tutorial sẵn sàng hoàn thành!");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Movement Tutorial chưa hoàn thành. Hãy di chuyển bằng WASD!");
+                        Debug.Log($" Movement Tutorial chưa hoàn thành. Hãy di chuyển bằng WASD!");
                     }
                 }
                 else if (quest.questName == "Tower Builder II")
                 {
                     bool canComplete = oneGunBarrelTowersPlaced >= quest.requiredTowerCount;
-                    Debug.Log($"🎯 Quest II can complete: {canComplete} (OneGunBarrel: {oneGunBarrelTowersPlaced}/{quest.requiredTowerCount})");
+                    Debug.Log($" Quest II can complete: {canComplete} (OneGunBarrel: {oneGunBarrelTowersPlaced}/{quest.requiredTowerCount})");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"✅ Quest II sẵn sàng hoàn thành!");
+                        Debug.Log($" Quest II sẵn sàng hoàn thành!");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Quest II cần thêm {quest.requiredTowerCount - oneGunBarrelTowersPlaced} OneGunBarrel towers");
+                        Debug.Log($" Quest II cần thêm {quest.requiredTowerCount - oneGunBarrelTowersPlaced} OneGunBarrel towers");
                     }
                 }
                 else if (quest.questName == "Tower Builder III")
                 {
                     bool canComplete = iceTrapTowersPlaced >= quest.requiredTowerCount;
-                    Debug.Log($"🎯 Quest III can complete: {canComplete} (Ice Trap: {iceTrapTowersPlaced}/{quest.requiredTowerCount})");
+                    Debug.Log($" Quest III can complete: {canComplete} (Ice Trap: {iceTrapTowersPlaced}/{quest.requiredTowerCount})");
                     
                     if (canComplete)
                     {
-                        Debug.Log($"✅ Quest III sẵn sàng hoàn thành!");
+                        Debug.Log($" Quest III sẵn sàng hoàn thành!");
                     }
                     else
                     {
-                        Debug.Log($"⏳ Quest III cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers");
+                        Debug.Log($" Quest III cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers");
                     }
                 }
             }
@@ -729,19 +729,19 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 var currentQuest = activeQuests[0];
                 if (currentQuest.questName == "Movement Tutorial")
                 {
-                    Debug.Log($"🎮 UI Movement Tutorial Progress: {movementTutorialCompleted}/{currentQuest.requiredTowerCount}");
+                    Debug.Log($" UI Movement Tutorial Progress: {movementTutorialCompleted}/{currentQuest.requiredTowerCount}");
                 }
                 else if (currentQuest.questName == "Tower Builder II")
                 {
-                    Debug.Log($"🎯 UI Quest II Progress: {oneGunBarrelTowersPlaced}/{currentQuest.requiredTowerCount}");
+                    Debug.Log($" UI Quest II Progress: {oneGunBarrelTowersPlaced}/{currentQuest.requiredTowerCount}");
                 }
                 else if (currentQuest.questName == "Tower Builder III")
                 {
-                    Debug.Log($"🎯 UI Quest III Progress: {iceTrapTowersPlaced}/{currentQuest.requiredTowerCount}");
+                    Debug.Log($" UI Quest III Progress: {iceTrapTowersPlaced}/{currentQuest.requiredTowerCount}");
                 }
                 else
                 {
-                    Debug.Log($"🎯 UI Quest {currentQuest.questName} Progress: {totalTowersPlaced}/{currentQuest.requiredTowerCount}");
+                    Debug.Log($" UI Quest {currentQuest.questName} Progress: {totalTowersPlaced}/{currentQuest.requiredTowerCount}");
                 }
             }
         }

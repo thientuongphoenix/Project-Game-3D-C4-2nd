@@ -29,13 +29,13 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     {
         if (this.questPanel != null) return;
         
-        Debug.Log("LoadQuestUI: Bắt đầu tìm UI elements...");
+        Debug.Log("LoadQuestUI: Starting to find UI elements...");
         
-        // Tìm UI elements trong scene
+        // Find UI elements in scene
         this.questPanel = GameObject.Find("QuestPanel");
         if (this.questPanel != null)
         {
-            Debug.Log("LoadQuestUI: Đã tìm thấy QuestPanel");
+            Debug.Log("LoadQuestUI: Found QuestPanel");
             
             this.questTitleText = this.questPanel.transform.Find("QuestTitleText")?.GetComponent<TextMeshProUGUI>();
             this.questDescriptionText = this.questPanel.transform.Find("QuestDescriptionText")?.GetComponent<TextMeshProUGUI>();
@@ -48,10 +48,10 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         }
         else
         {
-            Debug.LogError("LoadQuestUI: KHÔNG TÌM THẤY QuestPanel trong scene!");
+            Debug.LogError("LoadQuestUI: QuestPanel NOT FOUND in scene!");
         }
         
-        // Tìm notification panel
+        // Find notification panel
         this.notificationPanel = GameObject.Find("NotificationPanel");
         if (this.notificationPanel != null)
         {
@@ -74,24 +74,24 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         
         if (this.questPanel == null)
         {
-            Debug.LogWarning("QuestPanel is null! Không thể cập nhật UI");
+            Debug.LogWarning("QuestPanel is null! Cannot update UI");
             return;
         }
         
-        // Lấy thông tin nhiệm vụ (kể cả đã hoàn thành)
+        // Get quest information (including completed ones)
         var allQuests = TowerQuestSystem.Instance.GetAllQuests();
-        Debug.Log($"UpdateQuestDisplay: Số quest hiện có: {allQuests.Count}");
+        Debug.Log($"UpdateQuestDisplay: Current number of quests: {allQuests.Count}");
         
         if (allQuests.Count > 0)
         {
-            // Tìm nhiệm vụ chưa hoàn thành đầu tiên, nếu không có thì lấy nhiệm vụ cuối cùng
+            // Find first incomplete quest, if none then take the last quest
             var currentQuest = allQuests.Find(q => !q.isCompleted) ?? allQuests[allQuests.Count - 1];
             
-            // QUAN TRỌNG: Lấy tiến độ phù hợp với từng quest
+            // IMPORTANT: Get appropriate progress for each quest
             int currentProgress = this.GetProgressForQuest(currentQuest);
             
-            // Debug: Kiểm tra tiến độ real-time
-            Debug.Log($"UI Update: Tiến độ {currentProgress}/{currentQuest.requiredTowerCount} - Quest: {currentQuest.questName}");
+            // Debug: Check real-time progress
+            Debug.Log($"UI Update: Progress {currentProgress}/{currentQuest.requiredTowerCount} - Quest: {currentQuest.questName}");
             Debug.Log($"UI Update: QuestTitleText null? {this.questTitleText == null}");
             Debug.Log($"UI Update: ProgressText null? {this.progressText == null}");
             Debug.Log($"UI Update: ProgressBar null? {this.progressBar == null}");
@@ -99,35 +99,35 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
             if (this.questTitleText != null)
             {
                 if (currentQuest.isCompleted)
-                    this.questTitleText.text = $"✅ {currentQuest.questName} - HOÀN THÀNH!";
+                    this.questTitleText.text = $"{currentQuest.questName} - COMPLETED!";
                 else
-                    this.questTitleText.text = $"🔒 {currentQuest.questName}";
-                Debug.Log($"Đã cập nhật QuestTitleText: {this.questTitleText.text}");
+                    this.questTitleText.text = $"{currentQuest.questName}";
+                Debug.Log($"Updated QuestTitleText: {this.questTitleText.text}");
             }
                 
             if (this.questDescriptionText != null)
             {
                 if (currentQuest.isCompleted)
-                    this.questDescriptionText.text = $"Nhiệm vụ đã hoàn thành!\n\nTower đã mở khóa: {this.GetTowerDisplayName(currentQuest.unlockedTower)}";
+                    this.questDescriptionText.text = $"Quest completed!\n\nTower unlocked: {this.GetTowerDisplayName(currentQuest.unlockedTower)}";
                 else
-                    this.questDescriptionText.text = $"{currentQuest.description}\n\nTower bị khóa: {this.GetTowerDisplayName(currentQuest.unlockedTower)}";
-                Debug.Log($"Đã cập nhật QuestDescriptionText: {this.questDescriptionText.text}");
+                    this.questDescriptionText.text = $"{currentQuest.description}\n\nTower locked: {this.GetTowerDisplayName(currentQuest.unlockedTower)}";
+                Debug.Log($"Updated QuestDescriptionText: {this.questDescriptionText.text}");
             }
                 
             if (this.progressText != null)
             {
-                this.progressText.text = $"Tiến độ: {currentProgress}/{currentQuest.requiredTowerCount}";
-                Debug.Log($"Đã cập nhật ProgressText: {this.progressText.text}");
+                this.progressText.text = $"Progress: {currentProgress}/{currentQuest.requiredTowerCount}";
+                Debug.Log($"Updated ProgressText: {this.progressText.text}");
             }
                 
             if (this.progressBar != null)
             {
                 this.progressBar.maxValue = currentQuest.requiredTowerCount;
                 this.progressBar.value = currentProgress;
-                Debug.Log($"Đã cập nhật ProgressBar: maxValue={this.progressBar.maxValue}, value={this.progressBar.value}");
+                Debug.Log($"Updated ProgressBar: maxValue={this.progressBar.maxValue}, value={this.progressBar.value}");
             }
             
-            // Tự động ẩn panel sau 2 giây khi hoàn thành nhiệm vụ (chỉ gọi 1 lần)
+            // Auto hide panel after 2 seconds when quest is completed (only call once)
             if (currentQuest.isCompleted && this.questPanel.activeSelf && !this.isAutoHideScheduled)
             {
                 this.isAutoHideScheduled = true;
@@ -136,7 +136,7 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         }
         else
         {
-            Debug.LogWarning("Không có quest nào để hiển thị!");
+            Debug.LogWarning("No quests to display!");
         }
     }
     
@@ -144,10 +144,10 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     {
         if (this.notificationPanel == null || this.notificationText == null) return;
         
-        this.notificationText.text = $"Hoàn thành: {questName}\nMở khóa: {unlockedTower}";
+        this.notificationText.text = $"Completed: {questName}\nUnlocked: {unlockedTower}";
         this.notificationPanel.SetActive(true);
         
-        // Tự động ẩn sau một thời gian
+        // Auto hide after a period of time
         Invoke(nameof(this.HideNotification), this.notificationDuration);
     }
     
@@ -155,10 +155,10 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     {
         if (this.notificationPanel == null || this.notificationText == null) return;
         
-        this.notificationText.text = $"🎯 Nhiệm vụ mới: {questName}\n{description}";
+        this.notificationText.text = $"🎯 New Quest: {questName}\n{description}";
         this.notificationPanel.SetActive(true);
         
-        // Tự động ẩn sau một thời gian
+        // Auto hide after a period of time
         Invoke(nameof(this.HideNotification), this.notificationDuration);
     }
     
@@ -181,8 +181,8 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         if (this.questPanel != null)
         {
             this.questPanel.SetActive(false);
-            this.isAutoHideScheduled = false; // Reset biến để có thể gọi lại
-            Debug.Log("Quest Panel đã tự động ẩn sau khi hoàn thành nhiệm vụ!");
+            this.isAutoHideScheduled = false; // Reset variable to allow calling again
+            Debug.Log("Quest Panel automatically hidden after completing quest!");
         }
     }
     
@@ -191,7 +191,7 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         if (this.questPanel != null)
         {
             this.questPanel.SetActive(true);
-            this.isAutoHideScheduled = false; // Reset biến khi hiện panel
+            this.isAutoHideScheduled = false; // Reset variable when showing panel
         }
     }
     
@@ -199,17 +199,17 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     {
         switch (towerCode)
         {
-            case TowerCode.MachineGun: return "Machine Gun (Phím 1)";
-            case TowerCode.OneGunBarrel: return "One Gun Barrel (Phím 2)";
-            case TowerCode.IceTrap: return "Ice Trap (Phím 3)";
-            case TowerCode.FlameTrap: return "Flame Trap (Phím 4)";
-            case TowerCode.Core: return "Core Tower (Phím 5)";
+            case TowerCode.MachineGun: return "Machine Gun (Key 1)";
+            case TowerCode.OneGunBarrel: return "One Gun Barrel (Key 2)";
+            case TowerCode.IceTrap: return "Ice Trap (Key 3)";
+            case TowerCode.FlameTrap: return "Flame Trap (Key 4)";
+            case TowerCode.Core: return "Core Tower (Key 5)";
             default: return towerCode.ToString();
         }
     }
     
     /// <summary>
-    /// Lấy tiến độ phù hợp cho từng quest
+    /// Get appropriate progress for each quest
     /// </summary>
     protected virtual int GetProgressForQuest(TowerQuest quest)
     {
@@ -219,28 +219,28 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         if (quest.questName == "Movement Tutorial")
         {
             int movementProgress = TowerQuestSystem.Instance.GetMovementTutorialStatus();
-            Debug.Log($"🎮 Movement Tutorial Progress: {movementProgress}/1");
+            Debug.Log($"Movement Tutorial Progress: {movementProgress}/1");
             return movementProgress;
         }
         // Quest 2: Đếm OneGunBarrel towers
         else if (quest.questName == "Tower Builder II")
         {
             int oneGunBarrelProgress = TowerQuestSystem.Instance.GetOneGunBarrelTowersPlaced();
-            Debug.Log($"🎯 Quest II Progress: {oneGunBarrelProgress} OneGunBarrel towers");
+            Debug.Log($"Quest II Progress: {oneGunBarrelProgress} OneGunBarrel towers");
             return oneGunBarrelProgress;
         }
         // Quest 3: Đếm Ice Trap towers
         else if (quest.questName == "Tower Builder III")
         {
             int iceTrapProgress = TowerQuestSystem.Instance.GetIceTrapTowersPlaced();
-            Debug.Log($"🎯 Quest III Progress: {iceTrapProgress} Ice Trap towers");
+            Debug.Log($"Quest III Progress: {iceTrapProgress} Ice Trap towers");
             return iceTrapProgress;
         }
         // Quest 1 và các quest khác: Đếm tất cả towers (trừ OneGunBarrel, IceTrap)
         else
         {
             int totalProgress = TowerQuestSystem.Instance.GetTotalTowersPlaced();
-            Debug.Log($"🎯 Quest {quest.questName} Progress: {totalProgress} towers");
+            Debug.Log($"Quest {quest.questName} Progress: {totalProgress} towers");
             return totalProgress;
         }
     }
