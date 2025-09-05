@@ -389,6 +389,7 @@ MonoBehaviour:
   state: 0
   treeStatus: 1
   enemyCtrl: {fileID: 1754123086888264209}
+  attackRange: 1.5
 --- !u!1 &969512908318204937
 GameObject:
   m_ObjectHideFlags: 0
@@ -2577,6 +2578,7 @@ MonoBehaviour:
   canMove: 1
   isMoving: 0
   isFinish: 0
+  moveSpeed: 2
 --- !u!1 &7755452781277062215
 GameObject:
   m_ObjectHideFlags: 0
@@ -2959,7 +2961,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
+  m_Speed: 5
   m_Acceleration: 150
   avoidancePriority: 5
   m_AngularSpeed: 200

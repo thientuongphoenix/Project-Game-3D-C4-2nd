@@ -43,8 +43,8 @@ public class TowerLockedNotifier : SaiSingleton<TowerLockedNotifier>
         
         string towerName = this.GetTowerDisplayName(towerCode);
         
-        // Lấy thông tin nhiệm vụ hiện tại
-        string questInfo = "Không có nhiệm vụ nào";
+        // Get current quest information
+        string questInfo = "No quest available";
         if (TowerQuestSystem.Instance != null)
         {
             var activeQuests = TowerQuestSystem.Instance.GetActiveQuests();
@@ -52,15 +52,15 @@ public class TowerLockedNotifier : SaiSingleton<TowerLockedNotifier>
             {
                 var currentQuest = activeQuests[0];
                 int totalPlaced = TowerQuestSystem.Instance.GetTotalTowersPlaced();
-                questInfo = $"NHIỆM VỤ: {currentQuest.questName}\n{currentQuest.description}\nTiến độ: {totalPlaced}/{currentQuest.requiredTowerCount}";
+                questInfo = $"QUEST: {currentQuest.questName}\n{currentQuest.description}\nProgress: {totalPlaced}/{currentQuest.requiredTowerCount}";
             }
         }
         
-        this.lockedNotificationText.text = $"{towerName} chưa được mở khóa!\n\nHãy hoàn thành nhiệm vụ để mở khóa.\n\n{questInfo}";
+        this.lockedNotificationText.text = $"{towerName} is not unlocked!\n\nComplete the quest to unlock.\n\n{questInfo}";
         
         this.lockedNotificationPanel.SetActive(true);
         
-        // Tự động ẩn sau một thời gian
+        // Auto hide after a period of time
         Invoke(nameof(this.HideLockedNotification), this.notificationDuration);
     }
     
@@ -76,11 +76,11 @@ public class TowerLockedNotifier : SaiSingleton<TowerLockedNotifier>
                 var currentQuest = activeQuests[0];
                 int totalPlaced = TowerQuestSystem.Instance.GetTotalTowersPlaced();
                 
-                this.questInfoText.text = $"NHIỆM VỤ HIỆN TẠI:\n{currentQuest.questName}\n\n{currentQuest.description}\n\nTiến độ: {totalPlaced}/{currentQuest.requiredTowerCount}";
+                this.questInfoText.text = $"CURRENT QUEST:\n{currentQuest.questName}\n\n{currentQuest.description}\n\nProgress: {totalPlaced}/{currentQuest.requiredTowerCount}";
                 
                 this.questInfoPanel.SetActive(true);
                 
-                // Tự động ẩn sau một thời gian
+                // Auto hide after a period of time
                 Invoke(nameof(this.HideQuestInfo), this.notificationDuration + 1f);
             }
         }

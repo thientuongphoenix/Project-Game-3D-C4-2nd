@@ -163,10 +163,20 @@ public class GameResultManager : MonoBehaviour
     protected virtual void CompleteCurrentMap()
     {
         string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        Debug.Log($"=== COMPLETING MAP: {currentSceneName} ===");
+        
         if (MapProgressManager.Instance != null)
         {
             MapProgressManager.Instance.CompleteMap(currentSceneName);
-            Debug.Log($"Map {currentSceneName} completed!");
+            Debug.Log($"Map {currentSceneName} completed and saved!");
+            
+            // Debug: Kiểm tra danh sách completed maps
+            var completedMaps = MapProgressManager.Instance.GetCompletedMaps();
+            Debug.Log($"Current completed maps: {string.Join(", ", completedMaps)}");
+        }
+        else
+        {
+            Debug.LogError("MapProgressManager.Instance is NULL! Cannot save map progress!");
         }
     }
 
