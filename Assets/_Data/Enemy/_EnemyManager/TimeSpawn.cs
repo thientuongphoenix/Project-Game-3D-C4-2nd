@@ -15,7 +15,6 @@ public class TimeSpawn : MonoBehaviour
     public float time3; 
     public float time4;
     public float time5;
-    public float time6;
     public float timeBoss;
 
     private float currentTime = 0f;
@@ -34,25 +33,29 @@ public class TimeSpawn : MonoBehaviour
         {
             SetActiveObjects(false, false, false, false, false);
         }
-        else if (currentTime < time2) 
-        {
-            SetActiveObjects(true, false, false, false, false);
-        }
-        else if (currentTime < time3) 
+        else if (currentTime < time2) //bat a b 
         {
             SetActiveObjects(false, true, true, false, false);
         }
+        else if (currentTime < time3) 
+        {
+            SetActiveObjects(false, false, false, false, false);
+        }
         else if (currentTime < time4) 
         {
-            SetActiveObjects(false, false, true, true, false);
+            SetActiveObjects(false, false, false, true, true);
+        }
+        else if (currentTime < time5)
+        {
+            SetActiveObjects(false, false, false, false, false);
         }
         else if (currentTime < timeBoss)
         {
-            SetActiveObjects(false, false, true, false, false);
+            SetActiveObjects(true, false, true, false, false);
         }
         else // Sau 7 phút
         {
-            SetActiveObjects(false, false, true, true, false);
+            SetActiveObjects(false, false, false, false, false);
         }
     }
 
