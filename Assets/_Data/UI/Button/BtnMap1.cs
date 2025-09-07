@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class BtnMap1 : BtnMapLock
 {
     [Header("Map 1 Settings")]
-    [SerializeField] protected string map1RequiredMap = "SampleScene"; // Cần hoàn thành Tutorial để unlock Map 1
+    [SerializeField] protected string map1RequiredMap = "Hai_SampleScene"; // Cần hoàn thành Tutorial để unlock Map 1
     
     protected override void Start()
     {

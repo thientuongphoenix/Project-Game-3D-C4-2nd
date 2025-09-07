@@ -174,7 +174,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapSelectionSceneName: MapSelect_Hai
   newGameButton: {fileID: 1043438803}
-  tutorialMapName: SampleScene
+  tutorialMapName: Hai_SampleScene
   menuContainer: {fileID: 54188602}
   newGameButtonHeight: 60
   buttonSpacing: 20
@@ -186,7 +186,7 @@ MonoBehaviour:
   dialogMessageText: {fileID: 1286244655}
   confirmButton: {fileID: 1575396168}
   cancelButton: {fileID: 2024473865}
-  dialogTitle: "C\u1EA2NH B\xC1O"
+  dialogTitle: WARNING
   dialogMessage: "N\u1EBFu b\u1EA1n ch\u1ECDn n\xFAt n\xE0y, t\u1EA5t c\u1EA3 d\u1EEF
     li\u1EC7u s\u1EBD b\u1ECB reset.\nB\u1EA1n c\xF3 ch\u1EAFc th\u1EF1c hi\u1EC7n
     vi\u1EC7c n\xE0y kh\xF4ng?"
@@ -2323,6 +2323,7 @@ GameObject:
   - component: {fileID: 920416028}
   - component: {fileID: 920416027}
   - component: {fileID: 920416026}
+  - component: {fileID: 920416029}
   m_Layer: 5
   m_Name: QuitButton
   m_TagString: Untagged
@@ -2444,6 +2445,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 920416024}
   m_CullTransparentMesh: 1
+--- !u!114 &920416029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920416024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2869d654c52835a4d84af8fde52ee4d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &926867402
 GameObject:
   m_ObjectHideFlags: 0
@@ -3348,7 +3361,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "kh\xF4ng"
+  m_text: no
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4641,9 +4654,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "N\u1EBFu b\u1EA1n ch\u1ECDn n\xFAt n\xE0y, t\u1EA5t c\u1EA3 d\u1EEF li\u1EC7u
-    s\u1EBD b\u1ECB reset.\\nB\u1EA1n c\xF3 ch\u1EAFc th\u1EF1c hi\u1EC7n vi\u1EC7c
-    n\xE0y kh\xF4ng?\n"
+  m_text: If you choose this button, all data will be reset.\nAre you sure you want
+    to do this?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5760,7 +5772,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "c\xF3"
+  m_text: yes
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6719,6 +6731,7 @@ GameObject:
   - component: {fileID: 1875586357}
   - component: {fileID: 1875586356}
   - component: {fileID: 1875586355}
+  - component: {fileID: 1875586358}
   m_Layer: 5
   m_Name: PlayButton
   m_TagString: Untagged
@@ -6840,6 +6853,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875586353}
   m_CullTransparentMesh: 1
+--- !u!114 &1875586358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875586353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2869d654c52835a4d84af8fde52ee4d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1877630014
 GameObject:
   m_ObjectHideFlags: 0
@@ -6897,7 +6922,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "C\u1EA3nh b\xE1o"
+  m_text: WARNING
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7413,6 +7438,7 @@ GameObject:
   - component: {fileID: 1995675903}
   - component: {fileID: 1995675902}
   - component: {fileID: 1995675901}
+  - component: {fileID: 1995675904}
   m_Layer: 5
   m_Name: OptionsButton
   m_TagString: Untagged
@@ -7558,6 +7584,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995675899}
   m_CullTransparentMesh: 1
+--- !u!114 &1995675904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1995675899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2869d654c52835a4d84af8fde52ee4d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2024473863
 GameObject:
   m_ObjectHideFlags: 0

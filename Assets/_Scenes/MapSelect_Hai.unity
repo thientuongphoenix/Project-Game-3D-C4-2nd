@@ -1464,7 +1464,7 @@ MonoBehaviour:
   lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   unlockedColor: {r: 1, g: 1, b: 1, a: 1}
   lockText: {fileID: 0}
-  map1RequiredMap: SampleScene
+  map1RequiredMap: Hai_SampleScene
 --- !u!114 &678123455
 MonoBehaviour:
   m_ObjectHideFlags: 0

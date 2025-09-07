@@ -179,6 +179,13 @@ public class TowerManager : SaiSingleton<TowerManager>
         if(this.towerPrefab != null) this.towerPrefab.SetActive(false);
         this.towerPrefab = null;
         this.newTowerId = TowerCode.NoTower;
+        
+        // Ẩn UI thông tin tower khi không có tower nào được chọn
+        if (this.currentShowingTower != TowerCode.NoTower)
+        {
+            this.HideTowerInfo();
+            this.currentShowingTower = TowerCode.NoTower;
+        }
         return;
       }
       
@@ -188,6 +195,13 @@ public class TowerManager : SaiSingleton<TowerManager>
           // Hiển thị thông tin tower mới (không ẩn tower cũ)
           this.ShowTowerInfo(newTowerId);
           this.newTowerId = newTowerId;
+          
+          // Cập nhật towerPrefab khi thay đổi selection
+          if (this.towerPrefab != null)
+          {
+              this.towerPrefab.SetActive(false);
+              this.towerPrefab = null;
+          }
       }
 
       if(this.towerPrefab == null) 

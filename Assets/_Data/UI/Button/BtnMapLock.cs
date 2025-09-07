@@ -109,10 +109,22 @@ public class BtnMapLock : ButttonAbstract
         if (string.IsNullOrEmpty(requiredMapCompleted))
         {
             this.isLocked = false; // Không có yêu cầu = luôn unlock
+            Debug.Log($"{transform.name}: No required map - UNLOCKED");
         }
         else
         {
-            this.isLocked = !MapProgressManager.Instance.IsMapCompleted(requiredMapCompleted);
+            bool isRequiredMapCompleted = MapProgressManager.Instance != null ? 
+                MapProgressManager.Instance.IsMapCompleted(requiredMapCompleted) : false;
+            this.isLocked = !isRequiredMapCompleted;
+            
+            Debug.Log($"{transform.name}: Required map '{requiredMapCompleted}' completed: {isRequiredMapCompleted} - Locked: {this.isLocked}");
+            
+            // Debug: Hiển thị danh sách completed maps
+            if (MapProgressManager.Instance != null)
+            {
+                var completedMaps = MapProgressManager.Instance.GetCompletedMaps();
+                Debug.Log($"{transform.name}: Current completed maps: {string.Join(", ", completedMaps)}");
+            }
         }
         
         this.UpdateLockState();

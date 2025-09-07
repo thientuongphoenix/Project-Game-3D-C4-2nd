@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
     
     [Header("New Game Button")]
     [SerializeField] protected GameObject newGameButton;
-    [SerializeField] protected string tutorialMapName = "SampleScene";
+    [SerializeField] protected string tutorialMapName = "Hai_SampleScene";
     
     [Header("Layout Control")]
     [SerializeField] protected RectTransform menuContainer; // Container chứa tất cả button
@@ -28,10 +28,10 @@ public class MainMenu : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI dialogMessageText;
     [SerializeField] protected Button confirmButton; // Button "Có"
     [SerializeField] protected Button cancelButton; // Button "Không"
-    [SerializeField] protected string dialogTitle = "CẢNH BÁO";
-    [SerializeField] protected string dialogMessage = "Nếu bạn chọn nút này, tất cả dữ liệu sẽ bị reset.\nBạn có chắc thực hiện việc này không?";
-    [SerializeField] protected string confirmText = "CÓ";
-    [SerializeField] protected string cancelText = "KHÔNG";
+    [SerializeField] protected string dialogTitle = "WARNING";
+    [SerializeField] protected string dialogMessage = "If you choose this button, all data will be reset.\nAre you sure you want to do this?";
+    [SerializeField] protected string confirmText = "YES";
+    [SerializeField] protected string cancelText = "NO";
     
     protected virtual void Start()
     {
