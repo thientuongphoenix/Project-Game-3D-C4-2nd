@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using TMPro;
 
 public class MainMenu : MonoBehaviour
@@ -33,12 +34,29 @@ public class MainMenu : MonoBehaviour
     [SerializeField] protected string confirmText = "YES";
     [SerializeField] protected string cancelText = "NO";
     
+    [Header("Cutscene Video")]
+    [SerializeField] protected GameObject cutsceneCanvas; // Canvas chứa video player
+    [SerializeField] protected VideoPlayer videoPlayer; // VideoPlayer component
+    [SerializeField] protected RawImage videoDisplay; // RawImage để hiển thị video
+    [SerializeField] protected Button skipButton; // Nút skip video
+    [SerializeField] protected VideoClip cutsceneVideoClip; // Video clip cần phát
+    [SerializeField] protected string skipButtonText = "SKIP";
+    [SerializeField] protected bool enableCutscene = true; // Bật/tắt cutscene
+    
+    [Header("Video Settings")]
+    [SerializeField] protected int videoWidth = 1216; // Chiều rộng video
+    [SerializeField] protected int videoHeight = 1080; // Chiều cao video
+    [SerializeField] protected bool maintainAspectRatio = true; // Giữ tỷ lệ khung hình
+    [SerializeField] protected float videoScale = 1.0f; // Tỷ lệ phóng to/thu nhỏ video (1.0 = kích thước gốc)
+    [SerializeField] protected bool centerVideo = true; // Căn giữa video trên màn hình
+    
     protected virtual void Start()
     {
         this.LoadNewGameButton();
         this.LoadMenuContainer();
         this.LoadPlayButton();
         this.LoadConfirmationDialog();
+        this.LoadCutsceneComponents();
         // Sử dụng Invoke để đảm bảo MapProgressManager đã được khởi tạo
         Invoke(nameof(CheckNewGameButtonVisibility), 0.1f);
     }
@@ -136,6 +154,226 @@ public class MainMenu : MonoBehaviour
         else
         {
             Debug.LogError("CancelButton not found! Check hierarchy structure.");
+        }
+    }
+    
+    protected virtual void LoadCutsceneComponents()
+    {
+        if (this.cutsceneCanvas != null) return;
+        
+        // Tìm cutscene canvas trong scene (có thể là root canvas)
+        this.cutsceneCanvas = GameObject.Find("CutsceneCanvas");
+        if (this.cutsceneCanvas == null)
+        {
+            // Tìm canvas có tag "CutsceneCanvas" hoặc tên chứa "Cutscene"
+            Canvas[] allCanvases = FindObjectsOfType<Canvas>();
+            foreach (Canvas canvas in allCanvases)
+            {
+                if (canvas.name.Contains("Cutscene") || canvas.CompareTag("CutsceneCanvas"))
+                {
+                    this.cutsceneCanvas = canvas.gameObject;
+                    break;
+                }
+            }
+        }
+        
+        if (this.cutsceneCanvas != null)
+        {
+            // Load các component của cutscene
+            this.LoadCutsceneUIComponents();
+            
+            // Ẩn cutscene canvas ban đầu
+            this.cutsceneCanvas.SetActive(false);
+            
+            Debug.Log(transform.name + ": LoadCutsceneComponents - Cutscene canvas found and loaded", gameObject);
+        }
+        else
+        {
+            Debug.LogWarning("CutsceneCanvas not found in scene. Please create it manually following the guide.");
+        }
+    }
+    
+    protected virtual void LoadCutsceneUIComponents()
+    {
+        Debug.Log("LoadCutsceneUIComponents() called!");
+        
+        // Load VideoPlayer component
+        this.videoPlayer = this.cutsceneCanvas.GetComponent<VideoPlayer>();
+        if (this.videoPlayer == null)
+        {
+            Debug.Log("VideoPlayer component not found, creating new one...");
+            this.videoPlayer = this.cutsceneCanvas.AddComponent<VideoPlayer>();
+            if (this.videoPlayer != null)
+            {
+                Debug.Log("VideoPlayer component created successfully!");
+            }
+            else
+            {
+                Debug.LogError("Failed to create VideoPlayer component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log("VideoPlayer component found!");
+        }
+        
+        // Load RawImage để hiển thị video
+        this.videoDisplay = this.cutsceneCanvas.transform.Find("VideoDisplay")?.GetComponent<RawImage>();
+        if (this.videoDisplay == null)
+        {
+            Debug.LogError("VideoDisplay RawImage not found! Check hierarchy structure.");
+        }
+        else
+        {
+            Debug.Log("VideoDisplay found!");
+        }
+        
+        // Load Skip button
+        this.skipButton = this.cutsceneCanvas.transform.Find("SkipButton")?.GetComponent<Button>();
+        if (this.skipButton != null)
+        {
+            this.skipButton.onClick.AddListener(this.SkipCutscene);
+            
+            // Set text cho skip button
+            TextMeshProUGUI skipButtonText = this.skipButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (skipButtonText != null)
+            {
+                skipButtonText.text = this.skipButtonText;
+            }
+            
+            Debug.Log("Skip button listener added");
+        }
+        else
+        {
+            Debug.LogError("SkipButton not found! Check hierarchy structure.");
+        }
+        
+        // Setup VideoPlayer
+        this.SetupVideoPlayer();
+        
+        Debug.Log($"Cutscene components loaded - VideoPlayer: {videoPlayer != null}, VideoDisplay: {videoDisplay != null}, SkipButton: {skipButton != null}");
+    }
+    
+    protected virtual void SetupVideoPlayer()
+    {
+        Debug.Log("SetupVideoPlayer() called!");
+        
+        if (this.videoPlayer == null) 
+        {
+            Debug.LogError("VideoPlayer is null! Cannot setup.");
+            return;
+        }
+        
+        Debug.Log("Configuring VideoPlayer...");
+        // Cấu hình VideoPlayer
+        this.videoPlayer.playOnAwake = false;
+        this.videoPlayer.isLooping = false;
+        this.videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+        
+        // Tạo RenderTexture cho video với resolution tùy chỉnh
+        Debug.Log($"Creating RenderTexture with resolution {this.videoWidth}x{this.videoHeight}...");
+        RenderTexture renderTexture = new RenderTexture(this.videoWidth, this.videoHeight, 0);
+        this.videoPlayer.targetTexture = renderTexture;
+        
+        // Gán RenderTexture cho RawImage
+        if (this.videoDisplay != null)
+        {
+            this.videoDisplay.texture = renderTexture;
+            
+            // Điều chỉnh RawImage để hiển thị video đúng tỷ lệ
+            this.AdjustVideoDisplayAspectRatio();
+            
+            Debug.Log("RenderTexture assigned to VideoDisplay");
+        }
+        else
+        {
+            Debug.LogWarning("VideoDisplay is null! Cannot assign RenderTexture.");
+        }
+        
+        // Gán video clip nếu có
+        if (this.cutsceneVideoClip != null)
+        {
+            this.videoPlayer.clip = this.cutsceneVideoClip;
+            Debug.Log($"Video clip assigned: {this.cutsceneVideoClip.name}");
+        }
+        else
+        {
+            Debug.LogWarning("No video clip assigned! Please assign cutsceneVideoClip in Inspector.");
+        }
+        
+        // Thêm event khi video kết thúc
+        this.videoPlayer.loopPointReached += OnVideoFinished;
+        
+        Debug.Log("VideoPlayer setup completed successfully!");
+    }
+    
+    protected virtual void AdjustVideoDisplayAspectRatio()
+    {
+        if (this.videoDisplay == null) return;
+        
+        Debug.Log("Adjusting video display aspect ratio...");
+        
+        // Tính tỷ lệ khung hình của video
+        float videoAspectRatio = (float)this.videoWidth / this.videoHeight;
+        Debug.Log($"Video aspect ratio: {videoAspectRatio} ({this.videoWidth}:{this.videoHeight})");
+        
+        // Lấy kích thước màn hình
+        Canvas canvas = this.cutsceneCanvas.GetComponent<Canvas>();
+        if (canvas != null)
+        {
+            RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+            float screenWidth = canvasRect.rect.width;
+            float screenHeight = canvasRect.rect.height;
+            float screenAspectRatio = screenWidth / screenHeight;
+            
+            Debug.Log($"Screen aspect ratio: {screenAspectRatio} ({screenWidth}:{screenHeight})");
+            
+            RectTransform videoRect = this.videoDisplay.GetComponent<RectTransform>();
+            
+            if (this.maintainAspectRatio)
+            {
+                // Giữ tỷ lệ khung hình video và fit vào màn hình
+                float scaleWidth = screenWidth / this.videoWidth;
+                float scaleHeight = screenHeight / this.videoHeight;
+                float autoScale = Mathf.Min(scaleWidth, scaleHeight); // Chọn scale nhỏ hơn để fit hoàn toàn
+                
+                // Áp dụng videoScale từ Inspector
+                float finalScale = autoScale * this.videoScale;
+                
+                float newWidth = this.videoWidth * finalScale;
+                float newHeight = this.videoHeight * finalScale;
+                
+                videoRect.sizeDelta = new Vector2(newWidth, newHeight);
+                
+                if (this.centerVideo)
+                {
+                    videoRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    videoRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    videoRect.anchoredPosition = Vector2.zero;
+                }
+                else
+                {
+                    videoRect.anchorMin = new Vector2(0, 0);
+                    videoRect.anchorMax = new Vector2(0, 0);
+                    videoRect.anchoredPosition = new Vector2(newWidth / 2, newHeight / 2);
+                }
+                
+                Debug.Log($"Video scaled to fit: {newWidth}x{newHeight} (auto scale: {autoScale}, final scale: {finalScale})");
+            }
+            else
+            {
+                // Stretch toàn màn hình
+                videoRect.sizeDelta = new Vector2(screenWidth, screenHeight);
+                videoRect.anchorMin = new Vector2(0, 0);
+                videoRect.anchorMax = new Vector2(1, 1);
+                videoRect.anchoredPosition = Vector2.zero;
+                Debug.Log($"Video stretched to full screen: {screenWidth}x{screenHeight}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Canvas not found! Cannot adjust aspect ratio.");
         }
     }
     
@@ -302,8 +540,57 @@ public class MainMenu : MonoBehaviour
     
     public void PlayGame()
     {
-        // Load map selection scene instead of next scene
-        SceneManager.LoadScene(mapSelectionSceneName);
+        Debug.Log("PlayGame() called!");
+        Debug.Log($"enableCutscene: {this.enableCutscene}");
+        Debug.Log($"cutsceneCanvas: {(this.cutsceneCanvas != null ? "Found" : "NULL")}");
+        Debug.Log($"videoPlayer: {(this.videoPlayer != null ? "Found" : "NULL")}");
+        
+        // Nếu cutscene được bật nhưng thiếu components, thử tạo lại
+        if (this.enableCutscene && this.cutsceneCanvas != null && this.videoPlayer == null)
+        {
+            Debug.Log("VideoPlayer is null, attempting to recreate...");
+            this.RecreateVideoPlayer();
+        }
+        
+        // Kiểm tra xem có bật cutscene không
+        if (this.enableCutscene && this.cutsceneCanvas != null && this.videoPlayer != null)
+        {
+            Debug.Log("All cutscene components found! Showing cutscene...");
+            // Hiển thị cutscene trước khi load map selection
+            this.ShowCutscene();
+        }
+        else
+        {
+            Debug.Log("Cutscene components missing or disabled! Loading map selection directly...");
+            // Load map selection scene trực tiếp nếu không có cutscene
+            SceneManager.LoadScene(mapSelectionSceneName);
+        }
+    }
+    
+    protected virtual void RecreateVideoPlayer()
+    {
+        if (this.cutsceneCanvas == null) return;
+        
+        Debug.Log("Recreating VideoPlayer component...");
+        
+        // Xóa VideoPlayer cũ nếu có
+        VideoPlayer oldVideoPlayer = this.cutsceneCanvas.GetComponent<VideoPlayer>();
+        if (oldVideoPlayer != null)
+        {
+            DestroyImmediate(oldVideoPlayer);
+        }
+        
+        // Tạo VideoPlayer mới
+        this.videoPlayer = this.cutsceneCanvas.AddComponent<VideoPlayer>();
+        if (this.videoPlayer != null)
+        {
+            Debug.Log("VideoPlayer recreated successfully!");
+            this.SetupVideoPlayer();
+        }
+        else
+        {
+            Debug.LogError("Failed to recreate VideoPlayer!");
+        }
     }
 
     public void NewGame()
@@ -367,5 +654,96 @@ public class MainMenu : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+    
+    // ========== CUTSCENE METHODS ==========
+    
+    protected virtual void ShowCutscene()
+    {
+        Debug.Log("ShowCutscene() called!");
+        Debug.Log($"cutsceneCanvas: {(this.cutsceneCanvas != null ? "Found" : "NULL")}");
+        Debug.Log($"videoPlayer: {(this.videoPlayer != null ? "Found" : "NULL")}");
+        
+        if (this.cutsceneCanvas == null || this.videoPlayer == null)
+        {
+            Debug.LogError("Cutscene components not found! Loading map selection directly.");
+            SceneManager.LoadScene(mapSelectionSceneName);
+            return;
+        }
+        
+        Debug.Log("Activating cutscene canvas...");
+        // Hiển thị cutscene canvas
+        this.cutsceneCanvas.SetActive(true);
+        
+        // Ẩn menu chính
+        if (this.menuContainer != null)
+        {
+            Debug.Log("Hiding main menu...");
+            this.menuContainer.gameObject.SetActive(false);
+        }
+        
+        // Phát video
+        this.PlayCutsceneVideo();
+        
+        Debug.Log("Cutscene started successfully!");
+    }
+    
+    protected virtual void PlayCutsceneVideo()
+    {
+        if (this.videoPlayer == null) return;
+        
+        // Kiểm tra xem có video clip không
+        if (this.videoPlayer.clip == null)
+        {
+            Debug.LogWarning("No video clip assigned! Loading map selection directly.");
+            this.LoadMapSelectionScene();
+            return;
+        }
+        
+        // Phát video
+        this.videoPlayer.Play();
+        Debug.Log("Cutscene video started playing");
+    }
+    
+    public void SkipCutscene()
+    {
+        Debug.Log("Cutscene skipped by user");
+        
+        // Dừng video
+        if (this.videoPlayer != null && this.videoPlayer.isPlaying)
+        {
+            this.videoPlayer.Stop();
+        }
+        
+        // Load map selection scene
+        this.LoadMapSelectionScene();
+    }
+    
+    protected virtual void OnVideoFinished(VideoPlayer vp)
+    {
+        Debug.Log("Cutscene video finished playing");
+        
+        // Load map selection scene khi video kết thúc
+        this.LoadMapSelectionScene();
+    }
+    
+    protected virtual void LoadMapSelectionScene()
+    {
+        // Ẩn cutscene canvas
+        if (this.cutsceneCanvas != null)
+        {
+            this.cutsceneCanvas.SetActive(false);
+        }
+        
+        // Hiện lại menu chính (để tránh lỗi khi quay lại)
+        if (this.menuContainer != null)
+        {
+            this.menuContainer.gameObject.SetActive(true);
+        }
+        
+        // Load map selection scene
+        SceneManager.LoadScene(mapSelectionSceneName);
+        
+        Debug.Log("Loading map selection scene: " + mapSelectionSceneName);
     }
 }
