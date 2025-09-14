@@ -52,6 +52,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         if (this.winPanel != null) this.winPanel.SetActive(false);
         if (this.losePanel != null) this.losePanel.SetActive(false);
         
+        // Reset nhiệm vụ khi vào lại tutorial map nếu map 1 đã được unlock
+        this.CheckAndResetTutorialQuests();
+        
         Debug.Log("GameResultManager: Initialized for new scene");
     }
     
@@ -90,7 +93,160 @@ public class GameResultManager : SaiSingleton<GameResultManager>
 
     protected virtual void UpdateTimer()
     {
-        timer += Time.deltaTime;
+        // Chỉ update timer cho map 1, không dùng cho tutorial map
+        if (IsMap1())
+        {
+            timer += Time.deltaTime;
+        }
+    }
+    
+    // Method để kiểm tra xem có phải map 1 không
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
+        }
+    }
+    
+    // Method để kiểm tra xem có phải tutorial map không
+    protected virtual bool IsTutorialMap()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            return currentSceneName == "Hai_SampleScene";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsTutorialMap: {e.Message}");
+            return false;
+        }
+    }
+    
+    // Method để kiểm tra và reset nhiệm vụ tutorial
+    protected virtual void CheckAndResetTutorialQuests()
+    {
+        try
+        {
+            // Chỉ reset khi đang ở tutorial map
+            if (!IsTutorialMap()) return;
+            
+            Debug.Log("=== CHECKING TUTORIAL QUEST RESET ===");
+            
+            // Kiểm tra xem map 1 đã được unlock chưa
+            bool isMap1Unlocked = IsMap1Unlocked();
+            Debug.Log($"Map 1 unlocked: {isMap1Unlocked}");
+            
+            if (isMap1Unlocked)
+            {
+                // Nếu map 1 đã unlock, reset lại tất cả nhiệm vụ tutorial
+                ResetTutorialQuests();
+                Debug.Log("Tutorial quests have been reset!");
+            }
+            else
+            {
+                Debug.Log("Map 1 not unlocked yet, keeping tutorial quests as is");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong CheckAndResetTutorialQuests: {e.Message}");
+        }
+    }
+    
+    // Method để kiểm tra xem tutorial map đã được completed chưa (tức là map 1 đã unlock)
+    protected virtual bool IsMap1Unlocked()
+    {
+        try
+        {
+            if (MapProgressManager.Instance != null)
+            {
+                // Kiểm tra xem tutorial map đã được completed chưa
+                // Nếu tutorial map đã completed thì map 1 đã được unlock
+                bool isUnlocked = MapProgressManager.Instance.IsMapCompleted("Hai_SampleScene");
+                Debug.Log($"Tutorial map completed (Map 1 unlocked): {isUnlocked}");
+                return isUnlocked;
+            }
+            else
+            {
+                Debug.LogWarning("MapProgressManager.Instance is null, cannot check map unlock status");
+                return false;
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1Unlocked: {e.Message}");
+            return false;
+        }
+    }
+    
+    // Method để reset tất cả nhiệm vụ tutorial
+    protected virtual void ResetTutorialQuests()
+    {
+        try
+        {
+            if (TowerQuestSystem.Instance != null)
+            {
+                Debug.Log("=== RESETTING TUTORIAL QUESTS ===");
+                
+                // Sử dụng method ResetAndReinitializeQuests() có sẵn trong TowerQuestSystem
+                // Method này sẽ reset cả quests và progress counters
+                TowerQuestSystem.Instance.ResetAndReinitializeQuests();
+                
+                Debug.Log("Tutorial quests and progress have been completely reset!");
+                Debug.Log("All quests are now in initial state and ready to be completed again");
+                
+                // Cập nhật UI để hiển thị trạng thái mới
+                if (TowerQuestUI.Instance != null)
+                {
+                    TowerQuestUI.Instance.UpdateQuestDisplay();
+                    Debug.Log("Quest UI updated with reset state");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("TowerQuestSystem.Instance is null, cannot reset quests");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong ResetTutorialQuests: {e.Message}");
+        }
+    }
+    
+    // Method để kiểm tra xem Final Mission có đang active không
+    protected virtual bool IsFinalMissionActive()
+    {
+        try
+        {
+            if (IsTutorialMap() && TowerQuestSystem.Instance != null)
+            {
+                var finalMissionQuest = TowerQuestSystem.Instance.GetAllQuests().Find(q => q.questName == "Final Mission: Defend Core");
+                bool hasFinalMission = finalMissionQuest != null && !finalMissionQuest.isCompleted;
+                
+                if (hasFinalMission && CountdownTimerUI.Instance != null)
+                {
+                    return CountdownTimerUI.Instance.IsFinalMission();
+                }
+            }
+            
+            return false;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsFinalMissionActive: {e.Message}");
+            return false;
+        }
     }
 
     protected virtual void CheckLoseCondition()
@@ -113,42 +269,35 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     {
         if (isWin || isGameEnded) return;
         
-        // Kiểm tra xem có phải tutorial map và có final mission không
-        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        bool isTutorialMap = currentSceneName == "Hai_SampleScene";
-        bool hasFinalMission = false;
-        
-        if (isTutorialMap && TowerQuestSystem.Instance != null)
+        // Xử lý win condition cho tutorial map
+        if (IsTutorialMap())
         {
-            var finalMissionQuest = TowerQuestSystem.Instance.GetAllQuests().Find(q => q.questName == "Final Mission: Defend Core");
-            hasFinalMission = finalMissionQuest != null && !finalMissionQuest.isCompleted;
-        }
-        
-        // Nếu có final mission, sử dụng countdown timer thay vì timer cũ
-        if (hasFinalMission)
-        {
-            // Kiểm tra countdown timer thay vì timer cũ
-            if (CountdownTimerUI.Instance != null && CountdownTimerUI.Instance.IsFinalMission())
+            // Chỉ check win condition khi Final Mission đang active
+            if (IsFinalMissionActive())
             {
-                // Không cần check win condition ở đây nữa vì countdown timer sẽ tự xử lý
+                // Countdown timer sẽ tự xử lý win condition
                 return;
             }
+            
+            // Nếu không có Final Mission active, không có win condition
+            return;
         }
-        else if (timer >= defendTime)
+        
+        // Xử lý win condition cho map 1
+        if (IsMap1())
         {
-            // Chỉ sử dụng timer cũ khi không có final mission
-            isWin = true;
-            // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
-            if (SoundManager.Instance != null)
+            if (timer >= defendTime)
             {
-                SoundManager.Instance.VolumeSfxUpdating(0f);
-                //Debug.Log("Đã tắt tất cả SFX, giữ lại nhạc nền");
+                isWin = true;
+                // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.VolumeSfxUpdating(0f);
+                    Debug.Log("Map 1: Đã tắt tất cả SFX, giữ lại nhạc nền");
+                }
+                
+                ShowWinPanel();
             }
-            
-            // Kiểm tra xem có phải tutorial map không và hoàn thành final mission
-            this.CheckAndCompleteFinalMission();
-            
-            ShowWinPanel();
         }
     }
 
@@ -446,15 +595,12 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     {
         try
         {
-            // Kiểm tra xem có phải tutorial map không
-            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            bool isTutorialMap = currentSceneName == "Hai_SampleScene";
-            
             Debug.Log($"=== STARTING COUNTDOWN TIMER ===");
-            Debug.Log($"Current scene: {currentSceneName}");
-            Debug.Log($"Is tutorial map: {isTutorialMap}");
+            Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            Debug.Log($"Is tutorial map: {IsTutorialMap()}");
+            Debug.Log($"Is map 1: {IsMap1()}");
             
-            if (isTutorialMap)
+            if (IsTutorialMap())
             {
                 // Kiểm tra TowerQuestSystem có tồn tại không
                 if (TowerQuestSystem.Instance != null)
@@ -468,7 +614,7 @@ public class GameResultManager : SaiSingleton<GameResultManager>
                         if (CountdownTimerUI.Instance != null)
                         {
                             CountdownTimerUI.Instance.StartCountdown(this.defendTime);
-                            Debug.Log($"Countdown timer started for {this.defendTime} seconds!");
+                            Debug.Log($"Tutorial map: Countdown timer started for {this.defendTime} seconds! Defend time is now active!");
                         }
                         else
                         {
@@ -485,9 +631,13 @@ public class GameResultManager : SaiSingleton<GameResultManager>
                     Debug.LogWarning("TowerQuestSystem.Instance là null! Không thể kiểm tra final mission!");
                 }
             }
+            else if (IsMap1())
+            {
+                Debug.Log("Map 1: Sử dụng timer cũ, không cần countdown timer");
+            }
             else
             {
-                Debug.Log("Không phải tutorial map, không bắt đầu countdown timer");
+                Debug.Log("Không phải tutorial map hoặc map 1, không bắt đầu countdown timer");
             }
             
             Debug.Log("================================");
