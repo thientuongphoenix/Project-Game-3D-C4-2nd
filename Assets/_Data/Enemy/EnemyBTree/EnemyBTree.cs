@@ -10,6 +10,9 @@ public class EnemyBTree : BTAgent
     private float lastAttackTime = -999f;
 
     [SerializeField] protected float attackRange = 1.5f; // Khoảng cách tấn công, có thể chỉnh sửa trong Inspector
+    
+    [Header("Âm thanh")]
+    [SerializeField] protected SoundName attackSound = SoundName.NoSound;
 
     public override void Start()
     {
@@ -214,6 +217,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh tấn công
+            if (this.attackSound != SoundName.NoSound)
+            {
+                SoundManager.Instance.CreateSfx(this.attackSound);
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;
@@ -244,6 +252,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh tấn công
+            if (this.attackSound != SoundName.NoSound)
+            {
+                SoundManager.Instance.CreateSfx(this.attackSound);
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;
