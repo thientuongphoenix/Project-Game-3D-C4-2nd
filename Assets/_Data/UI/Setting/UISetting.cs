@@ -4,6 +4,9 @@ public class UISetting : SaiSingleton<UISetting>
 {
     protected bool isShow = true;
     protected bool IsShow => isShow;
+    
+    // Public property để truy cập từ bên ngoài
+    public bool IsSettingOpen => isShow;
 
     [SerializeField] protected Transform showHide;
 
@@ -31,6 +34,9 @@ public class UISetting : SaiSingleton<UISetting>
         this.isShow = true;
         this.showHide.gameObject.SetActive(this.isShow);
         HideMouse.Instance.isCursorVisible = this.isShow;
+        // Pause game khi mở setting
+        Time.timeScale = 0f; // Pause game
+        Debug.Log("Game paused - Settings opened");
     }
 
     public virtual void Hide()
@@ -38,6 +44,9 @@ public class UISetting : SaiSingleton<UISetting>
         this.isShow = false;
         this.showHide.gameObject.SetActive(false);
         HideMouse.Instance.isCursorVisible = this.isShow;
+        // Unpause game khi đóng setting
+        Time.timeScale = 1f; // Resume game
+        Debug.Log("Game resumed - Settings closed");
     }
 
     public virtual void ToggleSetting()
