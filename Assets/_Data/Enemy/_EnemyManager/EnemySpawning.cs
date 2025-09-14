@@ -7,6 +7,10 @@ public class EnemySpawning : EnemyManagerAbstract
     [SerializeField] protected int maxSpawn = 10;
     protected List<EnemyCtrl> spawnedEnemies = new();
 
+    [Header("Âm thanh quái")]
+    [SerializeField] protected SoundName enemySpawnSound = SoundName.NoSound;
+    [SerializeField] protected SoundName enemyDeathSound = SoundName.NoSound;
+
     protected override void Start()
     {
       base.Start();
@@ -28,6 +32,12 @@ public class EnemySpawning : EnemyManagerAbstract
 
       EnemyCtrl newEnemy = this.enemyManagerCtrl.EnemySpawner.Spawn(prefab, transform.position);
       newEnemy.gameObject.SetActive(true);
+
+      // Phát âm thanh spawn quái
+      if (this.enemySpawnSound != SoundName.NoSound)
+      {
+          SoundManager.Instance.CreateSfx(this.enemySpawnSound);
+      }
 
       if (newEnemy != null && newEnemy.EnemyBTree != null)
             newEnemy.EnemyBTree.BuildBehaviorTree();
@@ -55,6 +65,12 @@ public class EnemySpawning : EnemyManagerAbstract
       {
         if(enemyCtrl.EnemyDamageReceiver.IsDead())
         {
+          // Phát âm thanh chết quái
+          if (this.enemyDeathSound != SoundName.NoSound)
+          {
+              SoundManager.Instance.CreateSfx(this.enemyDeathSound);
+          }
+          
           this.spawnedEnemies.Remove(enemyCtrl);
           return;
         }

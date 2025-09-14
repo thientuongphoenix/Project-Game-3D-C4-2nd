@@ -9,6 +9,11 @@ public class EnemyBTree : BTAgent
     private float attackCooldown = 1.0f; // thời gian giữa các đòn đánh
     private float lastAttackTime = -999f;
 
+    [SerializeField] protected float attackRange = 1.5f; // Khoảng cách tấn công, có thể chỉnh sửa trong Inspector
+    
+    [Header("Âm thanh")]
+    [SerializeField] protected SoundName attackSound = SoundName.NoSound;
+
     public override void Start()
     {
         base.Start();
@@ -212,6 +217,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh tấn công
+            if (this.attackSound != SoundName.NoSound)
+            {
+                SoundManager.Instance.CreateSfx(this.attackSound);
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;
@@ -229,7 +239,7 @@ public class EnemyBTree : BTAgent
         }
         // Kiểm tra khoảng cách tấn công
         float distance = Vector3.Distance(enemyCtrl.transform.position, targeting.Player.transform.position);
-        float attackRange = 1.5f; // hoặc enemyCtrl.EnemyAttackRange nếu có
+        float attackRange = this.attackRange; // hoặc enemyCtrl.EnemyAttackRange nếu có
         if (distance > attackRange)
         {
             // Player đã rời khỏi phạm vi tấn công, quay lại chase
@@ -242,6 +252,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh tấn công
+            if (this.attackSound != SoundName.NoSound)
+            {
+                SoundManager.Instance.CreateSfx(this.attackSound);
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;

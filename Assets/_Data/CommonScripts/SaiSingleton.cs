@@ -9,7 +9,7 @@ public abstract class SaiSingleton<T> : SaiMonoBehaviour where T : SaiMonoBehavi
         {
             if (_instance == null)
             {
-                Debug.LogError(typeof(T).Name + ": Instance chưa được khởi tạo thì phải :D");
+                //Debug.LogError(typeof(T).Name + ": Instance chưa được khởi tạo thì phải :D");
             }
 
             return _instance;

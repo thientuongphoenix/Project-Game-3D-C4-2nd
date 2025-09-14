@@ -31,8 +31,21 @@ public class AttackLight : AttackAbstract
     {
         // SFXCtrl sfxPrefab = (SFXCtrl)SoundSpawnerCtrl.Instance.Prefabs.GetByName(this.shootSFXName.ToString());
         // SFXCtrl newSfx = (SFXCtrl)SoundSpawnerCtrl.Instance.Spawner.Spawn(sfxPrefab, position);
+        if (SoundManager.Instance == null)
+        {
+            Debug.LogWarning("SoundManager.Instance is null, cannot spawn SFX");
+            return;
+        }
+        
         SFXCtrl newSfx = SoundManager.Instance.CreateSfx(this.shootSFXName);
-        newSfx.transform.position = position;
-        newSfx.gameObject.SetActive(true);
+        if (newSfx != null)
+        {
+            newSfx.transform.position = position;
+            newSfx.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning($"Failed to create SFX: {this.shootSFXName}");
+        }
     }
 }
