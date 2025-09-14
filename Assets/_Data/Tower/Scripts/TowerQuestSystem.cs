@@ -20,6 +20,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     [SerializeField] protected int oneGunBarrelTowersPlaced = 0; // Add variable to count OneGunBarrel towers
     [SerializeField] protected int iceTrapTowersPlaced = 0; // Add variable to count Ice Trap towers
     [SerializeField] protected int movementTutorialCompleted = 0; // Add variable to count movement tutorial
+    [SerializeField] protected bool finalMissionCompleted = false; // Add variable for final mission completion
     
     [Header("UI")]
     [SerializeField] protected GameObject questNotificationPrefab;
@@ -152,6 +153,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             }
             
             // KHÔNG tạo quest thứ hai ở đây nữa - sẽ được tạo tự động khi hoàn thành quest đầu tiên
+            // KHÔNG tạo final mission ở đây nữa - sẽ được tạo khi hoàn thành Tower Builder III
             
             // Debug: Kiểm tra tất cả quest hiện có
             Debug.Log($"Tổng số quest hiện tại: {towerQuests.Count}");
@@ -181,6 +183,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             towerQuests = new List<TowerQuest>();
         }
     }
+    
     
     public virtual void OnTowerPlaced(TowerCode towerType = TowerCode.NoTower)
     {
@@ -289,6 +292,21 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                         Debug.Log($" Quest III chưa hoàn thành. Cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers nữa");
                     }
                 }
+                // Final Mission: kiểm tra thời gian bảo vệ core
+                else if (quest.questName == "Final Mission: Defend Core")
+                {
+                    canComplete = finalMissionCompleted;
+                    Debug.Log($" FINAL MISSION CHECK: finalMissionCompleted={finalMissionCompleted}, canComplete={canComplete}");
+                    
+                    if (canComplete)
+                    {
+                        Debug.Log($" Final Mission có thể hoàn thành! Đã bảo vệ core thành công!");
+                    }
+                    else
+                    {
+                        Debug.Log($" Final Mission chưa hoàn thành. Hãy bảo vệ core trong 60 giây!");
+                    }
+                }
                 // Các quest khác: giữ nguyên logic cũ
                 else
                 {
@@ -331,6 +349,15 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         {
             this.CreateThirdQuest();
         }
+        else if (quest.questName == "Tower Builder III")
+        {
+            this.CreateFinalMission();
+        }
+        else if (quest.questName == "Final Mission: Defend Core")
+        {
+            // Không cần tạo quest mới cho final mission
+            Debug.Log(" Final Mission hoàn thành! Tutorial đã hoàn tất!");
+        }
         
         // Hiển thị thông báo
         this.ShowQuestNotification(quest);
@@ -353,6 +380,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         oneGunBarrelTowersPlaced = 0;
         iceTrapTowersPlaced = 0;
         movementTutorialCompleted = 0;
+        finalMissionCompleted = false;
         
         // Reset tất cả quest về trạng thái ban đầu
         foreach (var quest in towerQuests)
@@ -482,6 +510,97 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         }
     }
     
+    protected virtual void CreateFinalMission()
+    {
+        // Kiểm tra xem có phải tutorial map không
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool isTutorialMap = currentSceneName == "Hai_SampleScene";
+        
+        Debug.Log($"=== CREATING FINAL MISSION ===");
+        Debug.Log($"Current scene: {currentSceneName}");
+        Debug.Log($"Is tutorial map: {isTutorialMap}");
+        
+        if (isTutorialMap)
+        {
+            // Kiểm tra xem đã có final mission chưa
+            bool hasFinalMission = towerQuests.Find(q => q.questName == "Final Mission: Defend Core") != null;
+            
+            if (!hasFinalMission)
+            {
+                // Tạo final mission cho tutorial map
+                towerQuests.Add(new TowerQuest
+                {
+                    questName = "Final Mission: Defend Core",
+                    description = "Defend the core for 60 seconds to complete the tutorial",
+                    requiredTowerCount = 1, // Chỉ cần 1 để trigger (sẽ được check riêng)
+                    unlockedTower = TowerCode.NoTower, // Không mở khóa tower mới
+                    isCompleted = false,
+                    isUnlocked = false
+                });
+                
+                Debug.Log("Final Mission đã được tạo tự động sau Tower Builder III!");
+                Debug.Log($"DEBUG: Tổng số quest hiện tại: {towerQuests.Count}");
+                
+                // Debug chi tiết quest vừa tạo
+                var newQuest = towerQuests[towerQuests.Count - 1];
+                Debug.Log($"DEBUG: Quest mới - Name: {newQuest.questName}, Required: {newQuest.requiredTowerCount}, UnlockedTower: {newQuest.unlockedTower}");
+                
+                // Cập nhật UI để hiển thị quest mới
+                if (TowerQuestUI.Instance != null)
+                {
+                    TowerQuestUI.Instance.UpdateQuestDisplay();
+                    
+                    // Hiển thị thông báo quest mới
+                    TowerQuestUI.Instance.ShowNewQuestNotification(
+                        "Final Mission: Defend Core", 
+                        "Defend the core for 60 seconds to complete the tutorial"
+                    );
+                    
+                    Debug.Log("UI đã được cập nhật với Final Mission!");
+                }
+                
+                // Bắt đầu countdown timer cho final mission
+                this.StartFinalMissionCountdown();
+            }
+            else
+            {
+                Debug.Log("Final Mission đã tồn tại cho tutorial map");
+            }
+        }
+        else
+        {
+            Debug.Log("Không phải tutorial map, không tạo Final Mission");
+        }
+        
+        Debug.Log("================================");
+    }
+    
+    protected virtual void StartFinalMissionCountdown()
+    {
+        try
+        {
+            Debug.Log("=== STARTING FINAL MISSION COUNTDOWN ===");
+            
+            // Kiểm tra GameResultManager có tồn tại không
+            if (GameResultManager.Instance != null)
+            {
+                // Gọi method StartCountdownTimer từ GameResultManager
+                GameResultManager.Instance.StartCountdownTimer();
+                Debug.Log("Final Mission countdown started via GameResultManager!");
+            }
+            else
+            {
+                Debug.LogWarning("GameResultManager.Instance là null! Không thể bắt đầu countdown timer!");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong StartFinalMissionCountdown: {e.Message}");
+        }
+    }
+    
     protected virtual void ShowQuestNotification(TowerQuest quest)
     {
         if (questNotificationPrefab != null)
@@ -566,6 +685,46 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     }
     
     /// <summary>
+    /// Hoàn thành final mission - bảo vệ core 60 giây
+    /// </summary>
+    public virtual void CompleteFinalMission()
+    {
+        Debug.Log(" CompleteFinalMission được gọi!");
+        Debug.Log($" Trước khi hoàn thành: finalMissionCompleted = {finalMissionCompleted}");
+        
+        if (!finalMissionCompleted)
+        {
+            finalMissionCompleted = true;
+            Debug.Log(" Final Mission đã hoàn thành! Đã bảo vệ core thành công!");
+            Debug.Log($" Sau khi hoàn thành: finalMissionCompleted = {finalMissionCompleted}");
+            
+            // Cập nhật UI
+            if (TowerQuestUI.Instance != null)
+            {
+                TowerQuestUI.Instance.UpdateQuestDisplay();
+                Debug.Log(" UI đã được cập nhật!");
+            }
+            else
+            {
+                Debug.LogWarning(" TowerQuestUI.Instance là null!");
+            }
+            
+            // Kiểm tra quest
+            Debug.Log(" Bắt đầu kiểm tra quest...");
+            this.CheckQuests();
+        }
+        else
+        {
+            Debug.Log($" Final Mission đã hoàn thành trước đó (finalMissionCompleted = {finalMissionCompleted})");
+        }
+    }
+    
+    public virtual bool GetFinalMissionStatus()
+    {
+        return finalMissionCompleted;
+    }
+    
+    /// <summary>
     /// Test method để kiểm tra quest tutorial
     /// </summary>
     [ContextMenu("Test Movement Tutorial")]
@@ -591,6 +750,32 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log(" === END TEST ===");
     }
     
+    /// <summary>
+    /// Test method để kiểm tra final mission
+    /// </summary>
+    [ContextMenu("Test Final Mission")]
+    public virtual void TestFinalMission()
+    {
+        Debug.Log(" === TEST FINAL MISSION ===");
+        Debug.Log($" finalMissionCompleted: {finalMissionCompleted}");
+        Debug.Log($" Tổng số quest: {towerQuests.Count}");
+        
+        var finalMissionQuest = towerQuests.Find(q => q.questName == "Final Mission: Defend Core");
+        if (finalMissionQuest != null)
+        {
+            Debug.Log($" Tìm thấy Final Mission quest:");
+            Debug.Log($" - Required: {finalMissionQuest.requiredTowerCount}");
+            Debug.Log($" - Completed: {finalMissionQuest.isCompleted}");
+            Debug.Log($" - Can complete: {finalMissionCompleted}");
+        }
+        else
+        {
+            Debug.LogError(" KHÔNG TÌM THẤY Final Mission quest!");
+        }
+        
+        Debug.Log(" === END TEST ===");
+    }
+    
     public virtual List<TowerQuest> GetActiveQuests()
     {
         // Trả về quest chưa hoàn thành, không phân biệt isUnlocked
@@ -609,6 +794,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         oneGunBarrelTowersPlaced = 0; // Reset cả biến đếm OneGunBarrel
         iceTrapTowersPlaced = 0; // Reset cả biến đếm Ice Trap
         movementTutorialCompleted = 0; // Reset cả biến đếm tutorial di chuyển
+        finalMissionCompleted = false; // Reset final mission
         foreach (var quest in towerQuests)
         {
             quest.isCompleted = false;
@@ -629,6 +815,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         oneGunBarrelTowersPlaced = 0; // Reset cả biến đếm OneGunBarrel
         iceTrapTowersPlaced = 0; // Reset cả biến đếm Ice Trap
         movementTutorialCompleted = 0; // Reset cả biến đếm tutorial di chuyển
+        finalMissionCompleted = false; // Reset final mission
         
         Debug.Log("Đã reset và tạo lại tất cả nhiệm vụ!");
     }
@@ -658,6 +845,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log($"Số OneGunBarrel towers đã đặt: {oneGunBarrelTowersPlaced}");
         Debug.Log($"Số Ice Trap towers đã đặt: {iceTrapTowersPlaced}");
         Debug.Log($"Movement Tutorial: {movementTutorialCompleted}/1");
+        Debug.Log($"Final Mission: {(finalMissionCompleted ? "Completed" : "Not Completed")}");
         Debug.Log("================================");
     }
     
@@ -668,6 +856,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log($"Tổng số towers đã đặt: {totalTowersPlaced}");
         Debug.Log($"Số OneGunBarrel towers đã đặt: {oneGunBarrelTowersPlaced}");
         Debug.Log($"Số Ice Trap towers đã đặt: {iceTrapTowersPlaced}");
+        Debug.Log($"Final Mission: {(finalMissionCompleted ? "Completed" : "Not Completed")}");
         
         foreach (var quest in towerQuests)
         {
@@ -716,6 +905,20 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                         Debug.Log($" Quest III cần thêm {quest.requiredTowerCount - iceTrapTowersPlaced} Ice Trap towers");
                     }
                 }
+                else if (quest.questName == "Final Mission: Defend Core")
+                {
+                    bool canComplete = finalMissionCompleted;
+                    Debug.Log($" Final Mission can complete: {canComplete} (Status: {(finalMissionCompleted ? "Completed" : "Not Completed")})");
+                    
+                    if (canComplete)
+                    {
+                        Debug.Log($" Final Mission sẵn sàng hoàn thành!");
+                    }
+                    else
+                    {
+                        Debug.Log($" Final Mission chưa hoàn thành. Hãy bảo vệ core trong 60 giây!");
+                    }
+                }
             }
         }
         
@@ -738,6 +941,10 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 else if (currentQuest.questName == "Tower Builder III")
                 {
                     Debug.Log($" UI Quest III Progress: {iceTrapTowersPlaced}/{currentQuest.requiredTowerCount}");
+                }
+                else if (currentQuest.questName == "Final Mission: Defend Core")
+                {
+                    Debug.Log($" UI Final Mission Progress: {(finalMissionCompleted ? "Completed" : "Not Completed")}");
                 }
                 else
                 {
