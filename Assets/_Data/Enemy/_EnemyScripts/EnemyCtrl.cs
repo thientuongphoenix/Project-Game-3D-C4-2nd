@@ -26,6 +26,9 @@ public abstract class EnemyCtrl : PoolObj
     [SerializeField] protected EnemyTargeting enemyTargeting;
     public EnemyTargeting EnemyTargeting => enemyTargeting;
 
+    [SerializeField] protected EnemyScream enemyScream;
+    public EnemyScream EnemyScream => enemyScream;
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -37,6 +40,7 @@ public abstract class EnemyCtrl : PoolObj
         this.LoadEnemyBTree();
         this.LoadEnemyMoving();
         this.LoadEnemyTargeting();
+        this.LoadEnemyScream();
     }
 
     protected virtual void LoadEnemyTargeting()
@@ -98,5 +102,17 @@ public abstract class EnemyCtrl : PoolObj
         if (this.enemyDamageReceiver != null) return;
         this.enemyDamageReceiver = GetComponentInChildren<EnemyDamageReceiver>();
         Debug.Log(transform.name + ": LoadEnemyDamageReceiver", gameObject);
+    }
+
+    protected virtual void LoadEnemyScream()
+    {
+        if (this.enemyScream != null) return;
+        this.enemyScream = GetComponentInChildren<EnemyScream>();
+        if (this.enemyScream == null)
+        {
+            // Tự động thêm EnemyScream component nếu chưa có
+            this.enemyScream = gameObject.AddComponent<EnemyScream>();
+        }
+        Debug.Log(transform.name + ": LoadEnemyScream", gameObject);
     }
 }

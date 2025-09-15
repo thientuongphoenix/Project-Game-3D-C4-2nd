@@ -40,6 +40,10 @@ public class EnemySpawning : EnemyManagerAbstract
         if (newEnemy != null && newEnemy.EnemyBTree != null)
             newEnemy.EnemyBTree.StartBTree();
 
+        // 4. Khởi tạo EnemyScream
+        if (newEnemy != null && newEnemy.EnemyScream != null)
+            newEnemy.EnemyScream.SetCanScream(true);
+
       this.spawnedEnemies.Add(newEnemy);
       Debug.Log("Spawning");
     }
