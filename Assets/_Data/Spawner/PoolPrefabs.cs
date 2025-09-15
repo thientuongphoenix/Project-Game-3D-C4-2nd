@@ -4,6 +4,7 @@ using UnityEngine;
 public class PoolPrefabs<T> : SaiMonoBehaviour where T : MonoBehaviour
 {
     [SerializeField] protected List<T> prefabs = new();
+    public List<T> PrefabsList => prefabs;
 
     protected override void Awake()
     {

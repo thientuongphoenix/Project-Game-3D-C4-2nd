@@ -214,6 +214,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh đánh với delay
+            if (enemyCtrl.EnemyAttackSound != null)
+            {
+                enemyCtrl.EnemyAttackSound.StartAttack();
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;
@@ -244,6 +249,11 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
+            // Phát âm thanh đánh với delay
+            if (enemyCtrl.EnemyAttackSound != null)
+            {
+                enemyCtrl.EnemyAttackSound.StartAttack();
+            }
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;

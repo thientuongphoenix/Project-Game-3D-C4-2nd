@@ -12,4 +12,5 @@ public enum SoundName
     MagicSpell = 101,
     Flame = 102,
     EvilScream = 103,
+    EnemyPunch = 104,
 }

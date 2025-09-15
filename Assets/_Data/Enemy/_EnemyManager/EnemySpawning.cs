@@ -44,6 +44,13 @@ public class EnemySpawning : EnemyManagerAbstract
         if (newEnemy != null && newEnemy.EnemyScream != null)
             newEnemy.EnemyScream.SetCanScream(true);
 
+        // 5. Khởi tạo EnemyAttackSound
+        if (newEnemy != null && newEnemy.EnemyAttackSound != null)
+        {
+            // Có thể cấu hình delay khác nhau cho từng loại Enemy
+            // newEnemy.EnemyAttackSound.SetAttackSoundDelay(0.5f);
+        }
+
       this.spawnedEnemies.Add(newEnemy);
       Debug.Log("Spawning");
     }

@@ -39,13 +39,23 @@ public class SoundManager : SaiSingleton<SoundManager>
     {
         base.LoadComponents();
         this.LoadSoundSpawnerCtrl();
+        this.EnsureSoundSpawnerExists();
     }
 
     protected virtual void LoadSoundSpawnerCtrl()
     {
         if (this.ctrl != null) return;
         this.ctrl = GameObject.FindAnyObjectByType<SoundSpawnerCtrl>();
-        Debug.Log(transform.name + ": LoadSoundSpawnerCtrl", gameObject);
+        
+        if (this.ctrl == null)
+        {
+            Debug.LogError("SoundManager: Không tìm thấy SoundSpawnerCtrl trong scene! " +
+                          "Vui lòng đảm bảo SoundSpawnerCtrl tồn tại trong scene hiện tại.");
+        }
+        else
+        {
+            Debug.Log(transform.name + ": LoadSoundSpawnerCtrl thành công", gameObject);
+        }
     }
 
     public virtual void StartMusicBackground()
@@ -330,6 +340,57 @@ public class SoundManager : SaiSingleton<SoundManager>
         this.UpdateBackgroundMusicVolume();
         
         Debug.Log("SoundManager: Loaded settings applied to all music and SFX");
+    }
+
+    /// <summary>
+    /// Đảm bảo SoundSpawnerCtrl tồn tại trong scene
+    /// </summary>
+    protected virtual void EnsureSoundSpawnerExists()
+    {
+        if (this.ctrl != null) return;
+        
+        // Tìm lại SoundSpawnerCtrl
+        this.ctrl = GameObject.FindAnyObjectByType<SoundSpawnerCtrl>();
+        
+        if (this.ctrl == null)
+        {
+            Debug.LogWarning("SoundManager: Tự động tạo SoundSpawnerCtrl...");
+            this.CreateSoundSpawnerCtrl();
+        }
+    }
+
+    /// <summary>
+    /// Tạo SoundSpawnerCtrl nếu không có
+    /// </summary>
+    protected virtual void CreateSoundSpawnerCtrl()
+    {
+        // Tạo GameObject chính
+        GameObject soundSpawnerObj = new GameObject("SoundSpawnerCtrl");
+        
+        // Thêm SoundSpawnerCtrl component
+        this.ctrl = soundSpawnerObj.AddComponent<SoundSpawnerCtrl>();
+        
+        // Thêm SoundSpawner component
+        SoundSpawner spawner = soundSpawnerObj.AddComponent<SoundSpawner>();
+        
+        // Tạo SoundPrefabs GameObject
+        GameObject soundPrefabsObj = new GameObject("SoundPrefabs");
+        soundPrefabsObj.transform.SetParent(soundSpawnerObj.transform);
+        
+        // Thêm SoundPrefabs component
+        SoundPrefabs soundPrefabs = soundPrefabsObj.AddComponent<SoundPrefabs>();
+        
+        // Tạo PoolHolder
+        GameObject poolHolderObj = new GameObject("PoolHolder");
+        poolHolderObj.transform.SetParent(soundSpawnerObj.transform);
+        
+        // Cấu hình SoundSpawner (poolHolder sẽ được set tự động)
+        // spawner.poolHolder = poolHolderObj.transform;
+        
+        // Đảm bảo không bị destroy khi load scene mới
+        DontDestroyOnLoad(soundSpawnerObj);
+        
+        Debug.Log("SoundManager: SoundSpawnerCtrl đã được tạo tự động");
     }
     
     /// <summary>
