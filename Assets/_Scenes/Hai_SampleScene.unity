@@ -4302,54 +4302,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 302089887}
   m_CullTransparentMesh: 1
---- !u!1 &305859167
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 305859168}
-  - component: {fileID: 305859169}
-  m_Layer: 6
-  m_Name: EnemyAttackSound
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &305859168
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 305859167}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 896133044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &305859169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 305859167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d02383e1341ade94ebd67b9dc32fb36e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyCtrl: {fileID: 896133043}
-  attackSoundName: 104
-  attackSoundDelay: 0.5
-  isAttacking: 1
 --- !u!1 &324263146
 GameObject:
   m_ObjectHideFlags: 0
@@ -13721,7 +13673,7 @@ PrefabInstance:
     - target: {fileID: 3790517415331034832, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       propertyPath: enemyAttackSound
       value: 
-      objectReference: {fileID: 955069894}
+      objectReference: {fileID: 0}
     - target: {fileID: 4427258844950813205, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1
@@ -13804,9 +13756,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6442283698088094248, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1761475893}
-    - targetCorrespondingSourceObject: {fileID: 6442283698088094248, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 955069893}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
 --- !u!1 &687691616
@@ -15861,7 +15810,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 534295642}
   m_HandleRect: {fileID: 534295641}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -18170,54 +18119,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 952426418}
   m_CullTransparentMesh: 1
---- !u!1 &955069892
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 955069893}
-  - component: {fileID: 955069894}
-  m_Layer: 6
-  m_Name: EnemyAttackSound_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &955069893
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 955069892}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2046390635}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &955069894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 955069892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d02383e1341ade94ebd67b9dc32fb36e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyCtrl: {fileID: 2046390634}
-  attackSoundName: 104
-  attackSoundDelay: 0.5
-  isAttacking: 1
 --- !u!1 &962539200
 GameObject:
   m_ObjectHideFlags: 0
@@ -99789,7 +99690,7 @@ PrefabInstance:
     - target: {fileID: 3790517415331034832, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       propertyPath: enemyAttackSound
       value: 
-      objectReference: {fileID: 305859169}
+      objectReference: {fileID: 0}
     - target: {fileID: 4427258844950813205, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1
@@ -99872,9 +99773,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6442283698088094248, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 743262397}
-    - targetCorrespondingSourceObject: {fileID: 6442283698088094248, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 305859168}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
 --- !u!4 &3510839256487722566

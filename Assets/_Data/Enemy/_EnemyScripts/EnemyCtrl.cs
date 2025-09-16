@@ -29,8 +29,7 @@ public abstract class EnemyCtrl : PoolObj
     [SerializeField] protected EnemyScream enemyScream;
     public EnemyScream EnemyScream => enemyScream;
 
-    [SerializeField] protected EnemyAttackSound enemyAttackSound;
-    public EnemyAttackSound EnemyAttackSound => enemyAttackSound;
+    // EnemyAttackSound removed - using EvilScream for both scream and attack
 
     protected override void LoadComponents()
     {
@@ -44,7 +43,6 @@ public abstract class EnemyCtrl : PoolObj
         this.LoadEnemyMoving();
         this.LoadEnemyTargeting();
         this.LoadEnemyScream();
-        this.LoadEnemyAttackSound();
     }
 
     protected virtual void LoadEnemyTargeting()
@@ -120,15 +118,5 @@ public abstract class EnemyCtrl : PoolObj
         Debug.Log(transform.name + ": LoadEnemyScream", gameObject);
     }
 
-    protected virtual void LoadEnemyAttackSound()
-    {
-        if (this.enemyAttackSound != null) return;
-        this.enemyAttackSound = GetComponentInChildren<EnemyAttackSound>();
-        if (this.enemyAttackSound == null)
-        {
-            // Tự động thêm EnemyAttackSound component nếu chưa có
-            this.enemyAttackSound = gameObject.AddComponent<EnemyAttackSound>();
-        }
-        Debug.Log(transform.name + ": LoadEnemyAttackSound", gameObject);
-    }
+    
 }

@@ -121,8 +121,6 @@ public class SoundSpawnerAutoSetup : SaiMonoBehaviour
         // Tạo EvilScream prefab
         this.CreateSfxPrefab(soundPrefabs.transform, "EvilScream", "EvilScreamCtrl");
         
-        // Tạo EnemyPunch prefab
-        this.CreateSfxPrefab(soundPrefabs.transform, "EnemyPunch", "EnemyPunchCtrl");
         
         // Tạo BerettaM9Shot prefab
         this.CreateSfxPrefab(soundPrefabs.transform, "BerettaM9Shot", "BerettaM9ShotCtrl");
@@ -157,9 +155,7 @@ public class SoundSpawnerAutoSetup : SaiMonoBehaviour
             case "EvilScreamCtrl":
                 sfxObj.AddComponent<EvilScreamCtrl>();
                 break;
-            case "EnemyPunchCtrl":
-                sfxObj.AddComponent<EnemyPunchCtrl>();
-                break;
+            // case "EnemyPunchCtrl": - REMOVED
             case "BerettaM9ShotCtrl":
                 sfxObj.AddComponent<BerettaM9ShotCtrl>();
                 break;
