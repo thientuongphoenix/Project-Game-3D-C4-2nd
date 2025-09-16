@@ -99,6 +99,56 @@ Transform:
   - {fileID: 3701054193472164160}
   m_Father: {fileID: 7146455492024827733}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &825378062122126242
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4183153289299492293}
+  - component: {fileID: 8127213466463654326}
+  m_Layer: 6
+  m_Name: EnemyScream
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4183153289299492293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825378062122126242}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6442283698088094248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8127213466463654326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825378062122126242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f82b4e13ac91f48a382019c00531ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyCtrl: {fileID: 3790517415331034832}
+  minScreamInterval: 5
+  maxScreamInterval: 15
+  nextScreamTime: 0
+  canScream: 1
+  screamSoundName: 103
 --- !u!1 &885580982989950567
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,6 +464,8 @@ Transform:
   - {fileID: 9006274414698302590}
   - {fileID: 2089331058811142843}
   - {fileID: 2199700304238482259}
+  - {fileID: 4183153289299492293}
+  - {fileID: 8931437967531464895}
   m_Father: {fileID: 4679342475927424483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &5030644306255274982
@@ -458,7 +510,8 @@ MonoBehaviour:
   enemyDamageReceiver: {fileID: 4680796989891031077}
   enemyBTree: {fileID: 4174831407874919527}
   enemyMoving: {fileID: 5661708631429953905}
-  enemyTargeting: {fileID: 0}
+  enemyTargeting: {fileID: 6807525926182280188}
+  enemyScream: {fileID: 4754445261524555696}
 --- !u!1 &1898998277334070737
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +834,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6984116280916771998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3794600705103498194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8931437967531464895}
+  - component: {fileID: 4754445261524555696}
+  m_Layer: 6
+  m_Name: EnemyScream_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8931437967531464895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794600705103498194}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6442283698088094248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4754445261524555696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794600705103498194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64f82b4e13ac91f48a382019c00531ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyCtrl: {fileID: 3790517415331034832}
+  minScreamInterval: 5
+  maxScreamInterval: 15
+  nextScreamTime: 0
+  canScream: 1
+  screamSoundName: 103
 --- !u!1 &3966421221848255121
 GameObject:
   m_ObjectHideFlags: 0
@@ -2140,7 +2243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1127121658624047518
 Transform:
   m_ObjectHideFlags: 0
@@ -2171,7 +2274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyManagerCtrl: {fileID: 4973147371210015740}
   spawnSpeed: 2
-  maxSpawn: 5
+  maxSpawn: 2
 --- !u!1 &9156298604575580626
 GameObject:
   m_ObjectHideFlags: 0
@@ -2217,7 +2320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyCtrl: {fileID: 3790517415331034832}
-  pathName: Path_0
+  pathName: Path_2
   enemyPath: {fileID: 0}
   currentPoint: {fileID: 0}
   pointDistance: Infinity
@@ -2225,6 +2328,7 @@ MonoBehaviour:
   canMove: 1
   isMoving: 0
   isFinish: 0
+  moveSpeed: 2
 --- !u!1001 &477650480371737782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2243,23 +2347,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526068556205865993, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1526068556205865993, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1526068556205865993, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1733423531679203417, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1733423531679203417, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1900025447727179277, guid: ebbcd2db5d2a4a342ad72b9680f9d66c, type: 3}
       propertyPath: m_LocalPosition.x
