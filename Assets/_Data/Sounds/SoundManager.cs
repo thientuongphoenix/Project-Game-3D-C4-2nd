@@ -197,6 +197,10 @@ public class SoundManager : SaiSingleton<SoundManager>
         {
             newSound.AudioSource.volume = this.volumeSfx;
             this.AddSfx(newSound);
+            
+            // Activate và play SFX
+            newSound.gameObject.SetActive(true);
+            newSound.AudioSource.Play();
         }
         return newSound;
     }

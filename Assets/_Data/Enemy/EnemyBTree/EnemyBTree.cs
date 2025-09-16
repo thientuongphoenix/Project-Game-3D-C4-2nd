@@ -214,11 +214,7 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
-            // Phát âm thanh đánh (dùng EvilScream)
-            if (enemyCtrl.EnemyScream != null)
-            {
-                enemyCtrl.EnemyScream.ForceScream();
-            }
+            // EvilScream sẽ phát theo logic random của nó (không cần gọi ForceScream)
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;
@@ -249,11 +245,7 @@ public class EnemyBTree : BTAgent
         if (Time.time - lastAttackTime > attackCooldown)
         {
             enemyCtrl.Animator.SetTrigger("isAttack");
-            // Phát âm thanh đánh (dùng EvilScream)
-            if (enemyCtrl.EnemyScream != null)
-            {
-                enemyCtrl.EnemyScream.ForceScream();
-            }
+            // EvilScream sẽ phát theo logic random của nó (không cần gọi ForceScream)
             lastAttackTime = Time.time;
         }
         return Node.Status.RUNNING;

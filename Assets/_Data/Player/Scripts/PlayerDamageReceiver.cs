@@ -41,6 +41,12 @@ public class PlayerDamageReceiver : DamageReceiver
     {
         base.OnHurt();
         ShowDamageText();
+        
+        // Phát EnemyPunch SFX khi bị damage từ enemy
+        if (EnemyDamageSender.IsEnemyDamage)
+        {
+            SoundManager.Instance.CreateSfx(SoundName.EnemyPunch);
+        }
     }
 
     // Hàm mới để hiển thị DamageText
