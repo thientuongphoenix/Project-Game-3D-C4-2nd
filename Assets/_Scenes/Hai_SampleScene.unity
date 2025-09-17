@@ -3282,6 +3282,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4379588755407911237, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 618611046}
+    - targetCorrespondingSourceObject: {fileID: 1661113828082918071, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 7582309477517576256, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 9a02837ce42cc7e40aa041962a090a5e, type: 3}
 --- !u!4 &234729919 stripped
 Transform:
@@ -15496,7 +15502,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 534295641}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17551,6 +17557,53 @@ MonoBehaviour:
   currentHP: 10
   isImmotal: 1
   boxCollider: {fileID: 942818797}
+--- !u!1 &949245511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 949245513}
+  - component: {fileID: 949245512}
+  m_Layer: 0
+  m_Name: 'gold '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &949245512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949245511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6317c1ccf19b676469d7c5cad896dc57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  haiMapGold: 120
+  haiSampleSceneGold: 1000
+  defaultGold: 100
+--- !u!4 &949245513
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949245511}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 128.1866, y: 13.61106, z: 44.40515}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &952426418
 GameObject:
   m_ObjectHideFlags: 0
@@ -58858,6 +58911,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5089973527897419863, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1073350225614243493}
+    - targetCorrespondingSourceObject: {fileID: 5576110279866959598, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 4833814664602644608, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 6aab6423d50290d45b1501f9862ade6a, type: 3}
 --- !u!114 &948725983671553485 stripped
 MonoBehaviour:
@@ -190857,3 +190916,4 @@ SceneRoots:
   - {fileID: 1760238794}
   - {fileID: 1589898396}
   - {fileID: 870789326}
+  - {fileID: 949245513}
