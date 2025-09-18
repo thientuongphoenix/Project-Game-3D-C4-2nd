@@ -20,6 +20,10 @@ public class EnemyMoving : SaiMonoBehaviour
     public bool IsMoving => isMoving;
     [SerializeField] protected bool isFinish = false;
     public bool IsFinish { get => isFinish; set => isFinish = value; }
+    
+    // Thêm biến speed có thể cấu hình
+    [SerializeField] protected float moveSpeed = 2f;
+    public float MoveSpeed { get => moveSpeed; set => moveSpeed = value; }
 
     protected virtual void OnEnable()
     {
@@ -124,7 +128,8 @@ public class EnemyMoving : SaiMonoBehaviour
         this.isFinish = false;
         this.currentPoint = null;
         if(this.enemyCtrl.EnemyTargeting != null) this.enemyCtrl.EnemyTargeting.Towers.Clear();
-        this.enemyCtrl.Agent.speed = 2;
+        // Sử dụng biến moveSpeed thay vì hardcode
+        this.enemyCtrl.Agent.speed = this.moveSpeed;
         //if(this.enemyCtrl.EnemyTargeting != null) this.enemyCtrl.EnemyTargeting.Player = null;
         //this.enemyCtrl.EnemyTargeting.NearestTower = null;
     }

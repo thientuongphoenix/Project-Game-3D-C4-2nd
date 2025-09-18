@@ -6,7 +6,8 @@ public class InventoryTester : SaiMonoBehaviour
     protected override void Start()
     {
         base.Start();
-        this.AddTestItems(ItemCode.Gold, 1000);
+        // Tắt tự động thêm vàng - sử dụng MapGoldManager thay thế
+        // this.AddTestItems(ItemCode.Gold, 120);
     }
 
     [ProButton]

@@ -6,6 +6,9 @@ public class EnemyDamageReceiver : DamageReceiver
     [SerializeField] protected CapsuleCollider capsuleCollider;
     [SerializeField] protected EnemyCtrl enemyCtrl;
     
+    [Header("Phần thưởng khi chết")]
+    [SerializeField] protected int gold = 10;
+    
     
     protected override void LoadComponents()
     {
@@ -91,7 +94,7 @@ public class EnemyDamageReceiver : DamageReceiver
         //ItemsDropManager.Instance.DropMany(ItemCode.Gold, 10, transform.position);
         //ItemsDropManager.Instance.DropMany(ItemCode.Wand, 1, transform.position);
         //ItemsDropManager.Instance.DropMany(ItemCode.PlayerExp, 10, transform.position);
-        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Gold, 10, transform.position);
+        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Gold, gold, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Wand, 1, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.PlayerExp, 10, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.HealthPotion, 1, transform.position);
