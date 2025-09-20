@@ -7,6 +7,9 @@ public abstract class EnemyDamageSender : DamageSender
     [SerializeField] protected EnemyCtrl enemyCtrl;
     //[SerializeField] protected SphereCollider sphereCollider;
     [SerializeField] protected CapsuleCollider capsuleCollider;
+    
+    // Static flag để đánh dấu damage từ enemy
+    public static bool IsEnemyDamage = false;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -46,7 +49,11 @@ public abstract class EnemyDamageSender : DamageSender
         // Nếu đối tượng nhận damage là EnemyDamageReceiver thì không gây damage
         if (damageReceiver is EnemyDamageReceiver) return;
 
+        // Set flag để đánh dấu damage từ enemy
+        IsEnemyDamage = true;
         base.Send(damageReceiver, collider);
+        // Reset flag sau khi gửi damage
+        IsEnemyDamage = false;
         //this.ShowHitEffect(collider);
 
         //this.enemyCtrl.Despawn.DoDespawn();

@@ -4,6 +4,7 @@ using UnityEngine;
 public class PoolPrefabs<T> : SaiMonoBehaviour where T : MonoBehaviour
 {
     [SerializeField] protected List<T> prefabs = new();
+    public List<T> PrefabsList => prefabs;
 
     protected override void Awake()
     {
@@ -22,7 +23,10 @@ public class PoolPrefabs<T> : SaiMonoBehaviour where T : MonoBehaviour
     {
         foreach (T prefab in this.prefabs)
         {
-            prefab.gameObject.SetActive(false);
+            if (prefab != null) // Thêm null check để tránh NullReferenceException
+            {
+                prefab.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -39,6 +43,7 @@ public class PoolPrefabs<T> : SaiMonoBehaviour where T : MonoBehaviour
 
     public virtual T GetRandom()
     {
+        if (this.prefabs.Count == 0) return null; // Kiểm tra list rỗng
         int rand = Random.Range(0, this.prefabs.Count);
         return this.prefabs[rand];
     }
@@ -47,8 +52,10 @@ public class PoolPrefabs<T> : SaiMonoBehaviour where T : MonoBehaviour
     {
         foreach (T prefab in this.prefabs)
         {
-            if(prefab.name != prefabName) continue;
-            return prefab;
+            if(prefab != null && prefab.name == prefabName) // Thêm null check và sửa logic
+            {
+                return prefab;
+            }
         }
         return null;
     }

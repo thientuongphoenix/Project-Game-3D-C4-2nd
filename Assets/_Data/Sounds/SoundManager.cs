@@ -39,13 +39,23 @@ public class SoundManager : SaiSingleton<SoundManager>
     {
         base.LoadComponents();
         this.LoadSoundSpawnerCtrl();
+        this.EnsureSoundSpawnerExists();
     }
 
     protected virtual void LoadSoundSpawnerCtrl()
     {
         if (this.ctrl != null) return;
         this.ctrl = GameObject.FindAnyObjectByType<SoundSpawnerCtrl>();
-        Debug.Log(transform.name + ": LoadSoundSpawnerCtrl", gameObject);
+        
+        if (this.ctrl == null)
+        {
+            Debug.LogError("SoundManager: Không tìm thấy SoundSpawnerCtrl trong scene! " +
+                          "Vui lòng đảm bảo SoundSpawnerCtrl tồn tại trong scene hiện tại.");
+        }
+        else
+        {
+            Debug.Log(transform.name + ": LoadSoundSpawnerCtrl thành công", gameObject);
+        }
     }
 
     public virtual void StartMusicBackground()
@@ -59,7 +69,18 @@ public class SoundManager : SaiSingleton<SoundManager>
                 return;
             }
         }
+        
+        // Đảm bảo background music được thêm vào listMusic để có thể cập nhật volume
+        this.AddMusic(this.bgMusic);
+        
+        // Áp dụng volume hiện tại cho background music
+        if (this.bgMusic.AudioSource != null)
+        {
+            this.bgMusic.AudioSource.volume = this.volumeMusic;
+        }
+        
         this.bgMusic.gameObject.SetActive(true);
+        Debug.Log("SoundManager: Background music started and added to volume control list");
     }
 
     protected virtual MusicCtrl CreateBackgroundMusic()
@@ -80,6 +101,17 @@ public class SoundManager : SaiSingleton<SoundManager>
 
         bool status = this.bgMusic.gameObject.activeSelf;
         this.bgMusic.gameObject.SetActive(!status);
+        
+        // Đảm bảo background music được thêm vào listMusic nếu chưa có
+        this.AddMusic(this.bgMusic);
+        
+        // Cập nhật volume khi toggle
+        if (this.bgMusic.AudioSource != null)
+        {
+            this.bgMusic.AudioSource.volume = this.volumeMusic;
+        }
+        
+        Debug.Log($"SoundManager: Music toggled to {(status ? "OFF" : "ON")} with volume {this.volumeMusic}");
     }
 
     public virtual MusicCtrl CreateMusic(SoundName soundName)
@@ -165,6 +197,10 @@ public class SoundManager : SaiSingleton<SoundManager>
         {
             newSound.AudioSource.volume = this.volumeSfx;
             this.AddSfx(newSound);
+            
+            // Activate và play SFX
+            newSound.gameObject.SetActive(true);
+            newSound.AudioSource.Play();
         }
         return newSound;
     }
@@ -185,33 +221,59 @@ public class SoundManager : SaiSingleton<SoundManager>
     public virtual void VolumeMusicUpdating(float volume)
     {
         this.volumeMusic = volume;
+        
+        // Cập nhật volume cho tất cả music trong list
+        int updatedCount = 0;
         foreach(MusicCtrl musicCtrl in this.listMusic)
         {
-            musicCtrl.AudioSource.volume = this.volumeMusic;
+            if (musicCtrl != null && musicCtrl.AudioSource != null)
+            {
+                musicCtrl.AudioSource.volume = this.volumeMusic;
+                updatedCount++;
+            }
         }
+        
+        // Đảm bảo background music cũng được cập nhật volume
+        this.UpdateBackgroundMusicVolume();
+        
+        // Tìm và cập nhật tất cả Music trong scene (fallback)
+        this.UpdateAllMusicInScene();
+        
         // Lưu settings khi volume thay đổi
         this.SaveSettings();
+        
+        Debug.Log($"SoundManager: Music volume updated to {this.volumeMusic} (Updated {updatedCount} Music in list)");
     }
 
     public virtual void VolumeSfxUpdating(float volume)
     {
         this.volumeSfx = volume;
+        
+        // Khởi tạo listSfx nếu null
         if (this.listSfx == null)
         {
             Debug.LogWarning("SoundManager: listSfx is null, initializing...");
             this.listSfx = new System.Collections.Generic.List<SFXCtrl>();
-            return;
         }
         
+        // Cập nhật volume cho tất cả SFX trong list
+        int updatedCount = 0;
         foreach(SFXCtrl sfxCtrl in this.listSfx)
         {
             if (sfxCtrl != null && sfxCtrl.AudioSource != null)
             {
                 sfxCtrl.AudioSource.volume = this.volumeSfx;
+                updatedCount++;
             }
         }
+        
+        // Tìm và cập nhật tất cả SFX trong scene (fallback)
+        this.UpdateAllSFXInScene();
+        
         // Lưu settings khi volume thay đổi
         this.SaveSettings();
+        
+        Debug.Log($"SoundManager: SFX volume updated to {this.volumeSfx} (Updated {updatedCount} SFX in list)");
     }
     
     /// <summary>
@@ -247,7 +309,10 @@ public class SoundManager : SaiSingleton<SoundManager>
     /// </summary>
     protected virtual void ApplyLoadedSettings()
     {
-        // Áp dụng cho music
+        // Đảm bảo background music được thêm vào list
+        this.EnsureBackgroundMusicInList();
+        
+        // Áp dụng cho music trong list
         if (this.listMusic != null)
         {
             foreach(MusicCtrl musicCtrl in this.listMusic)
@@ -259,7 +324,7 @@ public class SoundManager : SaiSingleton<SoundManager>
             }
         }
         
-        // Áp dụng cho SFX
+        // Áp dụng cho SFX trong list
         if (this.listSfx != null)
         {
             foreach(SFXCtrl sfxCtrl in this.listSfx)
@@ -270,6 +335,66 @@ public class SoundManager : SaiSingleton<SoundManager>
                 }
             }
         }
+        
+        // Tìm và cập nhật tất cả Music và SFX trong scene (fallback)
+        this.UpdateAllMusicInScene();
+        this.UpdateAllSFXInScene();
+        
+        // Đảm bảo background music được cập nhật volume
+        this.UpdateBackgroundMusicVolume();
+        
+        Debug.Log("SoundManager: Loaded settings applied to all music and SFX");
+    }
+
+    /// <summary>
+    /// Đảm bảo SoundSpawnerCtrl tồn tại trong scene
+    /// </summary>
+    protected virtual void EnsureSoundSpawnerExists()
+    {
+        if (this.ctrl != null) return;
+        
+        // Tìm lại SoundSpawnerCtrl
+        this.ctrl = GameObject.FindAnyObjectByType<SoundSpawnerCtrl>();
+        
+        if (this.ctrl == null)
+        {
+            Debug.LogWarning("SoundManager: Tự động tạo SoundSpawnerCtrl...");
+            this.CreateSoundSpawnerCtrl();
+        }
+    }
+
+    /// <summary>
+    /// Tạo SoundSpawnerCtrl nếu không có
+    /// </summary>
+    protected virtual void CreateSoundSpawnerCtrl()
+    {
+        // Tạo GameObject chính
+        GameObject soundSpawnerObj = new GameObject("SoundSpawnerCtrl");
+        
+        // Thêm SoundSpawnerCtrl component
+        this.ctrl = soundSpawnerObj.AddComponent<SoundSpawnerCtrl>();
+        
+        // Thêm SoundSpawner component
+        SoundSpawner spawner = soundSpawnerObj.AddComponent<SoundSpawner>();
+        
+        // Tạo SoundPrefabs GameObject
+        GameObject soundPrefabsObj = new GameObject("SoundPrefabs");
+        soundPrefabsObj.transform.SetParent(soundSpawnerObj.transform);
+        
+        // Thêm SoundPrefabs component
+        SoundPrefabs soundPrefabs = soundPrefabsObj.AddComponent<SoundPrefabs>();
+        
+        // Tạo PoolHolder
+        GameObject poolHolderObj = new GameObject("PoolHolder");
+        poolHolderObj.transform.SetParent(soundSpawnerObj.transform);
+        
+        // Cấu hình SoundSpawner (poolHolder sẽ được set tự động)
+        // spawner.poolHolder = poolHolderObj.transform;
+        
+        // Đảm bảo không bị destroy khi load scene mới
+        DontDestroyOnLoad(soundSpawnerObj);
+        
+        Debug.Log("SoundManager: SoundSpawnerCtrl đã được tạo tự động");
     }
     
     /// <summary>
@@ -286,5 +411,82 @@ public class SoundManager : SaiSingleton<SoundManager>
     public virtual float GetSFXVolume()
     {
         return this.volumeSfx;
+    }
+    
+    /// <summary>
+    /// Cập nhật volume cho background music
+    /// </summary>
+    protected virtual void UpdateBackgroundMusicVolume()
+    {
+        if (this.bgMusic != null && this.bgMusic.AudioSource != null)
+        {
+            this.bgMusic.AudioSource.volume = this.volumeMusic;
+            Debug.Log($"SoundManager: Background music volume updated to {this.volumeMusic}");
+        }
+    }
+    
+    /// <summary>
+    /// Đảm bảo background music được thêm vào listMusic để quản lý volume
+    /// </summary>
+    protected virtual void EnsureBackgroundMusicInList()
+    {
+        if (this.bgMusic != null)
+        {
+            this.AddMusic(this.bgMusic);
+        }
+    }
+    
+    /// <summary>
+    /// Tìm và cập nhật tất cả SFX trong scene (fallback method)
+    /// </summary>
+    protected virtual void UpdateAllSFXInScene()
+    {
+        // Tìm tất cả SFXCtrl trong scene
+        SFXCtrl[] allSFX = FindObjectsOfType<SFXCtrl>();
+        int sceneUpdatedCount = 0;
+        
+        foreach (SFXCtrl sfx in allSFX)
+        {
+            if (sfx != null && sfx.AudioSource != null)
+            {
+                sfx.AudioSource.volume = this.volumeSfx;
+                sceneUpdatedCount++;
+                
+                // Thêm vào list nếu chưa có
+                this.AddSfx(sfx);
+            }
+        }
+        
+        if (sceneUpdatedCount > 0)
+        {
+            Debug.Log($"SoundManager: Updated {sceneUpdatedCount} SFX found in scene");
+        }
+    }
+    
+    /// <summary>
+    /// Tìm và cập nhật tất cả Music trong scene (fallback method)
+    /// </summary>
+    protected virtual void UpdateAllMusicInScene()
+    {
+        // Tìm tất cả MusicCtrl trong scene
+        MusicCtrl[] allMusic = FindObjectsOfType<MusicCtrl>();
+        int sceneUpdatedCount = 0;
+        
+        foreach (MusicCtrl music in allMusic)
+        {
+            if (music != null && music.AudioSource != null)
+            {
+                music.AudioSource.volume = this.volumeMusic;
+                sceneUpdatedCount++;
+                
+                // Thêm vào list nếu chưa có
+                this.AddMusic(music);
+            }
+        }
+        
+        if (sceneUpdatedCount > 0)
+        {
+            Debug.Log($"SoundManager: Updated {sceneUpdatedCount} Music found in scene");
+        }
     }
 }
