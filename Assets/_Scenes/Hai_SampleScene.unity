@@ -4708,6 +4708,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1663272632}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &359427102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 359427104}
+  - component: {fileID: 359427103}
+  m_Layer: 0
+  m_Name: GoldMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &359427103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 359427102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b43162bc69bd1478dad5ee89edc033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  haiSampleSceneGold: 900
+  haiMapGold: 500
+  defaultGold: 100
+  resetGoldOnNewGame: 1
+  addGoldIfEmpty: 1
+--- !u!4 &359427104
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 359427102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 619.3189, y: 251.92007, z: -2.7320318}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &372092508
 GameObject:
   m_ObjectHideFlags: 0
@@ -190957,3 +191006,4 @@ SceneRoots:
   - {fileID: 1760238794}
   - {fileID: 1589898396}
   - {fileID: 870789326}
+  - {fileID: 359427104}

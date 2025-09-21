@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class TimeSpawn : MonoBehaviour
 {
@@ -16,7 +16,11 @@ public class TimeSpawn : MonoBehaviour
     public float time4;
     public float time5;
     public float time6;
+    public float time7;
+    public float time8;
+    public float time9;
     public float timeBoss;
+
 
     private float currentTime = 0f;
 
@@ -40,19 +44,39 @@ public class TimeSpawn : MonoBehaviour
         }
         else if (currentTime < time3) 
         {
-            SetActiveObjects(false, true, true, false, false);
+            SetActiveObjects(false, false, false, false, false);
         }
         else if (currentTime < time4) 
         {
-            SetActiveObjects(false, false, true, true, false);
+            SetActiveObjects(false, true, false, false, false);
         }
-        else if (currentTime < timeBoss)
+        else if (currentTime < time5) 
+        {
+            SetActiveObjects(false, false, false, false, false);
+        }
+        else if (currentTime < time6) 
         {
             SetActiveObjects(false, false, true, false, false);
         }
-        else // Sau 7 phút
+        else if (currentTime < time7) 
         {
-            SetActiveObjects(false, false, true, true, false);
+            SetActiveObjects(false, false, false, false, false);
+        }
+        else if (currentTime < time8) 
+        {
+            SetActiveObjects(false, false, false, true, false);
+        }
+        else if (currentTime < time9) 
+        {
+            SetActiveObjects(false, false, false, false, false);
+        }
+        else if (currentTime < timeBoss)
+        {
+            SetActiveObjects(false, false, false, false, true);
+        }
+        else 
+        {
+            SetActiveObjects(false, false, false, false, false);
         }
     }
 
