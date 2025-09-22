@@ -100,5 +100,28 @@ public class EnemyDamageReceiver : DamageReceiver
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.PlayerExp, expReward, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.HealthPotion, 1, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.ManaPotion, 1, transform.position);
+        
+        // Show item usage guide UI
+        this.ShowItemGuide();
+    }
+    
+    protected virtual void ShowItemGuide()
+    {
+        // Reset tracker before showing new guide
+        if (ItemUseTracker.Instance != null)
+        {
+            ItemUseTracker.Instance.ResetTracker();
+        }
+        
+        // Show guide UI
+        if (ItemGuideUI.Instance != null)
+        {
+            ItemGuideUI.Instance.ShowGuide();
+            Debug.Log("Item Guide UI shown after enemy death!");
+        }
+        else
+        {
+            Debug.LogWarning("ItemGuideUI.Instance is null! Cannot show item guide.");
+        }
     }
 }

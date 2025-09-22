@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Machine Gun Info
   m_EditorClassIdentifier: 
   towerName: Machine Gun
-  description: Machine gun tower
+  description: A fully automatic and rifled firearm designed for sustained direct fire
   icon: {fileID: 21300000, guid: 4dea2a3ef96a9bb49a603a496c6a2641, type: 3}
-  basePrice: 100
+  basePrice: 60
   specialAbilities:
-  - 
-  - 
-  - 
+  - "Fire Rate: 0.7s per shot"
+  - "Range: 15 units"
+  - "Level Up: +20% max HP & heal 20%"
   towerType: 0

@@ -35,6 +35,10 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     [SerializeField] protected float fadeInDuration = 3f;
     protected CanvasGroup winPanelCanvasGroup;
     protected CanvasGroup losePanelCanvasGroup;
+    
+    // Thêm biến để theo dõi coroutine
+    protected Coroutine winPanelFadeCoroutine;
+    protected Coroutine losePanelFadeCoroutine;
 
     protected virtual void Init()
     {
@@ -64,6 +68,39 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         this.isGameEnded = false;
         this.isLose = false;
         this.isWin = false;
+        
+        // Dừng tất cả coroutine fade
+        this.StopAllFadeCoroutines();
+        
+        // Hiển thị lại TowerInfoUI khi game bắt đầu
+        this.ShowTowerInfoUI();
+    }
+    
+    /// <summary>
+    /// Dừng tất cả coroutine fade để tránh lỗi MissingReferenceException
+    /// </summary>
+    protected virtual void StopAllFadeCoroutines()
+    {
+        if (winPanelFadeCoroutine != null)
+        {
+            StopCoroutine(winPanelFadeCoroutine);
+            winPanelFadeCoroutine = null;
+        }
+        
+        if (losePanelFadeCoroutine != null)
+        {
+            StopCoroutine(losePanelFadeCoroutine);
+            losePanelFadeCoroutine = null;
+        }
+    }
+    
+    /// <summary>
+    /// Được gọi khi object bị destroy
+    /// </summary>
+    protected virtual void OnDestroy()
+    {
+        // Dừng tất cả coroutine để tránh lỗi MissingReferenceException
+        this.StopAllFadeCoroutines();
     }
     
     protected virtual void InitializeCanvasGroups()
@@ -76,7 +113,11 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             {
                 this.winPanelCanvasGroup = this.winPanel.AddComponent<CanvasGroup>();
             }
-            this.winPanelCanvasGroup.alpha = 0f;
+            // Kiểm tra null trước khi set alpha
+            if (this.winPanelCanvasGroup != null)
+            {
+                this.winPanelCanvasGroup.alpha = 0f;
+            }
         }
         
         // Khởi tạo CanvasGroup cho LosePanel
@@ -87,7 +128,11 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             {
                 this.losePanelCanvasGroup = this.losePanel.AddComponent<CanvasGroup>();
             }
-            this.losePanelCanvasGroup.alpha = 0f;
+            // Kiểm tra null trước khi set alpha
+            if (this.losePanelCanvasGroup != null)
+            {
+                this.losePanelCanvasGroup.alpha = 0f;
+            }
         }
     }
 
@@ -145,15 +190,20 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             bool isMap1Unlocked = IsMap1Unlocked();
             Debug.Log($"Map 1 unlocked: {isMap1Unlocked}");
             
-            if (isMap1Unlocked)
+            // Reset quest nếu:
+            // 1. Map 1 đã unlock (người chơi đã hoàn thành tutorial trước đó)
+            // 2. Hoặc nếu không có quest nào (new game)
+            bool shouldReset = isMap1Unlocked || (TowerQuestSystem.Instance != null && TowerQuestSystem.Instance.GetAllQuests().Count == 0);
+            
+            if (shouldReset)
             {
-                // Nếu map 1 đã unlock, reset lại tất cả nhiệm vụ tutorial
+                // Reset lại tất cả nhiệm vụ tutorial
                 ResetTutorialQuests();
                 Debug.Log("Tutorial quests have been reset!");
             }
             else
             {
-                Debug.Log("Map 1 not unlocked yet, keeping tutorial quests as is");
+                Debug.Log("Map 1 not unlocked yet and quests exist, keeping tutorial quests as is");
             }
             
             Debug.Log("================================");
@@ -206,6 +256,13 @@ public class GameResultManager : SaiSingleton<GameResultManager>
                 Debug.Log("Tutorial quests and progress have been completely reset!");
                 Debug.Log("All quests are now in initial state and ready to be completed again");
                 
+                // Reset ItemGuideUI để có thể hiển thị lại
+                if (ItemGuideUI.Instance != null)
+                {
+                    ItemGuideUI.Instance.ResetGuideState();
+                    Debug.Log("ItemGuideUI reset for tutorial replay");
+                }
+                
                 // Cập nhật UI để hiển thị trạng thái mới
                 if (TowerQuestUI.Instance != null)
                 {
@@ -222,6 +279,14 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         {
             Debug.LogError($"Lỗi trong ResetTutorialQuests: {e.Message}");
         }
+    }
+    
+    /// <summary>
+    /// Public method để reset tutorial quests từ bên ngoài
+    /// </summary>
+    public virtual void ResetTutorialQuestsPublic()
+    {
+        this.ResetTutorialQuests();
     }
     
     // Method để kiểm tra xem Final Mission có đang active không
@@ -327,12 +392,30 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         // Ẩn quest panel khi hiển thị win panel
         this.HideQuestPanel();
         
+        // Ẩn TowerInfoUI khi hiển thị win panel
+        this.HideTowerInfoUI();
+        
         if (winPanel != null) 
         {
             Debug.Log("Win panel found, activating...");
             winPanel.SetActive(true);
-            StartCoroutine(FadeInPanel(winPanelCanvasGroup));
-            Debug.Log("Win panel activated successfully!");
+            
+            // Kiểm tra CanvasGroup trước khi gọi StartCoroutine
+            if (winPanelCanvasGroup != null)
+            {
+                // Dừng coroutine cũ nếu có
+                if (winPanelFadeCoroutine != null)
+                {
+                    StopCoroutine(winPanelFadeCoroutine);
+                }
+                
+                winPanelFadeCoroutine = StartCoroutine(FadeInPanel(winPanelCanvasGroup));
+                Debug.Log("Win panel activated successfully!");
+            }
+            else
+            {
+                Debug.LogWarning("WinPanelCanvasGroup is null! Cannot start fade in animation.");
+            }
         }
         else
         {
@@ -522,10 +605,28 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         // Ẩn quest panel khi hiển thị lose panel
         this.HideQuestPanel();
         
+        // Ẩn TowerInfoUI khi hiển thị lose panel
+        this.HideTowerInfoUI();
+        
         if (losePanel != null) 
         {
             losePanel.SetActive(true);
-            StartCoroutine(FadeInPanel(losePanelCanvasGroup));
+            
+            // Kiểm tra CanvasGroup trước khi gọi StartCoroutine
+            if (losePanelCanvasGroup != null)
+            {
+                // Dừng coroutine cũ nếu có
+                if (losePanelFadeCoroutine != null)
+                {
+                    StopCoroutine(losePanelFadeCoroutine);
+                }
+                
+                losePanelFadeCoroutine = StartCoroutine(FadeInPanel(losePanelCanvasGroup));
+            }
+            else
+            {
+                Debug.LogWarning("LosePanelCanvasGroup is null! Cannot start fade in animation.");
+            }
         }
         if (winPanel != null) winPanel.SetActive(false);
         HideMouse.Instance.isCursorVisible = true; // Hiện chuột khi hiện panel
@@ -542,14 +643,37 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         
         while (elapsedTime < fadeInDuration)
         {
+            // Kiểm tra CanvasGroup có còn tồn tại không trước khi truy cập
+            if (canvasGroup == null) 
+            {
+                Debug.LogWarning("CanvasGroup đã bị destroy trong khi fade in, dừng coroutine");
+                yield break;
+            }
+            
             elapsedTime += Time.deltaTime;
             canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeInDuration);
             yield return null;
         }
         
-        canvasGroup.alpha = 1f;
+        // Kiểm tra lần cuối trước khi set alpha = 1f
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+        }
+        else
+        {
+            Debug.LogWarning("CanvasGroup đã bị destroy, không thể set alpha = 1f");
+        }
         
-        
+        // Reset coroutine reference khi hoàn thành
+        if (canvasGroup == winPanelCanvasGroup)
+        {
+            winPanelFadeCoroutine = null;
+        }
+        else if (canvasGroup == losePanelCanvasGroup)
+        {
+            losePanelFadeCoroutine = null;
+        }
     }
     
     protected virtual void CheckAndCompleteFinalMission()
@@ -720,6 +844,60 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         catch (System.Exception e)
         {
             Debug.LogError($"Error hiding quest panel and countdown timer: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Ẩn TowerInfoUI và TowerQuestUI khi hiển thị win/lose panel
+    /// </summary>
+    protected virtual void HideTowerInfoUI()
+    {
+        try
+        {
+            // Ẩn TowerInfoUI khi hiển thị win/lose panel
+            if (TowerInfoUI.Instance != null)
+            {
+                TowerInfoUI.Instance.Hide();
+                Debug.Log("TowerInfoUI hidden for win/lose panel");
+            }
+            
+            // Ẩn TowerQuestUI khi hiển thị win/lose panel
+            if (TowerQuestUI.Instance != null)
+            {
+                TowerQuestUI.Instance.HideQuestPanel();
+                Debug.Log("TowerQuestUI hidden for win/lose panel");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error hiding TowerInfoUI and TowerQuestUI: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Hiển thị lại TowerInfoUI và TowerQuestUI khi game bắt đầu
+    /// </summary>
+    protected virtual void ShowTowerInfoUI()
+    {
+        try
+        {
+            // Hiển thị lại TowerInfoUI khi game bắt đầu
+            if (TowerInfoUI.Instance != null)
+            {
+                // TowerInfoUI sẽ tự động hiển thị khi có tower được chọn
+                Debug.Log("TowerInfoUI ready to show when tower is selected");
+            }
+            
+            // Hiển thị lại TowerQuestUI khi game bắt đầu
+            if (TowerQuestUI.Instance != null)
+            {
+                TowerQuestUI.Instance.ShowQuestPanel();
+                Debug.Log("TowerQuestUI shown for new game");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error showing TowerInfoUI and TowerQuestUI: {e.Message}");
         }
     }
     

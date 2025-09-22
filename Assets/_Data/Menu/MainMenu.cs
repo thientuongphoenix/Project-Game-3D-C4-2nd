@@ -562,6 +562,8 @@ public class MainMenu : MonoBehaviour
         else
         {
             Debug.Log("Cutscene components missing or disabled! Loading map selection directly...");
+            // Reset quest trước khi load map selection scene
+            this.ResetQuestsBeforeMapSelection();
             // Load map selection scene trực tiếp nếu không có cutscene
             SceneManager.LoadScene(mapSelectionSceneName);
         }
@@ -622,6 +624,31 @@ public class MainMenu : MonoBehaviour
         // Reset toàn bộ tiến trình chơi về ban đầu
         MapProgressManager.Instance.ResetAllProgress();
         
+        // Reset TowerQuestSystem nếu có
+        if (TowerQuestSystem.Instance != null)
+        {
+            TowerQuestSystem.Instance.ResetAndReinitializeQuests();
+            Debug.Log("TowerQuestSystem reset for new game!");
+        }
+        else
+        {
+            Debug.LogWarning("TowerQuestSystem.Instance is null! Quest progress may not be reset properly.");
+        }
+        
+        // Reset ItemGuideUI nếu có
+        if (ItemGuideUI.Instance != null)
+        {
+            ItemGuideUI.Instance.ResetGuideState();
+            Debug.Log("ItemGuideUI reset for new game!");
+        }
+        
+        // Reset GameResultManager quests nếu có
+        if (GameResultManager.Instance != null)
+        {
+            GameResultManager.Instance.ResetTutorialQuestsPublic();
+            Debug.Log("GameResultManager quests reset for new game!");
+        }
+        
         // Có thể thêm reset các dữ liệu khác ở đây nếu cần
         // Ví dụ: PlayerPrefs.DeleteAll(); // Reset tất cả PlayerPrefs
         
@@ -667,6 +694,8 @@ public class MainMenu : MonoBehaviour
         if (this.cutsceneCanvas == null || this.videoPlayer == null)
         {
             Debug.LogError("Cutscene components not found! Loading map selection directly.");
+            // Reset quest trước khi load map selection scene
+            this.ResetQuestsBeforeMapSelection();
             SceneManager.LoadScene(mapSelectionSceneName);
             return;
         }
@@ -741,9 +770,51 @@ public class MainMenu : MonoBehaviour
             this.menuContainer.gameObject.SetActive(true);
         }
         
+        // Reset quest trước khi load map selection scene
+        this.ResetQuestsBeforeMapSelection();
+        
         // Load map selection scene
         SceneManager.LoadScene(mapSelectionSceneName);
         
         Debug.Log("Loading map selection scene: " + mapSelectionSceneName);
+    }
+    
+    /// <summary>
+    /// Reset tất cả quest trước khi load map selection scene
+    /// </summary>
+    protected virtual void ResetQuestsBeforeMapSelection()
+    {
+        try
+        {
+            Debug.Log("=== RESETTING QUESTS BEFORE MAP SELECTION ===");
+            
+            // Reset TowerQuestSystem nếu có
+            if (TowerQuestSystem.Instance != null)
+            {
+                TowerQuestSystem.Instance.ResetAndReinitializeQuests();
+                Debug.Log("TowerQuestSystem reset before map selection!");
+            }
+            
+            // Reset ItemGuideUI nếu có
+            if (ItemGuideUI.Instance != null)
+            {
+                ItemGuideUI.Instance.ResetGuideState();
+                Debug.Log("ItemGuideUI reset before map selection!");
+            }
+            
+            // Reset GameResultManager quests nếu có
+            if (GameResultManager.Instance != null)
+            {
+                GameResultManager.Instance.ResetTutorialQuestsPublic();
+                Debug.Log("GameResultManager quests reset before map selection!");
+            }
+            
+            Debug.Log("All quests have been reset before map selection!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in ResetQuestsBeforeMapSelection: {e.Message}");
+        }
     }
 }

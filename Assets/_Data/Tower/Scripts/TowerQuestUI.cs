@@ -176,7 +176,7 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         }
     }
     
-    protected virtual void HideQuestPanel()
+    public virtual void HideQuestPanel()
     {
         if (this.questPanel != null)
         {

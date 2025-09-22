@@ -88,4 +88,10 @@ public class TimeSpawn : MonoBehaviour
         objectD.SetActive(d);
         objectBoss.SetActive(e);
     }
+    
+    public void ResetTime()
+    {
+        currentTime = 0f;
+        Debug.Log("TimeSpawn time reset to 0");
+    }
 }

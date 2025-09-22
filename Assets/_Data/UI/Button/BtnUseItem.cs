@@ -48,6 +48,12 @@ public class BtnUseItem : ButttonAbstract
         Debug.Log($"Health Potion used! Healing for {healAmount} HP");
 
         InventoryManager.Instance.RemoveItem(item.ItemProfile.itemCode, 1);
+        
+        // Notify that item was used
+        if (ItemUseTracker.Instance != null)
+        {
+            ItemUseTracker.Instance.OnItemUsed();
+        }
     }
 
     protected virtual void UseManaPotion(ItemInventory item)
@@ -59,5 +65,11 @@ public class BtnUseItem : ButttonAbstract
         Debug.Log($"Mana Potion used! Restoring {manaAmount} mana");
 
         InventoryManager.Instance.RemoveItem(item.ItemProfile.itemCode, 1);
+        
+        // Notify that item was used
+        if (ItemUseTracker.Instance != null)
+        {
+            ItemUseTracker.Instance.OnItemUsed();
+        }
     }
 }

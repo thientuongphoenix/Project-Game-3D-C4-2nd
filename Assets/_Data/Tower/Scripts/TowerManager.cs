@@ -508,8 +508,16 @@ public class TowerManager : SaiSingleton<TowerManager>
             // Hiện UI thông báo không thể đặt
             if (this.checkMoneyUI != null) 
             {
-                // Sử dụng lại UI thông báo không đủ tiền để hiển thị thông báo khác
-                this.checkMoneyUI.ShowNotEnoughMoney();
+                if (this.isOutOfRange)
+                {
+                    // Hiển thị thông báo quá tầm thay vì không đủ tiền
+                    this.checkMoneyUI.ShowOutOfRangeMessage();
+                }
+                else
+                {
+                    // Hiển thị thông báo vị trí không hợp lệ
+                    this.checkMoneyUI.ShowInvalidPositionMessage();
+                }
             }
             return;
         }
@@ -648,12 +656,12 @@ public class TowerManager : SaiSingleton<TowerManager>
         // Chỉ các tower này cần quest để mở khóa
         switch (towerCode)
         {
+            case TowerCode.MachineGun:     // Cần quest "Movement Tutorial"
             case TowerCode.OneGunBarrel:  // Cần quest "Tower Builder I"
             case TowerCode.IceTrap:        // Cần quest "Tower Builder II"
             case TowerCode.FlameTrap:      // Có thể cần quest trong tương lai
                 return true;
             
-            case TowerCode.MachineGun:     // Luôn mở khóa từ đầu
             case TowerCode.Core:           // Luôn mở khóa từ đầu
             default:
                 return false;

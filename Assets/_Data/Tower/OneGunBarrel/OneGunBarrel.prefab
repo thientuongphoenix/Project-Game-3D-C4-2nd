@@ -827,7 +827,7 @@ MonoBehaviour:
   towerDespawn: {fileID: 3923135216626913521}
   enemyTargetable: {fileID: 8250416359884368897}
   towerType: 0
-  price: 100
+  price: 120
   cooldownTime: 2
   lastPlacedTime: -999
 --- !u!1 &4552013430169676560

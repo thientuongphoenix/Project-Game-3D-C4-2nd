@@ -121,7 +121,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                     questName = "Movement Tutorial",
                     description = "Move using WASD keys to move, Left Shift to sprint and Space to jump to get familiar with controls",
                     requiredTowerCount = 1,
-                    unlockedTower = TowerCode.NoTower, // No tower unlocked
+                    unlockedTower = TowerCode.MachineGun, // Unlock MachineGun tower
                     isCompleted = false,
                     isUnlocked = false
                 });
@@ -339,7 +339,8 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         if (quest.questName == "Movement Tutorial")
         {
             // Không cần tạo quest mới, chỉ hiển thị thông báo
-            Debug.Log(" Movement Tutorial hoàn thành! Bắt đầu với Tower Builder I");
+            Debug.Log(" Movement Tutorial hoàn thành! MachineGun Tower đã được mở khóa!");
+            Debug.Log(" Bắt đầu với Tower Builder I");
         }
         else if (quest.questName == "Tower Builder I")
         {
@@ -613,6 +614,14 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     
     public virtual bool IsTowerUnlocked(TowerCode towerCode)
     {
+        // Kiểm tra đặc biệt cho MachineGun - cần hoàn thành Movement Tutorial
+        if (towerCode == TowerCode.MachineGun)
+        {
+            bool isUnlocked = movementTutorialCompleted >= 1;
+            Debug.Log($"DEBUG: MachineGun Tower - Movement Tutorial Status: {movementTutorialCompleted}/1, IsUnlocked: {isUnlocked}");
+            return isUnlocked;
+        }
+        
         // Kiểm tra xem tower có được mở khóa chưa
         foreach (var quest in towerQuests)
         {
@@ -656,6 +665,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         {
             movementTutorialCompleted = 1;
             Debug.Log(" Movement Tutorial đã hoàn thành!");
+            Debug.Log(" MachineGun Tower đã được mở khóa!");
             Debug.Log($" Sau khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
             
             // Cập nhật UI
@@ -856,6 +866,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log($"Tổng số towers đã đặt: {totalTowersPlaced}");
         Debug.Log($"Số OneGunBarrel towers đã đặt: {oneGunBarrelTowersPlaced}");
         Debug.Log($"Số Ice Trap towers đã đặt: {iceTrapTowersPlaced}");
+        Debug.Log($"Movement Tutorial: {movementTutorialCompleted}/1 - MachineGun Unlocked: {(movementTutorialCompleted >= 1 ? "Yes" : "No")}");
         Debug.Log($"Final Mission: {(finalMissionCompleted ? "Completed" : "Not Completed")}");
         
         foreach (var quest in towerQuests)

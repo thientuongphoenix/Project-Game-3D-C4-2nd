@@ -22,7 +22,7 @@ public class EnemySpawning : EnemyManagerAbstract
     {
       Invoke(nameof(this.Spawning), this.spawnSpeed);
 
-      if(this.spawnedEnemies.Count > this.maxSpawn) return;
+      if(this.spawnedEnemies.Count >= this.maxSpawn) return;
 
       EnemyCtrl prefab = this.GetEnemyPrefab();
 
@@ -66,4 +66,9 @@ public class EnemySpawning : EnemyManagerAbstract
         }
       }
     }
+    
+    // Public properties để truy cập từ bên ngoài
+    public virtual int MaxSpawn => maxSpawn;
+    public virtual float SpawnSpeed => spawnSpeed;
+    public virtual List<EnemyCtrl> SpawnedEnemies => spawnedEnemies;
 }

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: One Gun Barrel Info
   m_EditorClassIdentifier: 
   towerName: One Gun Barrel
-  description: one gun barrel tower
+  description: A high-tech precision weapon with devastating firepower and basic health
   icon: {fileID: 21300000, guid: cded6e9ca6b108a4d814fdb0728ec18d, type: 3}
-  basePrice: 100
+  basePrice: 120
   specialAbilities:
-  - 
-  - 
-  - 
+  - "Fire Rate: 0.7s per shot"
+  - "Range: 15 units"
+  - "Level Up: -0.05s fire rate"
   towerType: 0
