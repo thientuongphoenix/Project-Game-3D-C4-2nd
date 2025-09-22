@@ -476689,7 +476689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigid: {fileID: 4268975321574649196}
-  damage: 4
+  damage: 2
   enemyCtrl: {fileID: 7565526837365295581}
   capsuleCollider: {fileID: 7516139614533429424}
 --- !u!1 &8784542762450654792
@@ -478087,8 +478087,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 50
-      minScalar: 30
+      scalar: 6
+      minScalar: 5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -478205,8 +478205,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
-      minScalar: 6
+      scalar: 6
+      minScalar: 5
       maxCurve:
         serializedVersion: 2
         m_Curve:
