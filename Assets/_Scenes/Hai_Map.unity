@@ -9552,8 +9552,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 30
-  currentHP: 30
+  maxHP: 33
+  currentHP: 33
   isImmotal: 0
   capsuleCollider: {fileID: 83433215}
   enemyCtrl: {fileID: 1627155946}
@@ -112960,7 +112960,7 @@ Transform:
   m_GameObject: {fileID: 907666863}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 121.53, y: 12.08, z: 39.35}
+  m_LocalPosition: {x: 129.8, y: 12.08, z: 41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -144634,7 +144634,7 @@ Transform:
   m_GameObject: {fileID: 1204858534}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 129.07, y: 11, z: 39.58}
+  m_LocalPosition: {x: 136.02, y: 11, z: 45.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -161782,7 +161782,7 @@ Transform:
   m_GameObject: {fileID: 1356285253}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 113.182, y: 14.000012, z: 46.4}
+  m_LocalPosition: {x: 115.76, y: 14.000012, z: 46.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -161982,7 +161982,7 @@ Transform:
   m_GameObject: {fileID: 1359577672}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 116.45, y: 14.000012, z: 46.4}
+  m_LocalPosition: {x: 124.74, y: 14.000012, z: 40.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -164360,8 +164360,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 18
-  currentHP: 18
+  maxHP: 20
+  currentHP: 20
   isImmotal: 0
   capsuleCollider: {fileID: 1374614817}
   enemyCtrl: {fileID: 1329361756}
@@ -192850,8 +192850,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 35
-  currentHP: 35
+  maxHP: 38
+  currentHP: 38
   isImmotal: 0
   capsuleCollider: {fileID: 1627886227}
   enemyCtrl: {fileID: 1810038790}
@@ -204799,8 +204799,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 15
-  currentHP: 15
+  maxHP: 18
+  currentHP: 18
   isImmotal: 0
   capsuleCollider: {fileID: 1749885047}
   enemyCtrl: {fileID: 1573245062}
@@ -230033,7 +230033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigid: {fileID: 2004648933}
-  damage: 1
+  damage: 3
   boxCollider: {fileID: 2004648934}
   flameDuration: 2
   flameTrapCtrl: {fileID: 2004373370}
@@ -438727,8 +438727,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 600
-  currentHP: 600
+  maxHP: 580
+  currentHP: 580
   isImmotal: 0
   capsuleCollider: {fileID: 2510598151852073572}
   enemyCtrl: {fileID: 4691403405808391405}
