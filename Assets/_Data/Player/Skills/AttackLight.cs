@@ -5,9 +5,16 @@ public class AttackLight : AttackAbstract
     protected string effectName = "Projectile2";
     protected SoundName shootSFXName = SoundName.MagicSpell;
 
+    [SerializeField] protected float cooldown = 0.3f; // Cooldown 0.3s cho light attack
+    protected float currentCooldown;
+    protected bool isOnCooldown;
+
     protected override void Attacking()
     {
         if(!InputManager.Instance.IsAttackLight()) return;
+        if(isOnCooldown) return; // Kiểm tra cooldown
+
+        Debug.Log("🔥 Attack Light triggered!");
 
         AttackPoint attackPoint = this.GetAttackPoint();
 
@@ -17,9 +24,37 @@ public class AttackLight : AttackAbstract
         effectFly.FlyToTarget.SetTarget(this.playerCtrl.CrosshairPointer.transform);
 
         effect.gameObject.SetActive(true);
-        //Debug.Log("Attack Light");
 
         this.SpawnSound(effectFly.transform.position);
+        
+        // Reset attack light state sau khi bắn
+        InputManager.Instance.ResetAttackLight();
+        Debug.Log("🔄 Attack Light state reset!");
+        
+        // Bắt đầu cooldown sau khi bắn
+        this.StartCooldown();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        
+        // Cập nhật cooldown
+        if(isOnCooldown)
+        {
+            currentCooldown -= Time.deltaTime;
+            if(currentCooldown <= 0)
+            {
+                isOnCooldown = false;
+                currentCooldown = 0;
+            }
+        }
+    }
+
+    protected virtual void StartCooldown()
+    {
+        isOnCooldown = true;
+        currentCooldown = cooldown;
     }
 
     protected virtual EffectCtrl GetEffect()

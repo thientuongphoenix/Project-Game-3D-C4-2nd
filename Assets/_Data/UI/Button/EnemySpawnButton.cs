@@ -10,14 +10,14 @@ public class EnemySpawnButton : SaiMonoBehaviour
     [SerializeField] protected TextMeshProUGUI statusText;
     
     [Header("Button Settings")]
-    [SerializeField] protected string startText = "Start Enemy Waves (P)";
+    [SerializeField] protected string startText = "Start Enemy Waves (G)";
     [SerializeField] protected string spawningText = "Spawning...";
-    [SerializeField] protected string waitingText = "Start Next Wave (P)";
-    [SerializeField] protected string completedText = "All Waves Completed! (P)";
-    [SerializeField] protected string resetText = "Reset Waves (P)";
+    [SerializeField] protected string waitingText = "Start Next Wave (G)";
+    [SerializeField] protected string completedText = "All Waves Completed! (G)";
+    [SerializeField] protected string resetText = "Reset Waves (G)";
     
     [Header("Keyboard Shortcut")]
-    [SerializeField] protected KeyCode shortcutKey = KeyCode.P;
+    [SerializeField] protected KeyCode shortcutKey = KeyCode.G;
     
     protected override void Start()
     {
@@ -67,7 +67,7 @@ public class EnemySpawnButton : SaiMonoBehaviour
         }
         else if (isSpawning)
         {
-            this.SetButtonState(false, spawningText, $"Spawning Wave {EnemyWaveManager.Instance.GetCurrentWaveNumber()}/{EnemyWaveManager.Instance.GetTotalWaves()}");
+            this.SetButtonState(false, spawningText, $"Wave {EnemyWaveManager.Instance.GetCurrentWaveNumber()}/{EnemyWaveManager.Instance.GetTotalWaves()}");
         }
         else if (isWaiting)
         {

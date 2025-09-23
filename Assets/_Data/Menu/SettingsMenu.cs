@@ -20,6 +20,9 @@ public class SettingsMenu : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("=== SETTINGS MENU START ===");
+        Debug.Log($"Current quality before LoadSettings: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
+        
         allResolutions = Screen.resolutions;
 
         // Khởi tạo resolution dropdown
@@ -38,12 +41,16 @@ public class SettingsMenu : MonoBehaviour
         
         // Load settings đã lưu hoặc dùng mặc định
         LoadSettings();
+        Debug.Log($"Current quality after LoadSettings: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
         
         // Khởi tạo quality dropdown
         InitializeQualityDropdown();
+        Debug.Log($"Current quality after InitializeQualityDropdown: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
         
         // Lưu timeScale ban đầu
         previousTimeScale = Time.timeScale;
+        
+        Debug.Log("=== SETTINGS MENU START COMPLETE ===");
     }
     
     // Method để set resolution hiện tại trong dropdown
@@ -94,9 +101,24 @@ public class SettingsMenu : MonoBehaviour
         // Thêm options vào dropdown
         qualityDropDown.AddOptions(qualityOptions);
         
-        // Set giá trị hiện tại
-        qualityDropDown.value = QualitySettings.GetQualityLevel();
+        // Set giá trị từ PlayerPrefs (đã được load trong LoadSettings)
+        int savedQuality = PlayerPrefs.GetInt("QualityLevel", 3);
+        
+        // Kiểm tra quality level có hợp lệ không
+        if (savedQuality < 0 || savedQuality >= QualitySettings.names.Length)
+        {
+            savedQuality = 3; // Reset về High nếu không hợp lệ
+            Debug.LogWarning($"Invalid quality level in InitializeQualityDropdown, reset to High (3)");
+        }
+        
+        // Set giá trị và áp dụng quality
+        qualityDropDown.value = savedQuality;
         qualityDropDown.RefreshShownValue();
+        
+        // Đảm bảo quality được áp dụng
+        QualitySettings.SetQualityLevel(savedQuality);
+        
+        Debug.Log($"InitializeQualityDropdown: Set quality to {QualitySettings.names[savedQuality]} (index: {savedQuality})");
     }
 
     public void ChangeResolution()
@@ -149,21 +171,43 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetFullScreen()
     {
+        Debug.Log("=== SET FULLSCREEN START ===");
+        Debug.Log($"Fullscreen toggle value: {fullScreenToggle.isOn}");
+        
         isFullScreen = fullScreenToggle.isOn;
         
         // Kiểm tra selectedResolution có hợp lệ không
         if (selectedResolution >= 0 && selectedResolution < selectedResolutionList.Count)
         {
-            Screen.SetResolution(selectedResolutionList[selectedResolution].width, selectedResolutionList[selectedResolution].height, isFullScreen);
+            // Sử dụng FullScreenMode để tương thích với Player Settings
+            if (isFullScreen)
+            {
+                Screen.SetResolution(selectedResolutionList[selectedResolution].width, selectedResolutionList[selectedResolution].height, FullScreenMode.FullScreenWindow);
+            }
+            else
+            {
+                Screen.SetResolution(selectedResolutionList[selectedResolution].width, selectedResolutionList[selectedResolution].height, FullScreenMode.Windowed);
+            }
+            Debug.Log($"Applied resolution: {selectedResolutionList[selectedResolution].width}x{selectedResolutionList[selectedResolution].height}, Fullscreen: {isFullScreen} (Mode: {(isFullScreen ? "FullScreenWindow" : "Windowed")})");
         }
         else
         {
             Debug.LogWarning($"Invalid resolution index in SetFullScreen: {selectedResolution}, using current screen resolution");
-            Screen.SetResolution(Screen.width, Screen.height, isFullScreen);
+            if (isFullScreen)
+            {
+                Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.FullScreenWindow);
+            }
+            else
+            {
+                Screen.SetResolution(Screen.width, Screen.height, FullScreenMode.Windowed);
+            }
+            Debug.Log($"Applied current resolution: {Screen.width}x{Screen.height}, Fullscreen: {isFullScreen} (Mode: {(isFullScreen ? "FullScreenWindow" : "Windowed")})");
         }
         
         // Save settings khi thay đổi fullscreen
+        Debug.Log("Saving settings...");
         SaveSettings();
+        Debug.Log("=== SET FULLSCREEN COMPLETE ===");
     }
     
     // Method để pause game khi mở setting
@@ -197,38 +241,76 @@ public class SettingsMenu : MonoBehaviour
     // Method để save settings vào PlayerPrefs
     public void SaveSettings()
     {
+        Debug.Log("=== SAVE SETTINGS START ===");
+        Debug.Log($"Current settings: Resolution={selectedResolution}, Fullscreen={isFullScreen}, Quality={QualitySettings.GetQualityLevel()}");
+        
         // Kiểm tra selectedResolution có hợp lệ không
+        int width, height;
         if (selectedResolution >= 0 && selectedResolution < selectedResolutionList.Count)
         {
-            // Save resolution
-            PlayerPrefs.SetInt("ResolutionWidth", selectedResolutionList[selectedResolution].width);
-            PlayerPrefs.SetInt("ResolutionHeight", selectedResolutionList[selectedResolution].height);
+            width = selectedResolutionList[selectedResolution].width;
+            height = selectedResolutionList[selectedResolution].height;
             PlayerPrefs.SetInt("ResolutionIndex", selectedResolution);
+            Debug.Log($"Using selected resolution: {width}x{height}");
         }
         else
         {
             // Nếu không hợp lệ, dùng resolution hiện tại của screen
-            PlayerPrefs.SetInt("ResolutionWidth", Screen.width);
-            PlayerPrefs.SetInt("ResolutionHeight", Screen.height);
+            width = Screen.width;
+            height = Screen.height;
             PlayerPrefs.SetInt("ResolutionIndex", 0);
-            Debug.LogWarning($"Invalid selectedResolution ({selectedResolution}), using current screen resolution: {Screen.width}x{Screen.height}");
+            Debug.LogWarning($"Invalid selectedResolution ({selectedResolution}), using current screen resolution: {width}x{height}");
         }
+        
+        // Save resolution
+        PlayerPrefs.SetInt("ResolutionWidth", width);
+        PlayerPrefs.SetInt("ResolutionHeight", height);
+        Debug.Log($"Saved resolution: {width}x{height}");
         
         // Save fullscreen
         PlayerPrefs.SetInt("FullScreen", isFullScreen ? 1 : 0);
+        Debug.Log($"Saved fullscreen: {isFullScreen}");
         
         // Save quality
-        PlayerPrefs.SetInt("QualityLevel", QualitySettings.GetQualityLevel());
+        int quality = QualitySettings.GetQualityLevel();
+        PlayerPrefs.SetInt("QualityLevel", quality);
+        Debug.Log($"Saved quality: {quality} ({QualitySettings.names[quality]})");
         
         // Lưu settings
         PlayerPrefs.Save();
+        Debug.Log("PlayerPrefs.Save() called");
         
-        Debug.Log("Settings saved successfully!");
+        // Sử dụng GlobalSettingsManager để đồng bộ settings
+        if (GlobalSettingsManager.Instance != null)
+        {
+            Debug.Log("Calling GlobalSettingsManager.SaveAndApplySettings...");
+            GlobalSettingsManager.Instance.SaveAndApplySettings(width, height, isFullScreen, quality);
+        }
+        else
+        {
+            Debug.LogWarning("GlobalSettingsManager.Instance is null!");
+        }
+        
+        Debug.Log("=== SAVE SETTINGS COMPLETE ===");
     }
     
     // Method để load settings từ PlayerPrefs
     public void LoadSettings()
     {
+        Debug.Log("=== LOAD SETTINGS START ===");
+        Debug.Log($"Quality before GlobalSettingsManager: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
+        
+        // Sử dụng GlobalSettingsManager để đồng bộ settings
+        if (GlobalSettingsManager.Instance != null)
+        {
+            GlobalSettingsManager.Instance.ApplyGlobalSettings();
+            Debug.Log($"Quality after GlobalSettingsManager: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
+        }
+        else
+        {
+            Debug.LogWarning("GlobalSettingsManager.Instance is null!");
+        }
+        
         // Load resolution (mặc định 1920x1080 nếu chưa có)
         int width = PlayerPrefs.GetInt("ResolutionWidth", 1920);
         int height = PlayerPrefs.GetInt("ResolutionHeight", 1080);
@@ -239,6 +321,7 @@ public class SettingsMenu : MonoBehaviour
         
         // Load quality (mặc định 3 - High nếu chưa có)
         int qualityLevel = PlayerPrefs.GetInt("QualityLevel", 3);
+        Debug.Log($"QualityLevel from PlayerPrefs: {qualityLevel}");
         
         // Kiểm tra quality level có hợp lệ không
         if (qualityLevel < 0 || qualityLevel >= QualitySettings.names.Length)
@@ -246,10 +329,6 @@ public class SettingsMenu : MonoBehaviour
             qualityLevel = 3; // Reset về High nếu không hợp lệ
             Debug.LogWarning($"Invalid quality level loaded, reset to High (3)");
         }
-        
-        // Áp dụng settings
-        Screen.SetResolution(width, height, isFullScreen);
-        QualitySettings.SetQualityLevel(qualityLevel);
         
         // Set UI elements
         if (resDropDown != null)
@@ -269,7 +348,21 @@ public class SettingsMenu : MonoBehaviour
         
         if (fullScreenToggle != null)
         {
+            // Tạm thời disable OnValueChanged để tránh trigger SetFullScreen khi load
+            var onValueChanged = fullScreenToggle.onValueChanged;
+            fullScreenToggle.onValueChanged = new Toggle.ToggleEvent();
+            
+            // Set giá trị
             fullScreenToggle.isOn = isFullScreen;
+            
+            // Khôi phục OnValueChanged
+            fullScreenToggle.onValueChanged = onValueChanged;
+            
+            Debug.Log($"Fullscreen toggle set to: {isFullScreen}");
+        }
+        else
+        {
+            Debug.LogWarning("fullScreenToggle is null!");
         }
         
         if (qualityDropDown != null)
@@ -279,6 +372,7 @@ public class SettingsMenu : MonoBehaviour
         }
         
         Debug.Log($"Settings loaded: {width}x{height}, Fullscreen: {isFullScreen}, Quality: {QualitySettings.names[qualityLevel]}");
+        Debug.Log("=== LOAD SETTINGS COMPLETE ===");
     }
     
     // Method để save settings khi thoát game
@@ -301,5 +395,45 @@ public class SettingsMenu : MonoBehaviour
     void OnDestroy()
     {
         SaveSettings();
+    }
+    
+    /// <summary>
+    /// Force load settings và update UI
+    /// </summary>
+    [ContextMenu("Force Load Settings")]
+    public virtual void ForceLoadSettings()
+    {
+        Debug.Log("🔧 FORCING SETTINGS LOAD...");
+        this.LoadSettings();
+    }
+    
+    /// <summary>
+    /// Force update fullscreen toggle
+    /// </summary>
+    [ContextMenu("Force Update Fullscreen Toggle")]
+    public virtual void ForceUpdateFullscreenToggle()
+    {
+        Debug.Log("🔧 FORCING FULLSCREEN TOGGLE UPDATE...");
+        
+        if (fullScreenToggle != null)
+        {
+            bool savedFullscreen = PlayerPrefs.GetInt("FullScreen", 1) == 1;
+            
+            // Tạm thời disable OnValueChanged
+            var onValueChanged = fullScreenToggle.onValueChanged;
+            fullScreenToggle.onValueChanged = new Toggle.ToggleEvent();
+            
+            // Set giá trị
+            fullScreenToggle.isOn = savedFullscreen;
+            
+            // Khôi phục OnValueChanged
+            fullScreenToggle.onValueChanged = onValueChanged;
+            
+            Debug.Log($"Fullscreen toggle force updated to: {savedFullscreen}");
+        }
+        else
+        {
+            Debug.LogWarning("fullScreenToggle is null!");
+        }
     }
 }

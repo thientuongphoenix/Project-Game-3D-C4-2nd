@@ -5,7 +5,7 @@ public class AttackHeavy : AttackAbstract
     protected string effectName = "Projectile3";
     protected SoundName shootSFXName = SoundName.MagicSpell;
 
-    [SerializeField] protected float cooldown = 3f;
+    [SerializeField] protected float cooldown = 1.5f; // Giảm từ 3s xuống 1.5s
     protected float currentCooldown;
     protected bool isOnCooldown;
 

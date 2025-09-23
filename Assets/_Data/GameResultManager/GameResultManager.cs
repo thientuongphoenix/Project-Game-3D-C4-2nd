@@ -118,6 +118,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             {
                 this.winPanelCanvasGroup.alpha = 0f;
             }
+            
+            // Đảm bảo WinPanel có Canvas sorting order cao nhất
+            this.SetupPanelCanvas(this.winPanel, 100);
         }
         
         // Khởi tạo CanvasGroup cho LosePanel
@@ -133,6 +136,33 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             {
                 this.losePanelCanvasGroup.alpha = 0f;
             }
+            
+            // Đảm bảo LosePanel có Canvas sorting order cao nhất
+            this.SetupPanelCanvas(this.losePanel, 100);
+        }
+    }
+    
+    /// <summary>
+    /// Thiết lập Canvas cho panel để đảm bảo hiển thị trên cùng
+    /// </summary>
+    protected virtual void SetupPanelCanvas(GameObject panel, int sortingOrder)
+    {
+        if (panel == null) return;
+        
+        Canvas panelCanvas = panel.GetComponent<Canvas>();
+        if (panelCanvas == null)
+        {
+            panelCanvas = panel.AddComponent<Canvas>();
+        }
+        
+        panelCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        panelCanvas.sortingOrder = sortingOrder;
+        panelCanvas.overrideSorting = true;
+        
+        // Thêm GraphicRaycaster nếu chưa có
+        if (panel.GetComponent<GraphicRaycaster>() == null)
+        {
+            panel.AddComponent<GraphicRaycaster>();
         }
     }
 
@@ -1011,6 +1041,56 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         catch (System.Exception e)
         {
             Debug.LogError($"Error hiding countdown timer: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem game đã kết thúc chưa (win hoặc lose)
+    /// </summary>
+    public virtual bool IsGameEnded()
+    {
+        return this.isGameEnded;
+    }
+    
+    /// <summary>
+    /// Được gọi khi hoàn thành tất cả enemy waves
+    /// </summary>
+    public virtual void OnAllWavesCompleted()
+    {
+        try
+        {
+            Debug.Log("=== ALL WAVES COMPLETED ===");
+            Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            
+            // Chỉ hiển thị win panel cho map 1 (Hai_Map)
+            if (IsMap1())
+            {
+                isWin = true;
+                
+                // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.VolumeSfxUpdating(0f);
+                    Debug.Log("Map 1: Đã tắt tất cả SFX, giữ lại nhạc nền");
+                }
+                
+                // Hiển thị win panel
+                Debug.Log("About to call ShowWinPanel() for wave completion...");
+                ShowWinPanel();
+                
+                Debug.Log("All waves completed successfully - Win panel shown!");
+            }
+            else
+            {
+                Debug.Log($"All waves completed but not on Map 1 (current: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}) - No win panel shown");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong OnAllWavesCompleted: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
         }
     }
 }

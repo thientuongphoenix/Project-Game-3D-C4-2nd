@@ -228,6 +228,7 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         }
         else
         {
+            Debug.Log("All waves completed! Calling CompleteAllWaves()...");
             this.CompleteAllWaves();
         }
     }
@@ -276,34 +277,34 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
     
     protected virtual IEnumerator SpawnWave5Sequentially()
     {
-        Debug.Log("Starting Wave 5 sequential spawn with increasing intervals");
+        Debug.Log("Starting Wave 5 sequential spawn with increased intervals (except Object A)");
         
-        // Spawn Object A (3s)
+        // Spawn Object A (3s) - KHÔNG THAY ĐỔI
         yield return new WaitForSeconds(3f);
         this.ActivateTimeSpawnObject(timeSpawn.objectA, "Object A");
         yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
         this.DeactivateTimeSpawnObject(timeSpawn.objectA, "Object A"); // Tắt sau khi spawn xong
         
-        // Spawn Object B - Chờ 10s
-        yield return new WaitForSeconds(10f);
+        // Spawn Object B - Chờ 20s (tăng gấp đôi từ 10s)
+        yield return new WaitForSeconds(20f);
         this.ActivateTimeSpawnObject(timeSpawn.objectB, "Object B");
         yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
         this.DeactivateTimeSpawnObject(timeSpawn.objectB, "Object B"); // Tắt sau khi spawn xong
         
-        // Spawn Object C - Chờ 15s
-        yield return new WaitForSeconds(15f);
+        // Spawn Object C - Chờ 30s (tăng gấp đôi từ 15s)
+        yield return new WaitForSeconds(30f);
         this.ActivateTimeSpawnObject(timeSpawn.objectC, "Object C");
         yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
         this.DeactivateTimeSpawnObject(timeSpawn.objectC, "Object C"); // Tắt sau khi spawn xong
         
-        // Spawn Object D - Chờ 20s
-        yield return new WaitForSeconds(20f);
+        // Spawn Object D - Chờ 40s (tăng gấp đôi từ 20s)
+        yield return new WaitForSeconds(40f);
         this.ActivateTimeSpawnObject(timeSpawn.objectD, "Object D");
         yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
         this.DeactivateTimeSpawnObject(timeSpawn.objectD, "Object D"); // Tắt sau khi spawn xong
         
-        // Spawn Object Boss - Chờ 5s
-        yield return new WaitForSeconds(5f);
+        // Spawn Object Boss - Chờ 60s
+        yield return new WaitForSeconds(60f);
         this.ActivateTimeSpawnObject(timeSpawn.objectBoss, "Object Boss");
         yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
         this.DeactivateTimeSpawnObject(timeSpawn.objectBoss, "Object Boss"); // Tắt sau khi spawn xong
@@ -438,12 +439,12 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         int aliveEnemies = 0;
         int totalEnemies = 0;
         
-        // Kiểm tra enemies từ tất cả TimeSpawn objects
+        // Kiểm tra enemies từ tất cả TimeSpawn objects (không cần activeInHierarchy)
         GameObject[] timeSpawnObjects = { timeSpawn.objectA, timeSpawn.objectB, timeSpawn.objectC, timeSpawn.objectD, timeSpawn.objectBoss };
         
         foreach (var obj in timeSpawnObjects)
         {
-            if (obj != null && obj.activeInHierarchy)
+            if (obj != null) // Bỏ điều kiện activeInHierarchy
             {
                 // Tìm EnemySpawning component trong object
                 EnemySpawning enemySpawning = obj.GetComponent<EnemySpawning>();
@@ -458,6 +459,16 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
                         }
                     }
                 }
+            }
+        }
+        
+        // Thêm kiểm tra enemies trong activeEnemies list
+        foreach (var enemy in activeEnemies)
+        {
+            if (enemy != null && !enemy.EnemyDamageReceiver.IsDead())
+            {
+                aliveEnemies++;
+                totalEnemies++;
             }
         }
         
@@ -579,6 +590,25 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         
         // Clear active enemies list
         activeEnemies.Clear();
+        
+        // Thông báo cho GameResultManager để hiển thị win panel
+        this.NotifyGameResultManager();
+    }
+    
+    /// <summary>
+    /// Thông báo cho GameResultManager khi hoàn thành tất cả waves
+    /// </summary>
+    protected virtual void NotifyGameResultManager()
+    {
+        if (GameResultManager.Instance != null)
+        {
+            Debug.Log("Notifying GameResultManager: All waves completed!");
+            GameResultManager.Instance.OnAllWavesCompleted();
+        }
+        else
+        {
+            Debug.LogWarning("GameResultManager.Instance is null! Cannot notify wave completion.");
+        }
     }
     
     protected virtual void SetWoodBalusterVisibility(bool visible)

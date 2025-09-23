@@ -1210,7 +1210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &117016456
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1748,11 +1748,11 @@ MonoBehaviour:
   isLose: 0
   isWin: 0
   player: {fileID: 9124317305094261327}
-  core: {fileID: 3510839256487722567}
+  core: {fileID: 1684386520}
   winPanel: {fileID: 1048185839}
   losePanel: {fileID: 580698045}
   defendTime: 60
-  fadeInDuration: 1
+  fadeInDuration: 3
 --- !u!4 &158627880
 Transform:
   m_ObjectHideFlags: 0
@@ -4809,7 +4809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haiSampleSceneGold: 1000
-  haiMapGold: 500
+  haiMapGold: 120
   defaultGold: 100
   resetGoldOnNewGame: 1
   addGoldIfEmpty: 1
@@ -8151,6 +8151,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 627383584}
   m_CullTransparentMesh: 1
+--- !u!1 &642143650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 642143652}
+  - component: {fileID: 642143651}
+  - component: {fileID: 642143653}
+  m_Layer: 0
+  m_Name: GlobalSettingsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &642143651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642143650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e1b2c565fb7cf44825bd084307fc54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoApplySettingsOnStart: 1
+  debugSettingsSync: 1
+  defaultWidth: 1920
+  defaultHeight: 1080
+  defaultFullscreen: 1
+  defaultQuality: 3
+--- !u!4 &642143652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642143650}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 647.6762, y: 993.0255, z: -1.8008351}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &642143653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642143650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee0d066d81d2fe54098e8e64e2e3bda5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applySettingsOnStart: 1
+  applySettingsOnEnable: 1
+  debugSceneSettings: 1
 --- !u!1 &646306018
 GameObject:
   m_ObjectHideFlags: 0
@@ -9268,8 +9334,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -727.20874, y: 451.0708}
-  m_SizeDelta: {x: 462.2657, y: 143.8584}
+  m_AnchoredPosition: {x: -697.52606, y: 451.0708}
+  m_SizeDelta: {x: 521.638, y: 143.8584}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &715962796
 MonoBehaviour:
@@ -10216,8 +10282,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -678, y: 483}
-  m_SizeDelta: {x: 112.63, y: 50}
+  m_AnchoredPosition: {x: -563.19324, y: 483}
+  m_SizeDelta: {x: 366.2436, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &769722524
 MonoBehaviour:
@@ -10232,6 +10298,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textPro: {fileID: 769722525}
+  showExp: 1
+  showStats: 0
 --- !u!114 &769722525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11006,6 +11074,7 @@ GameObject:
   - component: {fileID: 801380763}
   - component: {fileID: 801380762}
   - component: {fileID: 801380764}
+  - component: {fileID: 801380765}
   m_Layer: 5
   m_Name: UISetting
   m_TagString: Untagged
@@ -11076,6 +11145,22 @@ MonoBehaviour:
   button: {fileID: 1628771680}
   menuSceneName: Hai_Menu
   delayBeforeLoad: 0.1
+--- !u!114 &801380765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801380760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f00572464e2ecbe4ea99caf7cb61add7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixOnStart: 1
+  fixOnEnable: 1
+  debugToggleFix: 1
+  fixDelay: 0.1
 --- !u!1 &804544257
 GameObject:
   m_ObjectHideFlags: 0
@@ -22448,6 +22533,17 @@ MonoBehaviour:
   isDespawnByTime: 0
   timeLife: 7
   currentTime: 7
+--- !u!114 &1684386520 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2935119613980656795, guid: 27d96256a2c8c774ab189f994e31937a, type: 3}
+  m_PrefabInstance: {fileID: 1381067836}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 079828b1a7900544c99ea2db574eee85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1684999073
 GameObject:
   m_ObjectHideFlags: 0
@@ -22783,7 +22879,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -766, y: 483}
+  m_AnchoredPosition: {x: -778, y: 483}
   m_SizeDelta: {x: 98.0395, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1699237163
@@ -33810,7 +33906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2087279908
 RectTransform:
   m_ObjectHideFlags: 0
@@ -164803,6 +164899,7 @@ MonoBehaviour:
   playerExp:
     itemName: 
     itemCount: 0
+  levelSystem: {fileID: 0}
 --- !u!4 &6032098735440112472
 Transform:
   m_ObjectHideFlags: 0
@@ -165540,6 +165637,7 @@ MonoBehaviour:
   playerCtrl: {fileID: 9124317305094261327}
   spawner: {fileID: 2041160674}
   prefabs: {fileID: 1499133270}
+  cooldown: 0.3
 --- !u!1 &6821681450834572065
 GameObject:
   m_ObjectHideFlags: 0
@@ -186612,3 +186710,4 @@ SceneRoots:
   - {fileID: 870789326}
   - {fileID: 1184446098}
   - {fileID: 359427104}
+  - {fileID: 642143652}

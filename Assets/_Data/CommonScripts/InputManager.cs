@@ -27,6 +27,7 @@ public class InputManager : SaiSingleton<InputManager>
         {
             this.attackHold = 0;
             this.isAttackHeavy = false;
+            this.isAttackLight = false; // Reset attack light khi không aim
             return;
         }
 
@@ -59,5 +60,13 @@ public class InputManager : SaiSingleton<InputManager>
     public virtual bool IsAttackHeavy()
     {
         return this.isAttackHeavy;
+    }
+    
+    /// <summary>
+    /// Reset attack light sau khi đã bắn
+    /// </summary>
+    public virtual void ResetAttackLight()
+    {
+        this.isAttackLight = false;
     }
 }

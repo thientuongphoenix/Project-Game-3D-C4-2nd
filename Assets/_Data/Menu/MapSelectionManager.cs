@@ -70,3 +70,4 @@ public class MapSelectionManager : SaiSingleton<MapSelectionManager>
         return currentSceneName.Contains("MapSelect") || currentSceneName.Contains("Map_Selection");
     }
 }
+
