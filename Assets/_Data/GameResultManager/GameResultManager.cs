@@ -47,8 +47,16 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         
         this.player = PlayerCtrl.Instance;
         this.core = FindObjectOfType<CoreCtrl>();
-        this.winPanel = GameObject.Find("WinPanel");
-        this.losePanel = GameObject.Find("LosePanel");
+        
+        // Reset panel references khi vào scene mới
+        this.winPanel = null;
+        this.losePanel = null;
+        
+        // Ẩn tất cả Win/Lose panel trước khi tìm mới
+        this.HideAllWinLosePanelsInScene();
+        
+        // Tìm WinPanel và LosePanel trong scene hiện tại
+        this.FindWinLosePanelsInCurrentScene();
         
         // Khởi tạo CanvasGroup cho fade effect
         this.InitializeCanvasGroups();
@@ -59,7 +67,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         // Reset nhiệm vụ khi vào lại tutorial map nếu map 1 đã được unlock
         this.CheckAndResetTutorialQuests();
         
-        Debug.Log("GameResultManager: Initialized for new scene");
+        Debug.Log($"GameResultManager: Initialized for {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        Debug.Log($"WinPanel found: {winPanel != null}");
+        Debug.Log($"LosePanel found: {losePanel != null}");
     }
     
     protected virtual void ResetGameState()
@@ -74,6 +84,340 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         
         // Hiển thị lại TowerInfoUI khi game bắt đầu
         this.ShowTowerInfoUI();
+    }
+    
+    /// <summary>
+    /// Tìm WinPanel và LosePanel trong scene hiện tại
+    /// </summary>
+    protected virtual void FindWinLosePanelsInCurrentScene()
+    {
+        Debug.Log("=== SEARCHING FOR WIN/LOSE PANELS IN CURRENT SCENE ===");
+        Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        
+        // Tìm WinPanel chỉ trong scene hiện tại
+        this.winPanel = this.FindPanelInCurrentScene("WinPanel");
+        if (this.winPanel != null)
+        {
+            Debug.Log($"WinPanel found: {this.winPanel.name} at path: {GetFullPath(this.winPanel.transform)}");
+            Debug.Log($"WinPanel active: {this.winPanel.activeInHierarchy}");
+            Debug.Log($"WinPanel scene: {this.winPanel.gameObject.scene.name}");
+        }
+        else
+        {
+            Debug.LogWarning("WinPanel NOT FOUND in current scene! Will create temporary one if needed.");
+        }
+        
+        // Tìm LosePanel chỉ trong scene hiện tại
+        this.losePanel = this.FindPanelInCurrentScene("LosePanel");
+        if (this.losePanel != null)
+        {
+            Debug.Log($"LosePanel found: {this.losePanel.name} at path: {GetFullPath(this.losePanel.transform)}");
+            Debug.Log($"LosePanel active: {this.losePanel.activeInHierarchy}");
+            Debug.Log($"LosePanel scene: {this.losePanel.gameObject.scene.name}");
+        }
+        else
+        {
+            Debug.LogWarning("LosePanel NOT FOUND in current scene! Will create temporary one if needed.");
+        }
+        
+        Debug.Log("================================");
+    }
+    
+    /// <summary>
+    /// Tìm WinPanel và LosePanel trong scene (legacy method)
+    /// </summary>
+    protected virtual void FindWinLosePanels()
+    {
+        Debug.Log("=== SEARCHING FOR WIN/LOSE PANELS ===");
+        Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        
+        // Tìm WinPanel
+        this.winPanel = this.FindPanel("WinPanel");
+        if (this.winPanel != null)
+        {
+            Debug.Log($"WinPanel found: {this.winPanel.name} at path: {GetFullPath(this.winPanel.transform)}");
+            Debug.Log($"WinPanel active: {this.winPanel.activeInHierarchy}");
+            Debug.Log($"WinPanel scene: {this.winPanel.gameObject.scene.name}");
+        }
+        else
+        {
+            Debug.LogWarning("WinPanel NOT FOUND in current scene! Will create temporary one if needed.");
+        }
+        
+        // Tìm LosePanel
+        this.losePanel = this.FindPanel("LosePanel");
+        if (this.losePanel != null)
+        {
+            Debug.Log($"LosePanel found: {this.losePanel.name} at path: {GetFullPath(this.losePanel.transform)}");
+            Debug.Log($"LosePanel active: {this.losePanel.activeInHierarchy}");
+            Debug.Log($"LosePanel scene: {this.losePanel.gameObject.scene.name}");
+        }
+        else
+        {
+            Debug.LogWarning("LosePanel NOT FOUND in current scene! Will create temporary one if needed.");
+        }
+        
+        Debug.Log("================================");
+    }
+    
+    /// <summary>
+    /// Tìm panel chỉ trong scene hiện tại
+    /// </summary>
+    protected virtual GameObject FindPanelInCurrentScene(string panelName)
+    {
+        Debug.Log($"Searching for {panelName} in current scene only...");
+        
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        
+        // Cách 1: Tìm trực tiếp bằng tên (chỉ trong scene hiện tại)
+        GameObject panel = GameObject.Find(panelName);
+        if (panel != null && panel.gameObject.scene.name == currentSceneName)
+        {
+            Debug.Log($"Found {panelName} by direct name search in current scene");
+            return panel;
+        }
+        
+        // Cách 2: Tìm trong Canvas của scene hiện tại
+        Canvas[] allCanvases = FindObjectsOfType<Canvas>();
+        Debug.Log($"Searching in {allCanvases.Length} Canvas(es) in current scene...");
+        
+        foreach (Canvas canvas in allCanvases)
+        {
+            if (canvas == null || canvas.gameObject.scene.name != currentSceneName) continue;
+            
+            Debug.Log($"Searching in Canvas: {canvas.name} (Scene: {canvas.gameObject.scene.name})");
+            
+            // Tìm trong Canvas
+            Transform panelTransform = canvas.transform.Find(panelName);
+            if (panelTransform != null)
+            {
+                Debug.Log($"Found {panelName} in Canvas: {canvas.name} (Scene: {canvas.gameObject.scene.name})");
+                return panelTransform.gameObject;
+            }
+            
+            // Tìm trong tất cả children của Canvas
+            Transform[] allChildren = canvas.GetComponentsInChildren<Transform>(true);
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == panelName && child.gameObject.scene.name == currentSceneName)
+                {
+                    Debug.Log($"Found {panelName} in Canvas child: {canvas.name} at path: {GetFullPath(child)} (Scene: {child.gameObject.scene.name})");
+                    return child.gameObject;
+                }
+            }
+        }
+        
+        // Cách 3: Tìm trong tất cả GameObject của scene hiện tại
+        GameObject[] allObjects = FindObjectsOfType<GameObject>(true);
+        Debug.Log($"Searching in {allObjects.Length} GameObjects in current scene...");
+        
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == panelName && obj.gameObject.scene.name == currentSceneName)
+            {
+                Debug.Log($"Found {panelName} in all objects at path: {GetFullPath(obj.transform)} (Scene: {obj.gameObject.scene.name})");
+                return obj;
+            }
+        }
+        
+        Debug.LogWarning($"{panelName} not found in current scene: {currentSceneName}!");
+        return null;
+    }
+    
+    /// <summary>
+    /// Tìm panel theo tên với nhiều cách tìm khác nhau
+    /// </summary>
+    protected virtual GameObject FindPanel(string panelName)
+    {
+        Debug.Log($"Searching for {panelName}...");
+        
+        // Cách 1: Tìm trực tiếp bằng tên (chỉ trong scene hiện tại)
+        GameObject panel = GameObject.Find(panelName);
+        if (panel != null)
+        {
+            Debug.Log($"Found {panelName} by direct name search in current scene");
+            return panel;
+        }
+        
+        // Cách 2: Tìm trong tất cả Canvas (bao gồm DontDestroyOnLoad)
+        Canvas[] allCanvases = FindObjectsOfType<Canvas>(true);
+        Debug.Log($"Searching in {allCanvases.Length} Canvas(es)...");
+        
+        foreach (Canvas canvas in allCanvases)
+        {
+            if (canvas == null) continue;
+            
+            Debug.Log($"Searching in Canvas: {canvas.name} (Scene: {canvas.gameObject.scene.name})");
+            
+            // Tìm trong Canvas
+            Transform panelTransform = canvas.transform.Find(panelName);
+            if (panelTransform != null)
+            {
+                Debug.Log($"Found {panelName} in Canvas: {canvas.name} (Scene: {canvas.gameObject.scene.name})");
+                return panelTransform.gameObject;
+            }
+            
+            // Tìm trong tất cả children của Canvas
+            Transform[] allChildren = canvas.GetComponentsInChildren<Transform>(true);
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == panelName)
+                {
+                    Debug.Log($"Found {panelName} in Canvas child: {canvas.name} at path: {GetFullPath(child)} (Scene: {child.gameObject.scene.name})");
+                    return child.gameObject;
+                }
+            }
+        }
+        
+        // Cách 3: Tìm trong tất cả GameObject (bao gồm inactive và DontDestroyOnLoad)
+        GameObject[] allObjects = FindObjectsOfType<GameObject>(true);
+        Debug.Log($"Searching in {allObjects.Length} GameObjects...");
+        
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == panelName)
+            {
+                Debug.Log($"Found {panelName} in all objects at path: {GetFullPath(obj.transform)} (Scene: {obj.gameObject.scene.name})");
+                return obj;
+            }
+        }
+        
+        Debug.LogWarning($"{panelName} not found in any Canvas or GameObject!");
+        return null;
+    }
+    
+    /// <summary>
+    /// Lấy đường dẫn đầy đủ của Transform
+    /// </summary>
+    private string GetFullPath(Transform transform)
+    {
+        if (transform.parent == null)
+            return transform.name;
+        return GetFullPath(transform.parent) + "/" + transform.name;
+    }
+    
+    /// <summary>
+    /// Ẩn tất cả Win/Lose panel trong scene để tránh xung đột khi chuyển scene
+    /// </summary>
+    protected virtual void HideAllWinLosePanelsInScene()
+    {
+        Debug.Log("=== HIDING ALL WIN/LOSE PANELS IN SCENE ===");
+        
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            
+            // Tìm tất cả WinPanel và LosePanel trong scene hiện tại
+            GameObject[] allObjects = FindObjectsOfType<GameObject>(true);
+            int hiddenCount = 0;
+            
+            foreach (GameObject obj in allObjects)
+            {
+                if ((obj.name == "WinPanel" || obj.name == "LosePanel") && obj.gameObject.scene.name == currentSceneName)
+                {
+                    if (obj.activeInHierarchy)
+                    {
+                        obj.SetActive(false);
+                        hiddenCount++;
+                        Debug.Log($"Hidden {obj.name} at path: {GetFullPath(obj.transform)} (Scene: {obj.gameObject.scene.name})");
+                    }
+                }
+            }
+            
+            Debug.Log($"Hidden {hiddenCount} Win/Lose panels in current scene: {currentSceneName}");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error hiding Win/Lose panels: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Tạo WinPanel tạm thời khi không tìm thấy WinPanel trong scene
+    /// </summary>
+    protected virtual void CreateTemporaryWinPanel()
+    {
+        Debug.Log("Creating temporary WinPanel...");
+        
+        // Tìm Canvas có sẵn trong scene
+        Canvas existingCanvas = FindObjectOfType<Canvas>();
+        if (existingCanvas == null)
+        {
+            Debug.LogError("No Canvas found in scene! Cannot create temporary WinPanel!");
+            return;
+        }
+        
+        // Tạo WinPanel tạm thời
+        GameObject tempWinPanel = new GameObject("WinPanel");
+        tempWinPanel.transform.SetParent(existingCanvas.transform, false);
+        
+        // Thêm RectTransform
+        RectTransform winRect = tempWinPanel.AddComponent<RectTransform>();
+        winRect.anchorMin = Vector2.zero;
+        winRect.anchorMax = Vector2.one;
+        winRect.offsetMin = Vector2.zero;
+        winRect.offsetMax = Vector2.zero;
+        
+        // Thêm Image background
+        UnityEngine.UI.Image background = tempWinPanel.AddComponent<UnityEngine.UI.Image>();
+        background.color = new Color(0, 0, 0, 0.8f);
+        
+        // Tạo text "YOU WIN!"
+        GameObject winTextGO = new GameObject("WinText");
+        winTextGO.transform.SetParent(tempWinPanel.transform, false);
+        
+        RectTransform textRect = winTextGO.AddComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+        
+        TMPro.TextMeshProUGUI winText = winTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+        winText.text = "YOU WIN!";
+        winText.fontSize = 72;
+        winText.color = Color.green;
+        winText.alignment = TMPro.TextAlignmentOptions.Center;
+        
+        // Tạo button "Continue"
+        GameObject continueButtonGO = new GameObject("ContinueButton");
+        continueButtonGO.transform.SetParent(tempWinPanel.transform, false);
+        
+        RectTransform buttonRect = continueButtonGO.AddComponent<RectTransform>();
+        buttonRect.anchorMin = new Vector2(0.5f, 0.3f);
+        buttonRect.anchorMax = new Vector2(0.5f, 0.3f);
+        buttonRect.sizeDelta = new Vector2(200, 50);
+        buttonRect.anchoredPosition = Vector2.zero;
+        
+        UnityEngine.UI.Image buttonImage = continueButtonGO.AddComponent<UnityEngine.UI.Image>();
+        buttonImage.color = Color.blue;
+        
+        Button continueButton = continueButtonGO.AddComponent<Button>();
+        continueButton.onClick.AddListener(() => {
+            Debug.Log("Continue button clicked!");
+            // Có thể thêm logic chuyển scene hoặc reset game
+        });
+        
+        // Tạo text cho button
+        GameObject buttonTextGO = new GameObject("ButtonText");
+        buttonTextGO.transform.SetParent(continueButtonGO.transform, false);
+        
+        RectTransform buttonTextRect = buttonTextGO.AddComponent<RectTransform>();
+        buttonTextRect.anchorMin = Vector2.zero;
+        buttonTextRect.anchorMax = Vector2.one;
+        buttonTextRect.offsetMin = Vector2.zero;
+        buttonTextRect.offsetMax = Vector2.zero;
+        
+        TMPro.TextMeshProUGUI buttonText = buttonTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+        buttonText.text = "Continue";
+        buttonText.fontSize = 24;
+        buttonText.color = Color.white;
+        buttonText.alignment = TMPro.TextAlignmentOptions.Center;
+        
+        // Gán WinPanel tạm thời
+        this.winPanel = tempWinPanel;
+        
+        Debug.Log("Temporary WinPanel created successfully!");
     }
     
     /// <summary>
@@ -101,6 +445,30 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     {
         // Dừng tất cả coroutine để tránh lỗi MissingReferenceException
         this.StopAllFadeCoroutines();
+    }
+    
+    /// <summary>
+    /// Được gọi khi scene bị unload
+    /// </summary>
+    protected virtual void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            // Ẩn tất cả panel khi game bị pause
+            this.HideAllWinLosePanelsInScene();
+        }
+    }
+    
+    /// <summary>
+    /// Được gọi khi application focus thay đổi
+    /// </summary>
+    protected virtual void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            // Ẩn tất cả panel khi game mất focus
+            this.HideAllWinLosePanelsInScene();
+        }
     }
     
     protected virtual void InitializeCanvasGroups()
@@ -417,6 +785,8 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     protected virtual void ShowWinPanel()
     {
         Debug.Log("=== ShowWinPanel() called ===");
+        Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        
         isGameEnded = true;
         
         // Ẩn quest panel khi hiển thị win panel
@@ -424,6 +794,16 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         
         // Ẩn TowerInfoUI khi hiển thị win panel
         this.HideTowerInfoUI();
+        
+        // Ẩn EnemySpawnButton khi hiển thị win panel
+        this.HideEnemySpawnButton();
+        
+        // Nếu WinPanel null, thử tìm lại trong scene hiện tại
+        if (winPanel == null)
+        {
+            Debug.LogWarning("WinPanel is null, attempting to find it again in current scene...");
+            this.winPanel = this.FindPanelInCurrentScene("WinPanel");
+        }
         
         if (winPanel != null) 
         {
@@ -450,6 +830,10 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         else
         {
             Debug.LogError("Win panel is NULL! Cannot show win panel!");
+            Debug.LogError("Please check if WinPanel exists in scene Hai_Map or assign it in GameResultManager Inspector!");
+            
+            // Tạo WinPanel tạm thời nếu không tìm thấy
+            this.CreateTemporaryWinPanel();
         }
         
         if (losePanel != null) losePanel.SetActive(false);
@@ -637,6 +1021,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         
         // Ẩn TowerInfoUI khi hiển thị lose panel
         this.HideTowerInfoUI();
+        
+        // Ẩn EnemySpawnButton khi hiển thị lose panel
+        this.HideEnemySpawnButton();
         
         if (losePanel != null) 
         {
@@ -932,6 +1319,31 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     }
     
     /// <summary>
+    /// Ẩn EnemySpawnButton khi hiển thị Win/Lose panel
+    /// </summary>
+    protected virtual void HideEnemySpawnButton()
+    {
+        try
+        {
+            // Tìm tất cả EnemySpawnButtonPrefab trong scene
+            EnemySpawnButtonPrefab[] spawnButtons = FindObjectsOfType<EnemySpawnButtonPrefab>();
+            foreach (EnemySpawnButtonPrefab button in spawnButtons)
+            {
+                if (button != null)
+                {
+                    button.HideButton();
+                }
+            }
+            
+            Debug.Log($"Hidden {spawnButtons.Length} EnemySpawnButton(s) for Win/Lose panel");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error hiding EnemySpawnButton: {e.Message}");
+        }
+    }
+    
+    /// <summary>
     /// Ẩn quest UI
     /// </summary>
     protected virtual void HideQuestUI()
@@ -1061,11 +1473,24 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         {
             Debug.Log("=== ALL WAVES COMPLETED ===");
             Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            Debug.Log($"IsMap1(): {IsMap1()}");
+            Debug.Log($"isGameEnded: {isGameEnded}");
+            Debug.Log($"isWin: {isWin}");
             
             // Chỉ hiển thị win panel cho map 1 (Hai_Map)
             if (IsMap1())
             {
+                Debug.Log("✅ Map 1 detected - Processing win condition...");
+                
+                // Kiểm tra xem game đã kết thúc chưa
+                if (isGameEnded)
+                {
+                    Debug.LogWarning("⚠️ Game already ended! Cannot process wave completion.");
+                    return;
+                }
+                
                 isWin = true;
+                isGameEnded = true;
                 
                 // Tắt tất cả SFX ngay lập tức, giữ lại nhạc
                 if (SoundManager.Instance != null)
@@ -1078,11 +1503,11 @@ public class GameResultManager : SaiSingleton<GameResultManager>
                 Debug.Log("About to call ShowWinPanel() for wave completion...");
                 ShowWinPanel();
                 
-                Debug.Log("All waves completed successfully - Win panel shown!");
+                Debug.Log("✅ All waves completed successfully - Win panel shown!");
             }
             else
             {
-                Debug.Log($"All waves completed but not on Map 1 (current: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}) - No win panel shown");
+                Debug.Log($"❌ All waves completed but not on Map 1 (current: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}) - No win panel shown");
             }
             
             Debug.Log("================================");

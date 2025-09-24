@@ -106,6 +106,16 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests = new List<TowerQuest>();
             }
             
+            // Kiểm tra xem có phải Map 1 không - nếu là Map 1 thì không tạo quest
+            if (this.IsMap1())
+            {
+                Debug.Log("Map 1 detected - Skipping quest initialization completely!");
+                // Xóa tất cả quest cũ nếu có
+                towerQuests.Clear();
+                Debug.Log("Map 1: Cleared all quests - No quests will be created!");
+                return;
+            }
+            
             // XÓA QUEST CŨ VỀ CORE TOWER TRƯỚC KHI TẠO QUEST MỚI
             towerQuests.RemoveAll(q => q != null && q.unlockedTower == TowerCode.Core);
             Debug.Log("Đã xóa quest cũ về Core Tower");
@@ -692,6 +702,24 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     public virtual int GetMovementTutorialStatus()
     {
         return movementTutorialCompleted;
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải Map 1 không
+    /// </summary>
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
+        }
     }
     
     /// <summary>

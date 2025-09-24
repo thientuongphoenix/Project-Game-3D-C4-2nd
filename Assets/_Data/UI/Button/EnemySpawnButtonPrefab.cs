@@ -106,7 +106,7 @@ public class EnemySpawnButtonPrefab : SaiMonoBehaviour
             canvasObj.transform.SetParent(transform.parent);
             buttonCanvas = canvasObj.AddComponent<Canvas>();
             buttonCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            buttonCanvas.sortingOrder = 1; // Thấp hơn win/lose panel
+            buttonCanvas.sortingOrder = 0; // Rất thấp, dưới win/lose panel
             
             // Thêm CanvasScaler
             CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
@@ -121,12 +121,11 @@ public class EnemySpawnButtonPrefab : SaiMonoBehaviour
         }
         else
         {
-            // Đảm bảo Canvas có sorting order thấp
-            if (buttonCanvas.sortingOrder >= 10)
-            {
-                buttonCanvas.sortingOrder = 1;
-            }
+            // Đảm bảo Canvas có sorting order rất thấp
+            buttonCanvas.sortingOrder = 0; // Luôn thấp hơn win/lose panel
         }
+        
+        Debug.Log($"EnemySpawnButton Canvas sorting order set to: {buttonCanvas.sortingOrder}");
     }
     
     /// <summary>
@@ -134,18 +133,74 @@ public class EnemySpawnButtonPrefab : SaiMonoBehaviour
     /// </summary>
     protected virtual void Update()
     {
+        // Kiểm tra xem có phải Map 1 không
+        if (this.IsMap1())
+        {
+            // Trong Map 1, ẩn button khi game kết thúc
+            if (GameResultManager.Instance != null && GameResultManager.Instance.IsGameEnded())
+            {
+                // Ẩn button khi game kết thúc trong Map 1
+                if (button != null) button.gameObject.SetActive(false);
+                if (statusText != null) statusText.gameObject.SetActive(false);
+            }
+            else
+            {
+                // Hiện button khi game chưa kết thúc trong Map 1
+                if (button != null) button.gameObject.SetActive(true);
+                if (statusText != null) statusText.gameObject.SetActive(true);
+            }
+            return;
+        }
+        
+        // Tutorial Map - ẩn button khi game kết thúc
         if (GameResultManager.Instance != null && GameResultManager.Instance.IsGameEnded())
         {
-            // Ẩn button khi game kết thúc
+            // Ẩn button khi game kết thúc trong Tutorial Map
             if (button != null) button.gameObject.SetActive(false);
             if (statusText != null) statusText.gameObject.SetActive(false);
         }
         else
         {
-            // Hiện lại button khi game chưa kết thúc
+            // Hiện lại button khi game chưa kết thúc trong Tutorial Map
             if (button != null) button.gameObject.SetActive(true);
             if (statusText != null) statusText.gameObject.SetActive(true);
         }
+    }
+    
+    // Thêm phương thức kiểm tra Map 1
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// Ẩn button ngay lập tức (được gọi từ GameResultManager)
+    /// </summary>
+    public virtual void HideButton()
+    {
+        if (button != null) button.gameObject.SetActive(false);
+        if (statusText != null) statusText.gameObject.SetActive(false);
+        Debug.Log("EnemySpawnButton hidden by GameResultManager");
+    }
+    
+    /// <summary>
+    /// Hiện button (được gọi từ GameResultManager)
+    /// </summary>
+    public virtual void ShowButton()
+    {
+        if (button != null) button.gameObject.SetActive(true);
+        if (statusText != null) statusText.gameObject.SetActive(true);
+        Debug.Log("EnemySpawnButton shown by GameResultManager");
     }
 }
 

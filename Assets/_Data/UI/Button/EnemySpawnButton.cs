@@ -55,7 +55,21 @@ public class EnemySpawnButton : SaiMonoBehaviour
     
     protected virtual void UpdateButtonState()
     {
-        if (EnemyWaveManager.Instance == null) return;
+        if (EnemyWaveManager.Instance == null) 
+        {
+            Debug.LogWarning("EnemyWaveManager.Instance is null! Button will be disabled.");
+            this.SetButtonState(false, "EnemyWaveManager not found", "Please check EnemyWaveManager setup");
+            return;
+        }
+        
+        // Kiểm tra xem có waves không
+        int totalWaves = EnemyWaveManager.Instance.GetTotalWaves();
+        if (totalWaves == 0)
+        {
+            Debug.LogWarning("No waves configured! Button will be disabled.");
+            this.SetButtonState(false, "No waves configured", "Please setup waves first");
+            return;
+        }
         
         bool isSpawning = EnemyWaveManager.Instance.IsSpawning();
         bool isWaiting = EnemyWaveManager.Instance.IsWaitingForButtonPress();

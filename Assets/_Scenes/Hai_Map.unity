@@ -9764,8 +9764,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 33
-  currentHP: 33
+  maxHP: 25
+  currentHP: 25
   isImmotal: 0
   capsuleCollider: {fileID: 83433215}
   enemyCtrl: {fileID: 1627155946}
@@ -15106,6 +15106,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 607625088}
   spawnSpeed: 2
   maxSpawn: 7
+  specificEnemyPrefab: {fileID: 1573245062}
 --- !u!1 &128637893
 GameObject:
   m_ObjectHideFlags: 0
@@ -16633,7 +16634,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &139409952
 Transform:
   m_ObjectHideFlags: 0
@@ -16661,21 +16662,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704343edb84efa7468f6de00a5fea10e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectA: {fileID: 2078902139}
-  objectB: {fileID: 127418279}
-  objectC: {fileID: 776214550}
-  objectD: {fileID: 189970082}
-  objectBoss: {fileID: 4160803119845689791}
+  enemyType1: {fileID: 1329361756}
+  enemyType2: {fileID: 1573245062}
+  enemyType3: {fileID: 1627155946}
+  enemyType4: {fileID: 1810038790}
+  enemyType5: {fileID: 4691403405808391405}
+  enemySpawning1: {fileID: 2078902141}
+  enemySpawning2: {fileID: 127418281}
+  enemySpawning3: {fileID: 776214552}
+  enemySpawning4: {fileID: 189970084}
+  enemySpawning5: {fileID: 7333189251493268114}
+  spawnPoints: []
   time1: 3
   time2: 10
   time3: 40
   time4: 45
   time5: 75
-  time6: 80
-  time7: 110
-  time8: 115
-  time9: 145
-  timeBoss: 150
+  useWave5SequentialSpawn: 1
+  wave5StartTime: 0
+  wave5SpawnTimes:
+  - 0
+  - 20
+  - 40
+  - 60
+  - 100
+  wave5SpawnCounts: 0400000005000000050000000500000001000000
+  wave5BossIsFinalBoss: 1
+  autoStart: 0
+  useEnemySpawning: 1
+  disableWave1to4Spawn: 1
+  showDebugLogs: 1
 --- !u!1 &139566414
 GameObject:
   m_ObjectHideFlags: 0
@@ -18511,8 +18527,8 @@ MonoBehaviour:
   isWin: 0
   player: {fileID: 9124317305094261327}
   core: {fileID: 3510839256487722567}
-  winPanel: {fileID: 0}
-  losePanel: {fileID: 0}
+  winPanel: {fileID: 274684916}
+  losePanel: {fileID: 777536106}
   defendTime: 900
   fadeInDuration: 3
 --- !u!4 &158627880
@@ -22067,6 +22083,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 2092350811}
   spawnSpeed: 3
   maxSpawn: 6
+  specificEnemyPrefab: {fileID: 1810038790}
 --- !u!1 &190708379
 GameObject:
   m_ObjectHideFlags: 0
@@ -32723,6 +32740,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 2043547329}
   spawnSpeed: 2
   maxSpawn: 3
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1001 &236233677
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62733,7 +62751,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &500322140
 RectTransform:
   m_ObjectHideFlags: 0
@@ -69160,6 +69178,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 644716632}
   spawnSpeed: 3
   maxSpawn: 3
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1001 &552079939
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96838,6 +96857,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 1822064717}
   spawnSpeed: 2
   maxSpawn: 6
+  specificEnemyPrefab: {fileID: 1627155946}
 --- !u!4 &776751432 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1499296504647824121, guid: 037d70fbc5e88c74c961178179800981, type: 3}
@@ -161435,7 +161455,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyManagerCtrl: {fileID: 1876698680}
   spawnSpeed: 3
-  maxSpawn: 3
+  maxSpawn: 5
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1001 &1372286864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -164151,6 +164172,7 @@ MonoBehaviour:
   baseSkillCooldown: 1
   originalAttackLightCooldown: 0.3
   originalAttackHeavyCooldown: 1.5
+  originalAttackLightLimit: 0.1
   movementSpeedBonus: 0.02
   attackSpeedBonus: 0.03
   skillCooldownReduction: 0.02
@@ -191652,8 +191674,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 38
-  currentHP: 38
+  maxHP: 35
+  currentHP: 35
   isImmotal: 0
   capsuleCollider: {fileID: 1627886227}
   enemyCtrl: {fileID: 1810038790}
@@ -205383,6 +205405,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 1894704300}
   spawnSpeed: 2
   maxSpawn: 3
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1 &1763551761
 GameObject:
   m_ObjectHideFlags: 0
@@ -233043,6 +233066,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 1175951955}
   spawnSpeed: 2
   maxSpawn: 4
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1 &2038043448
 GameObject:
   m_ObjectHideFlags: 0
@@ -241458,6 +241482,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 1726901255}
   spawnSpeed: 2
   maxSpawn: 7
+  specificEnemyPrefab: {fileID: 1329361756}
 --- !u!1001 &2079681937
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -255495,7 +255520,7 @@ MonoBehaviour:
   canMove: 1
   isMoving: 0
   isFinish: 0
-  moveSpeed: 4
+  moveSpeed: 2
 --- !u!1 &356057547003243024
 GameObject:
   m_ObjectHideFlags: 0
@@ -304622,6 +304647,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 2934905316507875936}
   spawnSpeed: 2
   maxSpawn: 3
+  specificEnemyPrefab: {fileID: 0}
 --- !u!4 &2923657252179376044
 Transform:
   m_ObjectHideFlags: 0
@@ -438631,8 +438657,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbd76286f3699e448a1aca2d5bb45f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 580
-  currentHP: 580
+  maxHP: 500
+  currentHP: 500
   isImmotal: 0
   capsuleCollider: {fileID: 2510598151852073572}
   enemyCtrl: {fileID: 4691403405808391405}
@@ -450179,6 +450205,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 2459088059081807582}
   spawnSpeed: 2
   maxSpawn: 4
+  specificEnemyPrefab: {fileID: 0}
 --- !u!114 &7102056098095076586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450932,7 +450959,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyManagerCtrl: {fileID: 9045088464225076962}
   spawnSpeed: 2
-  maxSpawn: 3
+  maxSpawn: 4
+  specificEnemyPrefab: {fileID: 0}
 --- !u!1 &7323978326933632787
 GameObject:
   m_ObjectHideFlags: 0
@@ -450980,6 +451008,7 @@ MonoBehaviour:
   enemyManagerCtrl: {fileID: 4968958449886829529}
   spawnSpeed: 1
   maxSpawn: 1
+  specificEnemyPrefab: {fileID: 4691403405808391405}
 --- !u!1 &7348254257373449878
 GameObject:
   m_ObjectHideFlags: 0
@@ -451202,7 +451231,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.24
+  m_Radius: 0.62
   m_Height: 1.14
   m_Direction: 1
   m_Center: {x: 0, y: 0.73, z: 0.09}

@@ -78,6 +78,14 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
             return;
         }
         
+        // Ẩn quest panel nếu đang ở Map 1
+        if (IsMap1())
+        {
+            questPanel.SetActive(false);
+            Debug.Log("Map 1 detected - Quest panel hidden!");
+            return;
+        }
+        
         // Get quest information (including completed ones)
         var allQuests = TowerQuestSystem.Instance.GetAllQuests();
         Debug.Log($"UpdateQuestDisplay: Current number of quests: {allQuests.Count}");
@@ -242,6 +250,24 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
             int totalProgress = TowerQuestSystem.Instance.GetTotalTowersPlaced();
             Debug.Log($"Quest {quest.questName} Progress: {totalProgress} towers");
             return totalProgress;
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải Map 1 không
+    /// </summary>
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
         }
     }
 } 

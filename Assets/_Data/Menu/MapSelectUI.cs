@@ -7,6 +7,7 @@ public class MapSelectUI : MonoBehaviour
     {
         // Reset quest trước khi load tutorial map
         this.ResetQuestsBeforeLoad();
+        
         SceneManager.LoadScene("Hai_SampleScene");
     }
 

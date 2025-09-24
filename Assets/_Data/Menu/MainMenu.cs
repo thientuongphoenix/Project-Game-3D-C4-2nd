@@ -57,8 +57,21 @@ public class MainMenu : MonoBehaviour
         this.LoadPlayButton();
         this.LoadConfirmationDialog();
         this.LoadCutsceneComponents();
+        this.EnsureMapProgressManagerExists();
         // Sử dụng Invoke để đảm bảo MapProgressManager đã được khởi tạo
         Invoke(nameof(CheckNewGameButtonVisibility), 0.1f);
+    }
+    
+    // Thêm phương thức đảm bảo MapProgressManager tồn tại
+    protected virtual void EnsureMapProgressManagerExists()
+    {
+        if (MapProgressManager.Instance == null)
+        {
+            Debug.Log("MapProgressManager not found, creating one...");
+            GameObject mapProgressObj = new GameObject("MapProgressManager");
+            mapProgressObj.AddComponent<MapProgressManager>();
+            Debug.Log("MapProgressManager created successfully!");
+        }
     }
     
     protected virtual void LoadNewGameButton()
@@ -66,6 +79,21 @@ public class MainMenu : MonoBehaviour
         if (this.newGameButton != null) return;
         this.newGameButton = GameObject.Find("NewGameButton");
         Debug.Log(transform.name + ": LoadNewGameButton", gameObject);
+        
+        // Gán onClick listener cho NewGameButton
+        if (this.newGameButton != null)
+        {
+            Button button = this.newGameButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(this.NewGame);
+                Debug.Log("NewGameButton onClick listener added!");
+            }
+            else
+            {
+                Debug.LogWarning("NewGameButton không có Button component!");
+            }
+        }
     }
     
     protected virtual void LoadMenuContainer()
@@ -389,17 +417,28 @@ public class MainMenu : MonoBehaviour
             return;
         }
         
-        // Chỉ hiện button New Game khi player đã hoàn thành tutorial
-        bool hasCompletedTutorial = MapProgressManager.Instance.IsMapCompleted(tutorialMapName);
+        bool hasCompletedTutorial = false; // Khai báo biến ở ngoài try block
         
-        if (hasCompletedTutorial)
+        try
         {
-            // Hiện button và đẩy các button khác xuống
-            this.ShowNewGameButton();
+            // Chỉ hiện button New Game khi player đã hoàn thành tutorial
+            hasCompletedTutorial = MapProgressManager.Instance.IsMapCompleted(tutorialMapName);
+            
+            if (hasCompletedTutorial)
+            {
+                // Hiện button và đẩy các button khác xuống
+                this.ShowNewGameButton();
+            }
+            else
+            {
+                // Ẩn button và thu hẹp layout
+                this.HideNewGameButton();
+            }
         }
-        else
+        catch (System.Exception e)
         {
-            // Ẩn button và thu hẹp layout
+            Debug.LogError($"Error in CheckNewGameButtonVisibility: {e.Message}");
+            // Mặc định ẩn button nếu có lỗi
             this.HideNewGameButton();
         }
         

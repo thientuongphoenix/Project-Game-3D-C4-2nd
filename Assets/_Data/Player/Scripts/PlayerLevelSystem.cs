@@ -19,9 +19,10 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     [Header("Original Cooldowns")]
     [SerializeField] protected float originalAttackLightCooldown = 0.3f;
     [SerializeField] protected float originalAttackHeavyCooldown = 1.5f; // Giảm từ 3.0s xuống 1.5s
+    [SerializeField] protected float originalAttackLightLimit = 0.1f; // Giá trị gốc của attackLightLimit
     
     [Header("Level Bonuses")]
-    [SerializeField] protected float movementSpeedBonus = 0.02f; // +2% mỗi level (giảm từ 5%)
+    [SerializeField] protected float movementSpeedBonus = 0.0f; // Tắt tăng movement speed
     [SerializeField] protected float attackSpeedBonus = 0.03f; // +3% mỗi level (giảm từ 8%)
     [SerializeField] protected float skillCooldownReduction = 0.02f; // -2% mỗi level (giảm từ 3%)
     
@@ -122,6 +123,19 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
                 Debug.Log($"Loaded Attack Heavy original cooldown: {originalAttackHeavyCooldown}s");
             }
         }
+        
+        // Load Attack Light Limit từ InputManager
+        if (InputManager.Instance != null)
+        {
+            var inputManagerType = InputManager.Instance.GetType();
+            var attackLightLimitField = inputManagerType.GetField("attackLightLimit", 
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (attackLightLimitField != null)
+            {
+                originalAttackLightLimit = (float)attackLightLimitField.GetValue(InputManager.Instance);
+                Debug.Log($"Loaded Attack Light Limit: {originalAttackLightLimit}s");
+            }
+        }
     }
     
     /// <summary>
@@ -192,16 +206,16 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     /// </summary>
     protected virtual void IncreaseStats()
     {
-        // Tăng Movement Speed (+5% mỗi level)
-        currentMovementSpeedMultiplier += movementSpeedBonus;
+        // Movement Speed không tăng theo level (đã tắt)
+        // currentMovementSpeedMultiplier += movementSpeedBonus;
         
-        // Tăng Attack Speed (+8% mỗi level)
+        // Tăng Attack Speed (+3% mỗi level)
         currentAttackSpeedMultiplier += attackSpeedBonus;
         
-        // Giảm Skill Cooldown (-3% mỗi level, tối thiểu 0.1x)
+        // Giảm Skill Cooldown (-2% mỗi level, tối thiểu 0.1x)
         currentSkillCooldownMultiplier = Mathf.Max(0.1f, currentSkillCooldownMultiplier - skillCooldownReduction);
         
-        Debug.Log($"Stats increased - Movement: {currentMovementSpeedMultiplier:F2}x, Attack: {currentAttackSpeedMultiplier:F2}x, Cooldown: {currentSkillCooldownMultiplier:F2}x");
+        Debug.Log($"Stats increased - Movement: {currentMovementSpeedMultiplier:F2}x (unchanged), Attack: {currentAttackSpeedMultiplier:F2}x, Cooldown: {currentSkillCooldownMultiplier:F2}x");
     }
     
     /// <summary>
@@ -211,8 +225,8 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     {
         if (playerCtrl == null) return;
         
-        // Cập nhật movement speed
-        this.UpdateMovementSpeed();
+        // Movement speed không được cập nhật (đã tắt)
+        // this.UpdateMovementSpeed();
         
         // Cập nhật attack speed
         this.UpdateAttackSpeed();
@@ -355,10 +369,10 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
         
         if (attackLightLimitField != null)
         {
-            float baseLimit = (float)attackLightLimitField.GetValue(InputManager.Instance);
-            float newLimit = baseLimit / currentAttackSpeedMultiplier; // Chia để giảm limit
+            // Sử dụng giá trị gốc thay vì giá trị hiện tại
+            float newLimit = originalAttackLightLimit / currentAttackSpeedMultiplier;
             attackLightLimitField.SetValue(InputManager.Instance, newLimit);
-            Debug.Log($"Attack Light Limit: {baseLimit:F2}s → {newLimit:F2}s");
+            Debug.Log($"Attack Light Limit: {originalAttackLightLimit:F2}s → {newLimit:F2}s (Level {currentLevel})");
         }
     }
     
@@ -392,7 +406,7 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     protected virtual void ShowLevelUpNotification()
     {
         Debug.Log($"🎉 LEVEL UP! Level {currentLevel} 🎉");
-        Debug.Log($"📈 Movement Speed: +{movementSpeedBonus * 100:F0}% (Total: {currentMovementSpeedMultiplier:F2}x)");
+        Debug.Log($"📈 Movement Speed: Unchanged (Total: {currentMovementSpeedMultiplier:F2}x)");
         Debug.Log($"⚔️ Attack Speed: +{attackSpeedBonus * 100:F0}% (Total: {currentAttackSpeedMultiplier:F2}x)");
         Debug.Log($"⚡ Skill Cooldown: -{skillCooldownReduction * 100:F0}% (Total: {currentSkillCooldownMultiplier:F2}x)");
         

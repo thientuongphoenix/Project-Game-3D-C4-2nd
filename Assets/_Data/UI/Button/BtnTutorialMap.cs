@@ -15,6 +15,18 @@ public class BtnTutorialMap : BtnMapLock
     protected override void ExecuteMapAction()
     {
         Debug.Log("Loading Tutorial Map...");
+        
+        // Reset quests khi chọn tutorial map
+        if (TowerQuestSystem.Instance != null)
+        {
+            TowerQuestSystem.Instance.ResetAndReinitializeQuests();
+            Debug.Log("Quests reset for tutorial map!");
+        }
+        else
+        {
+            Debug.LogWarning("TowerQuestSystem.Instance is null! Tutorial may not be reset properly.");
+        }
+        
         SceneManager.LoadScene("Hai_SampleScene");
     }
     

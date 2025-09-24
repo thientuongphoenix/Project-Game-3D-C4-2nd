@@ -255,11 +255,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &35748117 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2862360908646881537, guid: 0f3500db99f275542b46ef1059c091e7, type: 3}
-  m_PrefabInstance: {fileID: 4578410869493216446}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &38478478
 GameObject:
   m_ObjectHideFlags: 0
@@ -3644,11 +3639,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 248160423}
   m_CullTransparentMesh: 1
---- !u!1 &262514990 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5711157539605989731, guid: a6d797ae8fee35b4ebc5b9967b5b1392, type: 3}
-  m_PrefabInstance: {fileID: 6586284476700730288}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &269757737
 GameObject:
   m_ObjectHideFlags: 0
@@ -12369,11 +12359,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 212805998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &880881422 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8975433578251584479, guid: c5dcc7c0d2e776945a5f43d4aaa98c3e, type: 3}
-  m_PrefabInstance: {fileID: 3470009767850631703}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &887037452
 GameObject:
   m_ObjectHideFlags: 0
@@ -26278,7 +26263,8 @@ MonoBehaviour:
   ctrl: {fileID: 1796759407}
   volumeMusic: 1
   volumeSfx: 1
-  listMusic: []
+  listMusic:
+  - {fileID: 1043716544}
   listSfx: []
 --- !u!4 &1870858048
 Transform:
@@ -26887,21 +26873,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704343edb84efa7468f6de00a5fea10e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectA: {fileID: 880881422}
-  objectB: {fileID: 35748117}
-  objectC: {fileID: 262514990}
-  objectD: {fileID: 2138783395}
-  objectBoss: {fileID: 0}
+  enemyType1: {fileID: 0}
+  enemyType2: {fileID: 0}
+  enemyType3: {fileID: 0}
+  enemyType4: {fileID: 0}
+  enemyType5: {fileID: 0}
+  enemySpawning1: {fileID: 0}
+  enemySpawning2: {fileID: 0}
+  enemySpawning3: {fileID: 0}
+  enemySpawning4: {fileID: 0}
+  enemySpawning5: {fileID: 0}
+  spawnPoints: []
   time1: 0
   time2: 0
   time3: 0
   time4: 0
   time5: 0
-  time6: 0
-  time7: 0
-  time8: 0
-  time9: 0
-  timeBoss: 0
+  useWave5SequentialSpawn: 1
+  wave5StartTime: 0
+  wave5SpawnTimes:
+  - 0
+  - 5
+  - 10
+  - 15
+  - 20
+  wave5SpawnCounts: 0300000004000000050000000600000001000000
+  wave5BossIsFinalBoss: 1
+  autoStart: 0
+  useEnemySpawning: 1
+  disableWave1to4Spawn: 1
+  showDebugLogs: 1
 --- !u!1 &1901489663
 GameObject:
   m_ObjectHideFlags: 0
@@ -34629,11 +34630,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
   - {fileID: 1487375494}
---- !u!1 &2138783395 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3155812318259971965, guid: 360fc1cd782868f46badb033e1c16e5a, type: 3}
-  m_PrefabInstance: {fileID: 1322618954724563252}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2141531020
 GameObject:
   m_ObjectHideFlags: 0

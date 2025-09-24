@@ -39,10 +39,24 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         this.timeSpawn = FindObjectOfType<TimeSpawn>();
         if (this.timeSpawn == null)
         {
-            Debug.LogWarning("TimeSpawn not found in scene! Wave 5 will use normal spawning.");
+            Debug.Log("TimeSpawn not found in scene - Wave 5 will use normal spawning (this is normal for Map 1)");
         }
         else
         {
+            // Đảm bảo TimeSpawn GameObject được kích hoạt
+            if (!this.timeSpawn.gameObject.activeInHierarchy)
+            {
+                this.timeSpawn.gameObject.SetActive(true);
+                Debug.Log("TimeSpawn GameObject was disabled, now activated!");
+            }
+            
+            // Đảm bảo TimeSpawn component được enable
+            if (!this.timeSpawn.enabled)
+            {
+                this.timeSpawn.enabled = true;
+                Debug.Log("TimeSpawn component was disabled, now enabled!");
+            }
+            
             Debug.Log("TimeSpawn found and loaded for Wave 5");
         }
     }
@@ -262,9 +276,16 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         
         Debug.Log("Starting Wave 5 with sequential spawning...");
         
-        // TẮT TimeSpawn component để tránh xung đột
-        timeSpawn.enabled = false;
-        Debug.Log("TimeSpawn component disabled to prevent conflicts");
+        // Đảm bảo TimeSpawn GameObject được kích hoạt
+        if (!timeSpawn.gameObject.activeInHierarchy)
+        {
+            timeSpawn.gameObject.SetActive(true);
+            Debug.Log("TimeSpawn GameObject activated for Wave 5");
+        }
+        
+        // BẬT TimeSpawn component để nó hoạt động
+        timeSpawn.enabled = true;
+        Debug.Log("TimeSpawn component enabled for Wave 5");
         
         // Tắt tất cả objects trước khi bắt đầu
         this.DeactivateAllTimeSpawnObjects();
@@ -277,37 +298,26 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
     
     protected virtual IEnumerator SpawnWave5Sequentially()
     {
-        Debug.Log("Starting Wave 5 sequential spawn with increased intervals (except Object A)");
+        Debug.Log("Starting Wave 5 sequential spawn using new TimeSpawn system");
         
-        // Spawn Object A (3s) - KHÔNG THAY ĐỔI
-        yield return new WaitForSeconds(3f);
-        this.ActivateTimeSpawnObject(timeSpawn.objectA, "Object A");
-        yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
-        this.DeactivateTimeSpawnObject(timeSpawn.objectA, "Object A"); // Tắt sau khi spawn xong
-        
-        // Spawn Object B - Chờ 20s (tăng gấp đôi từ 10s)
-        yield return new WaitForSeconds(20f);
-        this.ActivateTimeSpawnObject(timeSpawn.objectB, "Object B");
-        yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
-        this.DeactivateTimeSpawnObject(timeSpawn.objectB, "Object B"); // Tắt sau khi spawn xong
-        
-        // Spawn Object C - Chờ 30s (tăng gấp đôi từ 15s)
-        yield return new WaitForSeconds(30f);
-        this.ActivateTimeSpawnObject(timeSpawn.objectC, "Object C");
-        yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
-        this.DeactivateTimeSpawnObject(timeSpawn.objectC, "Object C"); // Tắt sau khi spawn xong
-        
-        // Spawn Object D - Chờ 40s (tăng gấp đôi từ 20s)
-        yield return new WaitForSeconds(40f);
-        this.ActivateTimeSpawnObject(timeSpawn.objectD, "Object D");
-        yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
-        this.DeactivateTimeSpawnObject(timeSpawn.objectD, "Object D"); // Tắt sau khi spawn xong
-        
-        // Spawn Object Boss - Chờ 60s
-        yield return new WaitForSeconds(60f);
-        this.ActivateTimeSpawnObject(timeSpawn.objectBoss, "Object Boss");
-        yield return new WaitForSeconds(3f); // Chờ spawn đủ số lượng
-        this.DeactivateTimeSpawnObject(timeSpawn.objectBoss, "Object Boss"); // Tắt sau khi spawn xong
+        // Sử dụng TimeSpawn mới - Wave 5 sẽ được xử lý tự động
+        if (timeSpawn != null && timeSpawn.useWave5SequentialSpawn)
+        {
+            // Đảm bảo TimeSpawn được bật
+            timeSpawn.enabled = true;
+            timeSpawn.gameObject.SetActive(true);
+            
+            // Bắt đầu TimeSpawn cho Wave 5
+            timeSpawn.StartWave5Spawning();
+            Debug.Log("TimeSpawn started for Wave 5 sequential spawning");
+            
+            // Chờ TimeSpawn hoàn thành Wave 5
+            yield return new WaitUntil(() => timeSpawn.IsAllEnemiesSpawned() || timeSpawn.GetCurrentTime() > timeSpawn.wave5SpawnTimes[timeSpawn.wave5SpawnTimes.Length - 1] + 10f);
+        }
+        else
+        {
+            Debug.LogWarning("TimeSpawn not found or Wave 5 sequential spawn disabled!");
+        }
         
         Debug.Log("Wave 5 sequential spawn completed!");
     }
@@ -316,44 +326,28 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
     {
         if (timeSpawn == null) return;
         
-        // Tắt tất cả objects
-        if (timeSpawn.objectA != null) timeSpawn.objectA.SetActive(false);
-        if (timeSpawn.objectB != null) timeSpawn.objectB.SetActive(false);
-        if (timeSpawn.objectC != null) timeSpawn.objectC.SetActive(false);
-        if (timeSpawn.objectD != null) timeSpawn.objectD.SetActive(false);
-        if (timeSpawn.objectBoss != null) timeSpawn.objectBoss.SetActive(false);
-        
         // Tắt tất cả EnemySpawning components
-        GameObject[] objects = { timeSpawn.objectA, timeSpawn.objectB, timeSpawn.objectC, timeSpawn.objectD, timeSpawn.objectBoss };
-        foreach (var obj in objects)
+        EnemySpawning[] enemySpawningRefs = { timeSpawn.enemySpawning1, timeSpawn.enemySpawning2, timeSpawn.enemySpawning3, timeSpawn.enemySpawning4, timeSpawn.enemySpawning5 };
+        
+        foreach (var enemySpawning in enemySpawningRefs)
         {
-            if (obj != null)
+            if (enemySpawning != null)
             {
-                EnemySpawning enemySpawning = obj.GetComponent<EnemySpawning>();
-                if (enemySpawning != null)
-                {
-                    enemySpawning.enabled = false;
-                }
+                enemySpawning.enabled = false;
+                Debug.Log($"Deactivated EnemySpawning: {enemySpawning.name}");
             }
         }
         
-        Debug.Log("All TimeSpawn objects deactivated");
+        // KHÔNG tắt TimeSpawn component - để nó hoạt động cho Wave 5
+        Debug.Log("All TimeSpawn EnemySpawning components deactivated (TimeSpawn component remains active)");
     }
     
-    protected virtual void ActivateTimeSpawnObject(GameObject obj, string objectName)
+    protected virtual void ActivateTimeSpawnObject(EnemySpawning enemySpawning, string objectName)
     {
-        if (obj != null)
+        if (enemySpawning != null)
         {
-            obj.SetActive(true);
+            enemySpawning.enabled = true;
             Debug.Log($"Activated {objectName} for Wave 5");
-            
-            // Bật EnemySpawning component nếu có
-            EnemySpawning enemySpawning = obj.GetComponent<EnemySpawning>();
-            if (enemySpawning != null)
-            {
-                enemySpawning.enabled = true;
-                Debug.Log($"Enabled EnemySpawning for {objectName}");
-            }
         }
         else
         {
@@ -361,21 +355,13 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         }
     }
     
-    protected virtual void DeactivateTimeSpawnObject(GameObject obj, string objectName)
+    protected virtual void DeactivateTimeSpawnObject(EnemySpawning enemySpawning, string objectName)
     {
-        if (obj != null)
+        if (enemySpawning != null)
         {
-            // Tắt EnemySpawning component trước
-            EnemySpawning enemySpawning = obj.GetComponent<EnemySpawning>();
-            if (enemySpawning != null)
-            {
-                enemySpawning.enabled = false;
-                Debug.Log($"Disabled EnemySpawning for {objectName}");
-            }
-            
-            // Tắt GameObject
-            obj.SetActive(false);
-            Debug.Log($"Deactivated {objectName} for Wave 5");
+            // Tắt EnemySpawning component
+            enemySpawning.enabled = false;
+            Debug.Log($"Disabled EnemySpawning for {objectName}");
         }
         else
         {
@@ -439,16 +425,15 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         int aliveEnemies = 0;
         int totalEnemies = 0;
         
-        // Kiểm tra enemies từ tất cả TimeSpawn objects (không cần activeInHierarchy)
-        GameObject[] timeSpawnObjects = { timeSpawn.objectA, timeSpawn.objectB, timeSpawn.objectC, timeSpawn.objectD, timeSpawn.objectBoss };
+        // Kiểm tra enemies từ tất cả TimeSpawn EnemySpawning components
+        EnemySpawning[] timeSpawnEnemySpawning = { timeSpawn.enemySpawning1, timeSpawn.enemySpawning2, timeSpawn.enemySpawning3, timeSpawn.enemySpawning4, timeSpawn.enemySpawning5 };
         
-        foreach (var obj in timeSpawnObjects)
+        foreach (var enemySpawning in timeSpawnEnemySpawning)
         {
-            if (obj != null) // Bỏ điều kiện activeInHierarchy
+            if (enemySpawning != null) // Kiểm tra EnemySpawning component
             {
-                // Tìm EnemySpawning component trong object
-                EnemySpawning enemySpawning = obj.GetComponent<EnemySpawning>();
-                if (enemySpawning != null)
+                // Sử dụng EnemySpawning component trực tiếp
+                if (enemySpawning.SpawnedEnemies != null)
                 {
                     foreach (var enemy in enemySpawning.SpawnedEnemies)
                     {
@@ -469,6 +454,35 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
             {
                 aliveEnemies++;
                 totalEnemies++;
+            }
+        }
+        
+        // KIỂM TRA FINAL BOSS TỪ TIMESPAWN
+        if (timeSpawn.FinalBoss != null)
+        {
+            totalEnemies++;
+            var finalBossCtrl = timeSpawn.FinalBoss.GetComponent<EnemyCtrl>();
+            if (finalBossCtrl != null && !finalBossCtrl.EnemyDamageReceiver.IsDead())
+            {
+                aliveEnemies++;
+            }
+        }
+        
+        // KIỂM TRA TẤT CẢ ENEMIES TRONG SCENE (FALLBACK)
+        if (totalEnemies == 0)
+        {
+            // Tìm tất cả enemies trong scene
+            EnemyCtrl[] allEnemies = FindObjectsOfType<EnemyCtrl>();
+            foreach (var enemy in allEnemies)
+            {
+                if (enemy != null && enemy.gameObject.activeInHierarchy)
+                {
+                    totalEnemies++;
+                    if (!enemy.EnemyDamageReceiver.IsDead())
+                    {
+                        aliveEnemies++;
+                    }
+                }
             }
         }
         
@@ -577,7 +591,7 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
         }
     }
     
-    protected virtual void CompleteAllWaves()
+    public virtual void CompleteAllWaves()
     {
         allWavesCompleted = true;
         isSpawning = false;

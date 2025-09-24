@@ -653,7 +653,14 @@ public class TowerManager : SaiSingleton<TowerManager>
     
     protected virtual bool IsTowerRequiresQuest(TowerCode towerCode)
     {
-        // Chỉ các tower này cần quest để mở khóa
+        // Kiểm tra xem có phải Map 1 không - nếu là Map 1 thì unlock tất cả tower
+        if (this.IsMap1())
+        {
+            Debug.Log($"Map 1 detected - All towers unlocked! Tower: {towerCode}");
+            return false; // Không cần quest trong Map 1
+        }
+        
+        // Chỉ các tower này cần quest để mở khóa (chỉ trong Tutorial Map)
         switch (towerCode)
         {
             case TowerCode.MachineGun:     // Cần quest "Movement Tutorial"
@@ -665,6 +672,22 @@ public class TowerManager : SaiSingleton<TowerManager>
             case TowerCode.Core:           // Luôn mở khóa từ đầu
             default:
                 return false;
+        }
+    }
+    
+    // Thêm phương thức kiểm tra Map 1
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
         }
     }
 }

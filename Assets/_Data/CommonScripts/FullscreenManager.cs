@@ -11,6 +11,16 @@ public class FullscreenManager : SaiSingleton<FullscreenManager>
     
     protected virtual void Start()
     {
+        // Đợi một frame để đảm bảo scene đã load xong
+        StartCoroutine(ApplyFullscreenSettingsDelayed());
+    }
+    
+    protected virtual System.Collections.IEnumerator ApplyFullscreenSettingsDelayed()
+    {
+        // Đợi một frame
+        yield return null;
+        
+        // Áp dụng fullscreen settings
         this.ApplyFullscreenSettings();
     }
     
