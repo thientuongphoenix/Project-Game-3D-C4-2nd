@@ -159,7 +159,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests.Add(new TowerQuest
                 {
                     questName = "Tower Builder I",
-                    description = "Place 3 towers to unlock OneGunBarrel Tower",
+                    description = "Press F Key to place 3 MachineGun towers to unlock OneGunBarrel Tower",
                     requiredTowerCount = 3,
                     unlockedTower = TowerCode.OneGunBarrel,
                     isCompleted = false,

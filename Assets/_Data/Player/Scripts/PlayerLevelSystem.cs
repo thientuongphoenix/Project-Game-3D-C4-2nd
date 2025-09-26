@@ -36,9 +36,16 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     protected PlayerDamageReceiver playerDamageReceiver;
     protected PlayerLevel playerLevel; // Reference đến hệ thống level cũ
     
+    // Scene tracking
+    protected string lastSceneName = "";
+    
     protected override void Start()
     {
         base.Start();
+        
+        // Kiểm tra scene và reset nếu cần
+        this.CheckSceneAndReset();
+        
         this.LoadPlayerReferences();
         this.LoadOriginalCooldowns();
         this.LoadExpFromInventory();
@@ -47,8 +54,133 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     
     protected virtual void Update()
     {
+        // Kiểm tra scene change để reset khi cần
+        this.CheckSceneChange();
+        
         // Kiểm tra exp trong inventory mỗi frame để cập nhật real-time
         this.CheckExpUpdate();
+    }
+    
+    /// <summary>
+    /// Kiểm tra thay đổi scene và reset khi cần
+    /// </summary>
+    protected virtual void CheckSceneChange()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            
+            // Nếu scene đã thay đổi
+            if (lastSceneName != currentSceneName)
+            {
+                Debug.Log($"PlayerLevelSystem: Scene changed from '{lastSceneName}' to '{currentSceneName}'");
+                lastSceneName = currentSceneName;
+                
+                // Reset khi vào Hai_Map
+                if (currentSceneName == "Hai_Map")
+                {
+                    Debug.Log("=== RESETTING PLAYER LEVEL SYSTEM FOR HAI_MAP ===");
+                    this.ResetPlayerLevelSystem();
+                    Debug.Log("================================================");
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong CheckSceneChange: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra scene và reset nếu chuyển từ Hai_SampleScene sang Hai_Map (chỉ chạy 1 lần khi Start)
+    /// </summary>
+    protected virtual void CheckSceneAndReset()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            Debug.Log($"PlayerLevelSystem: Initial scene: {currentSceneName}");
+            
+            // Khởi tạo lastSceneName
+            lastSceneName = currentSceneName;
+            
+            // Reset khi vào Hai_Map
+            if (currentSceneName == "Hai_Map")
+            {
+                Debug.Log("=== RESETTING PLAYER LEVEL SYSTEM FOR HAI_MAP (INITIAL) ===");
+                this.ResetPlayerLevelSystem();
+                Debug.Log("==========================================================");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong CheckSceneAndReset: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Reset PlayerLevelSystem về trạng thái ban đầu
+    /// </summary>
+    protected virtual void ResetPlayerLevelSystem()
+    {
+        try
+        {
+            Debug.Log("Resetting PlayerLevelSystem to default state...");
+            
+            // Reset level và exp
+            currentLevel = 1;
+            currentExp = 0;
+            expToNextLevel = 100;
+            
+            // Reset multipliers về giá trị ban đầu
+            currentMovementSpeedMultiplier = 1.0f;
+            currentAttackSpeedMultiplier = 1.0f;
+            currentSkillCooldownMultiplier = 1.0f;
+            
+            Debug.Log($"Reset completed - Level: {currentLevel}, Exp: {currentExp}");
+            Debug.Log($"Reset multipliers - Movement: {currentMovementSpeedMultiplier:F2}x, Attack: {currentAttackSpeedMultiplier:F2}x, Cooldown: {currentSkillCooldownMultiplier:F2}x");
+            
+            // Reset exp trong inventory nếu có
+            this.ResetExpInInventory();
+            
+            Debug.Log("✅ PlayerLevelSystem reset completed!");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong ResetPlayerLevelSystem: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Reset exp trong inventory về 0
+    /// </summary>
+    protected virtual void ResetExpInInventory()
+    {
+        try
+        {
+            if (InventoryManager.Instance == null)
+            {
+                Debug.LogWarning("InventoryManager.Instance is null, cannot reset exp");
+                return;
+            }
+            
+            // Tìm PlayerExp item trong Monies inventory
+            var expItem = InventoryManager.Instance.Monies().FindItem(ItemCode.PlayerExp);
+            if (expItem != null)
+            {
+                Debug.Log($"Resetting PlayerExp from {expItem.itemCount} to 0");
+                expItem.itemCount = 0;
+                Debug.Log("✅ PlayerExp reset to 0 in inventory");
+            }
+            else
+            {
+                Debug.Log("PlayerExp item not found in inventory");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong ResetExpInInventory: {e.Message}");
+        }
     }
     
     /// <summary>
@@ -482,6 +614,16 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
     }
     
     /// <summary>
+    /// Force reset PlayerLevelSystem (có thể gọi từ bên ngoài)
+    /// </summary>
+    public virtual void ForceResetPlayerLevelSystem()
+    {
+        Debug.Log("🔧 FORCE RESETTING PLAYER LEVEL SYSTEM...");
+        this.ResetPlayerLevelSystem();
+        Debug.Log("✅ Force reset completed!");
+    }
+    
+    /// <summary>
     /// Test method để kiểm tra stats hiện tại
     /// </summary>
     [ContextMenu("Test Current Stats")]
@@ -507,5 +649,38 @@ public class PlayerLevelSystem : SaiSingleton<PlayerLevelSystem>
         }
         
         Debug.Log("========================");
+    }
+    
+    /// <summary>
+    /// Test method để force reset PlayerLevelSystem
+    /// </summary>
+    [ContextMenu("Force Reset Player Level System")]
+    public virtual void TestForceReset()
+    {
+        Debug.Log("=== TESTING FORCE RESET ===");
+        this.ForceResetPlayerLevelSystem();
+        Debug.Log("=== TEST COMPLETE ===");
+    }
+    
+    /// <summary>
+    /// Debug singleton behavior và scene tracking
+    /// </summary>
+    [ContextMenu("Debug Singleton & Scene Behavior")]
+    public virtual void DebugSingletonBehavior()
+    {
+        Debug.Log("=== PLAYER LEVEL SYSTEM SINGLETON DEBUG ===");
+        Debug.Log($"Instance: {Instance}");
+        Debug.Log($"This: {this}");
+        Debug.Log($"Is Instance == This: {Instance == this}");
+        Debug.Log($"Current Scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        Debug.Log($"Last Scene: {lastSceneName}");
+        Debug.Log($"GameObject: {gameObject.name}");
+        Debug.Log($"DontDestroyOnLoad: {gameObject.scene.name == "DontDestroyOnLoad"}");
+        Debug.Log($"Current Level: {currentLevel}");
+        Debug.Log($"Current Exp: {currentExp}");
+        Debug.Log($"Movement Multiplier: {currentMovementSpeedMultiplier:F2}x");
+        Debug.Log($"Attack Multiplier: {currentAttackSpeedMultiplier:F2}x");
+        Debug.Log($"Cooldown Multiplier: {currentSkillCooldownMultiplier:F2}x");
+        Debug.Log("==========================================");
     }
 }

@@ -47,6 +47,9 @@ public class SettingsMenu : MonoBehaviour
         InitializeQualityDropdown();
         Debug.Log($"Current quality after InitializeQualityDropdown: {QualitySettings.GetQualityLevel()} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})");
         
+        // Đảm bảo fullscreen mặc định được set
+        this.EnsureDefaultFullscreen();
+        
         // Lưu timeScale ban đầu
         previousTimeScale = Time.timeScale;
         
@@ -319,6 +322,15 @@ public class SettingsMenu : MonoBehaviour
         // Load fullscreen (mặc định true nếu chưa có)
         isFullScreen = PlayerPrefs.GetInt("FullScreen", 1) == 1;
         
+        // Force set fullscreen mặc định là true
+        if (!isFullScreen)
+        {
+            Debug.Log("Force setting fullscreen to true (default)");
+            isFullScreen = true;
+            PlayerPrefs.SetInt("FullScreen", 1);
+            PlayerPrefs.Save();
+        }
+        
         // Load quality (mặc định 3 - High nếu chưa có)
         int qualityLevel = PlayerPrefs.GetInt("QualityLevel", 3);
         Debug.Log($"QualityLevel from PlayerPrefs: {qualityLevel}");
@@ -434,6 +446,98 @@ public class SettingsMenu : MonoBehaviour
         else
         {
             Debug.LogWarning("fullScreenToggle is null!");
+        }
+    }
+    
+    /// <summary>
+    /// Force set fullscreen mặc định là true
+    /// </summary>
+    [ContextMenu("Force Set Default Fullscreen")]
+    public virtual void ForceSetDefaultFullscreen()
+    {
+        Debug.Log("🔧 FORCING DEFAULT FULLSCREEN...");
+        
+        // Set fullscreen mặc định là true
+        isFullScreen = true;
+        PlayerPrefs.SetInt("FullScreen", 1);
+        PlayerPrefs.Save();
+        
+        // Update toggle UI
+        if (fullScreenToggle != null)
+        {
+            // Tạm thời disable OnValueChanged
+            var onValueChanged = fullScreenToggle.onValueChanged;
+            fullScreenToggle.onValueChanged = new Toggle.ToggleEvent();
+            
+            // Set giá trị
+            fullScreenToggle.isOn = true;
+            
+            // Khôi phục OnValueChanged
+            fullScreenToggle.onValueChanged = onValueChanged;
+            
+            Debug.Log("Fullscreen toggle set to true (default)");
+        }
+        
+        // Apply fullscreen settings
+        this.SetFullScreen();
+        
+        Debug.Log("✅ Default fullscreen applied!");
+    }
+    
+    /// <summary>
+    /// Đảm bảo fullscreen mặc định được set
+    /// </summary>
+    protected virtual void EnsureDefaultFullscreen()
+    {
+        try
+        {
+            Debug.Log("=== ENSURING DEFAULT FULLSCREEN ===");
+            
+            // Kiểm tra PlayerPrefs
+            int savedFullscreen = PlayerPrefs.GetInt("FullScreen", -1);
+            Debug.Log($"Saved fullscreen from PlayerPrefs: {savedFullscreen}");
+            
+            // Nếu chưa có setting hoặc là false, set mặc định là true
+            if (savedFullscreen != 1)
+            {
+                Debug.Log("Setting default fullscreen to true...");
+                
+                // Set fullscreen mặc định
+                isFullScreen = true;
+                PlayerPrefs.SetInt("FullScreen", 1);
+                PlayerPrefs.Save();
+                
+                // Update toggle UI
+                if (fullScreenToggle != null)
+                {
+                    // Tạm thời disable OnValueChanged
+                    var onValueChanged = fullScreenToggle.onValueChanged;
+                    fullScreenToggle.onValueChanged = new Toggle.ToggleEvent();
+                    
+                    // Set giá trị
+                    fullScreenToggle.isOn = true;
+                    
+                    // Khôi phục OnValueChanged
+                    fullScreenToggle.onValueChanged = onValueChanged;
+                    
+                    Debug.Log("Fullscreen toggle set to true (default)");
+                }
+                
+                // Apply fullscreen settings
+                this.SetFullScreen();
+                
+                Debug.Log("✅ Default fullscreen ensured!");
+            }
+            else
+            {
+                Debug.Log("✅ Fullscreen already set to true");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong EnsureDefaultFullscreen: {e.Message}");
         }
     }
 }
