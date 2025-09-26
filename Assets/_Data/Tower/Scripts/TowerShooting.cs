@@ -6,6 +6,11 @@ public class TowerShooting : TowerAbstract
     [SerializeField] protected float targetLoadSpeed = 1f;
     [SerializeField] protected float shootingSpeed = 0.7f;
     [SerializeField] protected float rotationSpeed = 4f;
+    
+    // Biến lưu tốc độ bắn cơ bản và tốc độ tăng thêm do level
+    [SerializeField] protected float baseShootingSpeed = 0.7f; // Tốc độ bắn cơ bản ban đầu
+    [SerializeField] protected float levelBonusSpeed = 0f; // Tốc độ tăng thêm do level
+    [SerializeField] protected float minShootingSpeed = 0.4f; // Tốc độ bắn tối thiểu (nhanh nhất)
     [SerializeField] protected EnemyCtrl target;
     [SerializeField] protected BulletSpawner bulletSpawner;
     [SerializeField] protected Bullet bullet;
@@ -26,6 +31,17 @@ public class TowerShooting : TowerAbstract
         base.Start();
         Invoke(nameof(this.TargetLoading), this.targetLoadSpeed);
         //Invoke(nameof(this.Shooting), this.shootingSpeed);
+    }
+    
+    protected virtual void OnEnable()
+    {
+        // Khởi tạo baseShootingSpeed nếu chưa có
+        if (this.baseShootingSpeed <= 0)
+        {
+            this.baseShootingSpeed = this.shootingSpeed;
+        }
+        // Reset tốc độ bắn về cơ bản khi enable reuse
+        this.ResetToBaseShootingSpeed();
     }
 
     protected void FixedUpdate()
@@ -177,5 +193,41 @@ public class TowerShooting : TowerAbstract
         this.totalKill = 0;
         this.currentFirePoint = 0;
         this.shootingTimer = 0f;
+    }
+    
+    // Method để tăng tốc độ bắn khi lên cấp (chỉ cho OneGunBarrel)
+    public virtual void OnLevelUp()
+    {
+        // Kiểm tra nếu là OneGunBarrel tower
+        if (this.towerCtrl == null) return;
+        
+        // Lấy TowerCode từ tên object
+        string towerName = this.towerCtrl.name.ToLower();
+        if (!towerName.Contains("onegunbarrel")) return;
+        
+        // Tính toán tốc độ bắn mới (giảm 0.1s mỗi level)
+        float newShootingSpeed = this.baseShootingSpeed - this.levelBonusSpeed - 0.05f;
+        
+        // Giới hạn tốc độ tối thiểu là 0.4s
+        if (newShootingSpeed < this.minShootingSpeed)
+        {
+            newShootingSpeed = this.minShootingSpeed;
+        }
+        
+        // Cập nhật tốc độ bắn
+        this.levelBonusSpeed = this.baseShootingSpeed - newShootingSpeed;
+        this.shootingSpeed = newShootingSpeed;
+        
+        Debug.Log($"{transform.name}: Lên cấp! Tốc độ bắn mới: {this.shootingSpeed}s (giảm {this.levelBonusSpeed}s)");
+    }
+    
+    // Method để reset tốc độ bắn về cơ bản khi enable reuse
+    public virtual void ResetToBaseShootingSpeed()
+    {
+        // Chỉ reset bonus tốc độ, giữ nguyên baseShootingSpeed
+        this.levelBonusSpeed = 0f; // Reset bonus tốc độ
+        this.shootingSpeed = this.baseShootingSpeed;
+        
+        Debug.Log($"{transform.name}: Reset tốc độ bắn về cơ bản: {this.shootingSpeed}s");
     }
 }

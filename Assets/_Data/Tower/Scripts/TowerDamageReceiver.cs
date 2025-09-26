@@ -5,12 +5,28 @@ public class TowerDamageReceiver : DamageReceiver
 {
     [SerializeField] protected SphereCollider sphereCollider;
     [SerializeField] protected TowerCtrl towerCtrl;
+    
+    // Biến lưu máu cơ bản và máu tăng thêm do level
+    [SerializeField] protected int baseMaxHP = 10; // Máu cơ bản ban đầu
+    [SerializeField] protected int levelBonusHP = 0; // Máu tăng thêm do level
 
     protected override void LoadComponents()
     {
         base.LoadComponents();
         this.LoadSphereCollider();
         this.LoadTowerCtrl();
+    }
+    
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        // Khởi tạo baseMaxHP nếu chưa có
+        if (this.baseMaxHP <= 0)
+        {
+            this.baseMaxHP = this.maxHP;
+        }
+        // Reset máu về cơ bản khi enable reuse
+        this.ResetToBaseHP();
     }
 
     protected virtual void LoadTowerCtrl()
@@ -70,5 +86,40 @@ public class TowerDamageReceiver : DamageReceiver
     {
         base.OnReborn();
         this.sphereCollider.enabled = true;
+    }
+    
+    // Method để tăng máu khi lên cấp (chỉ cho MachineGun)
+    public virtual void OnLevelUp()
+    {
+        // Kiểm tra nếu là MachineGun tower
+        if (this.towerCtrl == null) return;
+        
+        // Lấy TowerCode từ tên object (vì TowerCtrl không có property TowerCode trực tiếp)
+        string towerName = this.towerCtrl.name.ToLower();
+        if (!towerName.Contains("machinegun")) return;
+        
+        // Tính toán máu tăng thêm (20% máu cơ bản)
+        int hpIncrease = Mathf.RoundToInt(this.baseMaxHP * 0.2f);
+        this.levelBonusHP += hpIncrease;
+        
+        // Cập nhật maxHP
+        this.maxHP = this.baseMaxHP + this.levelBonusHP;
+        
+        // Hồi 20% máu hiện tại
+        int healAmount = Mathf.RoundToInt(this.currentHP * 0.2f);
+        this.Heal(healAmount);
+        
+        Debug.Log($"{transform.name}: Lên cấp! Máu tăng thêm: {hpIncrease}, Máu hiện tại: {this.currentHP}/{this.maxHP}");
+    }
+    
+    // Method để reset máu về cơ bản khi enable reuse
+    public virtual void ResetToBaseHP()
+    {
+        // Chỉ reset bonus máu, giữ nguyên baseMaxHP
+        this.levelBonusHP = 0; // Reset bonus máu
+        this.maxHP = this.baseMaxHP;
+        this.currentHP = this.maxHP;
+        
+        Debug.Log($"{transform.name}: Reset máu về cơ bản: {this.maxHP}");
     }
 }

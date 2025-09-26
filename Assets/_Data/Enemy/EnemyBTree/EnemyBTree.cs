@@ -10,6 +10,21 @@ public class EnemyBTree : BTAgent
     private float lastAttackTime = -999f;
 
     [SerializeField] protected float attackRange = 1.5f; // Khoảng cách tấn công, có thể chỉnh sửa trong Inspector
+    
+    // --- Hàm kiểm tra target có hợp lệ không ---
+    protected virtual bool IsValidTarget(TowerCtrl tower)
+    {
+        if (tower == null) return false;
+        if (tower.TowerDamageReceiver != null && tower.TowerDamageReceiver.IsDead()) return false;
+        return true;
+    }
+    
+    protected virtual bool IsValidTarget(PlayerCtrl player)
+    {
+        if (player == null) return false;
+        // Có thể thêm kiểm tra player chết nếu cần
+        return true;
+    }
 
     public override void Start()
     {
@@ -61,7 +76,7 @@ public class EnemyBTree : BTAgent
         attackTowerSequence.AddChild(attackTower);
 
         var children = new List<Node> { goToNextPoint, attackPlayerSequence, attackTowerSequence };
-        var weights = new List<float> { 0.5f, 0.25f, 0.25f };
+        var weights = new List<float> { 0.05f, 0.15f, 0.8f };
         RandomSelectorEnemy randomSelector = new RandomSelectorEnemy(children, weights);
         tree.AddChild(randomSelector);
         tree.PrintTree();
@@ -144,9 +159,15 @@ public class EnemyBTree : BTAgent
         }
 
         var targeting = enemyCtrl.EnemyTargeting;
-        if (targeting == null || targeting.NearestTower == null) return Node.Status.FAILURE;
+        if (targeting == null) return Node.Status.FAILURE;
+        
+        // Cập nhật target liên tục để tìm tower gần nhất
+        targeting.UpdateNearestTower();
         var tower = targeting.NearestTower;
-        if (tower.TowerDamageReceiver != null && tower.TowerDamageReceiver.IsDead()) return Node.Status.FAILURE;
+        
+        // Kiểm tra target có hợp lệ không
+        if (!IsValidTarget(tower)) return Node.Status.FAILURE;
+        
         enemyCtrl.Agent.isStopped = false;
         enemyCtrl.Agent.SetDestination(tower.transform.position);
         float distance = Vector3.Distance(enemyCtrl.transform.position, tower.transform.position);
@@ -171,8 +192,15 @@ public class EnemyBTree : BTAgent
         }
 
         var targeting = enemyCtrl.EnemyTargeting;
-        if (targeting == null || targeting.Player == null) return Node.Status.FAILURE;
+        if (targeting == null) return Node.Status.FAILURE;
+        
+        // Cập nhật target liên tục để tìm player
+        targeting.UpdatePlayer();
         var player = targeting.Player;
+        
+        // Kiểm tra target có hợp lệ không
+        if (!IsValidTarget(player)) return Node.Status.FAILURE;
+        
         // Có thể kiểm tra player chết không nếu cần
         enemyCtrl.Agent.isStopped = false;
         enemyCtrl.Agent.SetDestination(player.transform.position);
@@ -201,15 +229,31 @@ public class EnemyBTree : BTAgent
     public Node.Status AttackTower()
     {
         var targeting = enemyCtrl.EnemyTargeting;
-        if (targeting == null || targeting.NearestTower == null) return Node.Status.FAILURE;
+        if (targeting == null) return Node.Status.FAILURE;
+        
+        // Cập nhật target liên tục để tránh đánh không có target
+        targeting.UpdateNearestTower();
         var tower = targeting.NearestTower;
-        if (tower.TowerDamageReceiver != null && tower.TowerDamageReceiver.IsDead())
+        
+        // Kiểm tra target có hợp lệ không
+        if (!IsValidTarget(tower))
         {
             enemyCtrl.Animator.SetBool("isAttack", false);
-            return Node.Status.SUCCESS;
+            return Node.Status.FAILURE;
         }
+        
+        // Kiểm tra khoảng cách tấn công
+        float distance = Vector3.Distance(enemyCtrl.transform.position, tower.transform.position);
+        if (distance > attackRange)
+        {
+            // Tower đã rời khỏi phạm vi tấn công
+            enemyCtrl.Animator.SetBool("isAttack", false);
+            return Node.Status.FAILURE;
+        }
+        
         // Đứng lại tại chỗ để đánh
         enemyCtrl.Agent.isStopped = true;
+        
         // Đánh liên tục theo cooldown
         if (Time.time - lastAttackTime > attackCooldown)
         {
@@ -223,23 +267,32 @@ public class EnemyBTree : BTAgent
     public Node.Status AttackPlayer()
     {
         var targeting = enemyCtrl.EnemyTargeting;
-        if (targeting == null || targeting.Player == null)
+        if (targeting == null) return Node.Status.FAILURE;
+        
+        // Cập nhật target liên tục để tránh đánh không có target
+        targeting.UpdatePlayer();
+        var player = targeting.Player;
+        
+        // Kiểm tra target có hợp lệ không
+        if (!IsValidTarget(player))
         {
             // Player đã rời khỏi phạm vi phát hiện
             enemyCtrl.Animator.SetBool("isAttack", false);
-            return Node.Status.SUCCESS;
+            return Node.Status.FAILURE;
         }
+        
         // Kiểm tra khoảng cách tấn công
-        float distance = Vector3.Distance(enemyCtrl.transform.position, targeting.Player.transform.position);
-        float attackRange = this.attackRange; // hoặc enemyCtrl.EnemyAttackRange nếu có
+        float distance = Vector3.Distance(enemyCtrl.transform.position, player.transform.position);
         if (distance > attackRange)
         {
             // Player đã rời khỏi phạm vi tấn công, quay lại chase
             enemyCtrl.Animator.SetBool("isAttack", false);
             return Node.Status.FAILURE;
         }
+        
         // Đứng lại tại chỗ để đánh
         enemyCtrl.Agent.isStopped = true;
+        
         // Đánh liên tục theo cooldown
         if (Time.time - lastAttackTime > attackCooldown)
         {
@@ -267,3 +320,4 @@ public class EnemyBTree : BTAgent
         └── Go To Next Point (lặp qua các point)
         */
 }
+

@@ -49,10 +49,10 @@ public class TowerInfoManager : SaiSingleton<TowerInfoManager>
         TowerInfoData machineGunTower = new TowerInfoData
         {
             towerName = "Machine Gun Tower",
-            description = "Rapid-fire tower with high attack speed but lower damage per shot.",
-            basePrice = 150,
+            description = "A fully automatic and rifled firearm designed for sustained direct fire",
+            basePrice = 60,
             towerType = TowerType.Tower,
-            specialAbilities = new string[] { "High Fire Rate", "Suppression Fire", "Ammo Belt" }
+            specialAbilities = new string[] { "Fire Rate: 0.7s per shot", "Range: 15 units", "Level Up: +20% max HP & heal 20%" }
         };
         
         // Cannon Tower
@@ -89,20 +89,20 @@ public class TowerInfoManager : SaiSingleton<TowerInfoManager>
         TowerInfoData flameTrap = new TowerInfoData
         {
             towerName = "Flame Trap",
-            description = "Burns enemies with continuous fire damage and burn debuff.",
-            basePrice = 120,
+            description = "A burning trap that ignites enemies with continuous fire damage",
+            basePrice = 150,
             towerType = TowerType.Trap,
-            specialAbilities = new string[] { "Continuous Damage", "Area Effect", "Burn Debuff" }
+            specialAbilities = new string[] { "Burn Damage: 3 HP per second", "Area Effect", "Continuous Damage" }
         };
         
         // Ice Trap
         TowerInfoData iceTrap = new TowerInfoData
         {
             towerName = "Ice Trap",
-            description = "Slows and freezes enemies with ice magic.",
-            basePrice = 130,
+            description = "A frozen trap that slows down enemies with ice magic",
+            basePrice = 100,
             towerType = TowerType.Trap,
-            specialAbilities = new string[] { "Slow Effect", "Freeze Chance", "Area Control" }
+            specialAbilities = new string[] { "Slow Effect: -1 movement speed", "Area Control", "Hidden Trap" }
         };
         
         // Add all to the main list

@@ -4,7 +4,7 @@ public abstract class Despawn<T> : DespawnBase where T : PoolObj
 {
     [SerializeField] protected T parent;
     [SerializeField] protected Spawner<T> spawner;
-    [SerializeField] protected bool isDespawnByTime = true;
+    [SerializeField] protected bool isDespawnByTime = false; // Tắt tự động despawn theo thời gian
     [SerializeField] protected float timeLife = 7f;
     [SerializeField] protected float currentTime = 7f;
 

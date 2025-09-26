@@ -28,4 +28,20 @@ public class SoundSpawnerCtrl : SaiSingleton<SoundSpawnerCtrl>
         this.spawner = GetComponent<SoundSpawner>();
         Debug.Log(transform.name + ": LoadSoundSpawner", gameObject);
     }
+    
+    /// <summary>
+    /// Public method để load SoundPrefabs từ bên ngoài
+    /// </summary>
+    public virtual void LoadSoundPrefabsPublic()
+    {
+        this.LoadSoundPrefabs();
+    }
+    
+    /// <summary>
+    /// Public method để load SoundSpawner từ bên ngoài
+    /// </summary>
+    public virtual void LoadSoundSpawnerPublic()
+    {
+        this.LoadSoundSpawner();
+    }
 }

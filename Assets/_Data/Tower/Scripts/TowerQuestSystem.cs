@@ -25,6 +25,9 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     [Header("UI")]
     [SerializeField] protected GameObject questNotificationPrefab;
     
+    [Header("Scene Management")]
+    [SerializeField] protected bool isDestroyed = false; // Track if this instance has been destroyed
+    
     protected override void LoadComponents()
     {
         try
@@ -32,6 +35,14 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             base.LoadComponents();
             
             Debug.Log("TowerQuestSystem: Starting LoadComponents");
+            
+            // Kiểm tra scene hiện tại - chỉ hoạt động ở Hai_SampleScene
+            if (!this.IsValidScene())
+            {
+                Debug.Log("TowerQuestSystem: Not in Hai_SampleScene, destroying instance");
+                this.DestroyInstance();
+                return;
+            }
             
             // DON'T delete old quests anymore - only create new quests if needed
             // this.CleanupOldQuests();
@@ -106,6 +117,16 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests = new List<TowerQuest>();
             }
             
+            // Kiểm tra xem có phải Map 1 không - nếu là Map 1 thì không tạo quest
+            if (this.IsMap1())
+            {
+                Debug.Log("Map 1 detected - Skipping quest initialization completely!");
+                // Xóa tất cả quest cũ nếu có
+                towerQuests.Clear();
+                Debug.Log("Map 1: Cleared all quests - No quests will be created!");
+                return;
+            }
+            
             // XÓA QUEST CŨ VỀ CORE TOWER TRƯỚC KHI TẠO QUEST MỚI
             towerQuests.RemoveAll(q => q != null && q.unlockedTower == TowerCode.Core);
             Debug.Log("Đã xóa quest cũ về Core Tower");
@@ -121,7 +142,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                     questName = "Movement Tutorial",
                     description = "Move using WASD keys to move, Left Shift to sprint and Space to jump to get familiar with controls",
                     requiredTowerCount = 1,
-                    unlockedTower = TowerCode.NoTower, // No tower unlocked
+                    unlockedTower = TowerCode.MachineGun, // Unlock MachineGun tower
                     isCompleted = false,
                     isUnlocked = false
                 });
@@ -138,7 +159,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
                 towerQuests.Add(new TowerQuest
                 {
                     questName = "Tower Builder I",
-                    description = "Place 3 towers to unlock OneGunBarrel Tower",
+                    description = "Press F Key to place 3 MachineGun towers to unlock OneGunBarrel Tower",
                     requiredTowerCount = 3,
                     unlockedTower = TowerCode.OneGunBarrel,
                     isCompleted = false,
@@ -187,6 +208,13 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     
     public virtual void OnTowerPlaced(TowerCode towerType = TowerCode.NoTower)
     {
+        // Kiểm tra nếu instance đã bị destroy hoặc không ở scene hợp lệ
+        if (this.isDestroyed || !this.IsValidScene())
+        {
+            Debug.LogWarning("TowerQuestSystem: Instance destroyed or not in valid scene, ignoring OnTowerPlaced");
+            return;
+        }
+        
         Debug.Log($"=== ON TOWER PLACED CALLED ===");
         Debug.Log($"TowerType được truyền vào: {towerType}");
         
@@ -339,7 +367,8 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         if (quest.questName == "Movement Tutorial")
         {
             // Không cần tạo quest mới, chỉ hiển thị thông báo
-            Debug.Log(" Movement Tutorial hoàn thành! Bắt đầu với Tower Builder I");
+            Debug.Log(" Movement Tutorial hoàn thành! MachineGun Tower đã được mở khóa!");
+            Debug.Log(" Bắt đầu với Tower Builder I");
         }
         else if (quest.questName == "Tower Builder I")
         {
@@ -613,6 +642,14 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     
     public virtual bool IsTowerUnlocked(TowerCode towerCode)
     {
+        // Kiểm tra đặc biệt cho MachineGun - cần hoàn thành Movement Tutorial
+        if (towerCode == TowerCode.MachineGun)
+        {
+            bool isUnlocked = movementTutorialCompleted >= 1;
+            Debug.Log($"DEBUG: MachineGun Tower - Movement Tutorial Status: {movementTutorialCompleted}/1, IsUnlocked: {isUnlocked}");
+            return isUnlocked;
+        }
+        
         // Kiểm tra xem tower có được mở khóa chưa
         foreach (var quest in towerQuests)
         {
@@ -656,6 +693,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         {
             movementTutorialCompleted = 1;
             Debug.Log(" Movement Tutorial đã hoàn thành!");
+            Debug.Log(" MachineGun Tower đã được mở khóa!");
             Debug.Log($" Sau khi hoàn thành: movementTutorialCompleted = {movementTutorialCompleted}");
             
             // Cập nhật UI
@@ -682,6 +720,24 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     public virtual int GetMovementTutorialStatus()
     {
         return movementTutorialCompleted;
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải Map 1 không
+    /// </summary>
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
+        }
     }
     
     /// <summary>
@@ -856,6 +912,7 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log($"Tổng số towers đã đặt: {totalTowersPlaced}");
         Debug.Log($"Số OneGunBarrel towers đã đặt: {oneGunBarrelTowersPlaced}");
         Debug.Log($"Số Ice Trap towers đã đặt: {iceTrapTowersPlaced}");
+        Debug.Log($"Movement Tutorial: {movementTutorialCompleted}/1 - MachineGun Unlocked: {(movementTutorialCompleted >= 1 ? "Yes" : "No")}");
         Debug.Log($"Final Mission: {(finalMissionCompleted ? "Completed" : "Not Completed")}");
         
         foreach (var quest in towerQuests)
@@ -956,5 +1013,56 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log("================================");
     }
     
+    /// <summary>
+    /// Kiểm tra xem có phải scene hợp lệ không (chỉ Hai_SampleScene)
+    /// </summary>
+    protected virtual bool IsValidScene()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isValid = currentSceneName == "Hai_SampleScene";
+            Debug.Log($"TowerQuestSystem: Current scene '{currentSceneName}', IsValid: {isValid}");
+            return isValid;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsValidScene: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// Destroy instance khi không ở scene hợp lệ
+    /// </summary>
+    protected virtual void DestroyInstance()
+    {
+        if (this.isDestroyed) return;
+        
+        Debug.Log("TowerQuestSystem: Destroying instance - not in Hai_SampleScene");
+        this.isDestroyed = true;
+        
+        // Clear all data
+        towerQuests.Clear();
+        totalTowersPlaced = 0;
+        oneGunBarrelTowersPlaced = 0;
+        iceTrapTowersPlaced = 0;
+        movementTutorialCompleted = 0;
+        finalMissionCompleted = false;
+        
+        // Destroy GameObject
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem instance có bị destroy không
+    /// </summary>
+    public virtual bool IsDestroyed()
+    {
+        return this.isDestroyed;
+    }
 
 } 

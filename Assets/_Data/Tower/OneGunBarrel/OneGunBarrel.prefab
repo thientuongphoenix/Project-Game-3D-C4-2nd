@@ -827,7 +827,7 @@ MonoBehaviour:
   towerDespawn: {fileID: 3923135216626913521}
   enemyTargetable: {fileID: 8250416359884368897}
   towerType: 0
-  price: 100
+  price: 120
   cooldownTime: 2
   lastPlacedTime: -999
 --- !u!1 &4552013430169676560
@@ -1677,7 +1677,7 @@ Transform:
   m_GameObject: {fileID: 8227240085576796041}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.51, z: 0.15}
+  m_LocalPosition: {x: 0, y: 0.682, z: 0.121}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1702,7 +1702,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.84
+  m_Radius: 0.65
   m_Center: {x: 0, y: 0.45573628, z: 0}
 --- !u!114 &7596677427000886459
 MonoBehaviour:

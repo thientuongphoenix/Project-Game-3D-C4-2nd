@@ -13,6 +13,15 @@ public class TowerManager : SaiSingleton<TowerManager>
     [SerializeField] protected List<TowerInfoDataSO> towerInfoList = new List<TowerInfoDataSO>();
     [SerializeField] protected bool showTowerInfo = true;
     [SerializeField] protected TowerCode currentShowingTower = TowerCode.NoTower;
+    
+    [Header("Tower Placement")]
+    [SerializeField] protected float minTowerDistance = 3f; // Khoảng cách tối thiểu giữa các tower
+    [SerializeField] protected float maxPlayerDistance = 10f; // Khoảng cách tối đa từ người chơi
+    [SerializeField] protected bool canPlaceTower = true; // Có thể đặt tower không
+    [SerializeField] protected LayerMask groundLayerMask = 1; // Layer mask cho mặt đất
+    [SerializeField] protected float raycastDistance = 10f; // Khoảng cách raycast
+    [SerializeField] protected bool showPlayerRange = true; // Hiển thị vòng tròn giới hạn khoảng cách
+    [SerializeField] protected bool isOutOfRange = false; // Tower prefab có vượt quá tầm không
 
     protected override void LoadComponents()
     {
@@ -162,10 +171,223 @@ public class TowerManager : SaiSingleton<TowerManager>
             TowerInfoUI.Instance.HideTowerInfo();
         }
     }
+    
+    // --- Hàm kiểm tra vị trí có phải là mặt đất không ---
+    protected virtual bool IsOnGround(Vector3 position)
+    {
+        // Raycast từ vị trí xuống dưới để kiểm tra mặt đất
+        Ray ray = new Ray(position + Vector3.up * 0.1f, Vector3.down);
+        RaycastHit hit;
+        
+        if (Physics.Raycast(ray, out hit, this.raycastDistance, this.groundLayerMask))
+        {
+            Debug.Log($"Tìm thấy mặt đất tại: {hit.point}, Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+            return true;
+        }
+        
+        Debug.Log($"Không tìm thấy mặt đất tại vị trí: {position}");
+        return false;
+    }
+    
+    // --- Hàm kiểm tra khoảng cách từ người chơi ---
+    protected virtual bool IsWithinPlayerRange(Vector3 position)
+    {
+        if (PlayerCtrl.Instance == null)
+        {
+            Debug.LogWarning("PlayerCtrl.Instance không tồn tại!");
+            return false;
+        }
+        
+        float distance = Vector3.Distance(position, PlayerCtrl.Instance.transform.position);
+        
+        if (distance > this.maxPlayerDistance)
+        {
+            Debug.Log($"Vị trí quá xa người chơi! Khoảng cách: {distance:F2}m (tối đa: {this.maxPlayerDistance}m)");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // --- Hàm lấy vị trí chính xác trên mặt đất ---
+    protected virtual Vector3 GetGroundPosition(Vector3 position)
+    {
+        // Raycast từ vị trí xuống dưới để tìm mặt đất
+        Ray ray = new Ray(position + Vector3.up * 0.1f, Vector3.down);
+        RaycastHit hit;
+        
+        if (Physics.Raycast(ray, out hit, this.raycastDistance, this.groundLayerMask))
+        {
+            Debug.Log($"Đặt tower tại vị trí mặt đất: {hit.point}");
+            return hit.point;
+        }
+        
+        // Nếu không tìm thấy mặt đất, trả về vị trí gốc
+        Debug.LogWarning("Không tìm thấy mặt đất, sử dụng vị trí gốc");
+        return position;
+    }
+    
+    // --- Hàm kiểm tra vị trí đặt tower có hợp lệ không ---
+    protected virtual bool IsValidTowerPosition(Vector3 newPosition)
+    {
+        // Kiểm tra xem vị trí có phải là mặt đất không
+        if (!this.IsOnGround(newPosition))
+        {
+            Debug.Log("Vị trí không hợp lệ! Chỉ được đặt tower trên mặt đất!");
+            return false;
+        }
+        
+        // Kiểm tra khoảng cách từ người chơi
+        if (!this.IsWithinPlayerRange(newPosition))
+        {
+            Debug.Log("Vị trí không hợp lệ! Quá xa người chơi!");
+            return false;
+        }
+        
+        // Tìm tất cả tower đã đặt trong scene
+        TowerCtrl[] existingTowers = FindObjectsOfType<TowerCtrl>();
+        
+        foreach (TowerCtrl tower in existingTowers)
+        {
+            if (tower == null || tower == this.towerPrefab) continue; // Bỏ qua tower prefab đang di chuyển
+            
+            float distance = Vector3.Distance(newPosition, tower.transform.position);
+            
+            if (distance < this.minTowerDistance)
+            {
+                Debug.Log($"Vị trí không hợp lệ! Khoảng cách đến {tower.name}: {distance:F2}m (cần tối thiểu {this.minTowerDistance}m)");
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // --- Hàm cập nhật trạng thái có thể đặt tower ---
+    protected virtual void UpdateTowerPlacementStatus()
+    {
+        if (this.towerPrefab == null) 
+        {
+            this.canPlaceTower = true;
+            this.isOutOfRange = false;
+            return;
+        }
+        
+        // Nếu vượt quá tầm, không thể đặt tower
+        if (this.isOutOfRange)
+        {
+            this.canPlaceTower = false;
+        }
+        else
+        {
+            Vector3 currentPosition = this.towerPrefab.transform.position;
+            this.canPlaceTower = this.IsValidTowerPosition(currentPosition);
+        }
+        
+        // Cập nhật màu sắc tower prefab để phản hồi trực quan
+        this.UpdateTowerPrefabVisual();
+    }
+    
+    // --- Hàm cập nhật màu sắc tower prefab ---
+    protected virtual void UpdateTowerPrefabVisual()
+    {
+        if (this.towerPrefab == null) return;
+        
+        // Tìm tất cả renderer trong tower prefab
+        Renderer[] renderers = this.towerPrefab.GetComponentsInChildren<Renderer>();
+        
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer.material != null)
+            {
+                // Xác định màu sắc dựa trên trạng thái
+                Color targetColor;
+                if (this.isOutOfRange)
+                {
+                    targetColor = Color.yellow; // Màu vàng khi vượt quá tầm
+                }
+                else if (this.canPlaceTower)
+                {
+                    targetColor = Color.green; // Màu xanh khi có thể đặt
+                }
+                else
+                {
+                    targetColor = Color.red; // Màu đỏ khi không thể đặt
+                }
+                
+                // Kiểm tra xem material có hỗ trợ thay đổi màu sắc không
+                if (renderer.material.HasProperty("_Color"))
+                {
+                    // Chỉ thay đổi màu nếu khác với màu hiện tại
+                    if (renderer.material.color != targetColor)
+                    {
+                        renderer.material.color = targetColor;
+                    }
+                }
+                // Nếu không có _Color property, thử sử dụng _TintColor (cho một số shader khác)
+                else if (renderer.material.HasProperty("_TintColor"))
+                {
+                    renderer.material.SetColor("_TintColor", targetColor);
+                }
+                // Nếu không có cả hai, bỏ qua material này
+                else
+                {
+                    // Debug.Log($"Material {renderer.material.name} không hỗ trợ thay đổi màu sắc");
+                }
+            }
+        }
+    }
+    
+    // --- Hàm reset màu sắc tower prefab về màu gốc ---
+    protected virtual void ResetTowerPrefabVisual()
+    {
+        if (this.towerPrefab == null) return;
+        
+        // Tìm tất cả renderer trong tower prefab
+        Renderer[] renderers = this.towerPrefab.GetComponentsInChildren<Renderer>();
+        
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer.material != null)
+            {
+                // Kiểm tra xem material có hỗ trợ thay đổi màu sắc không
+                if (renderer.material.HasProperty("_Color"))
+                {
+                    // Reset về màu trắng (màu gốc)
+                    renderer.material.color = Color.white;
+                }
+                // Nếu không có _Color property, thử sử dụng _TintColor
+                else if (renderer.material.HasProperty("_TintColor"))
+                {
+                    renderer.material.SetColor("_TintColor", Color.white);
+                }
+                // Nếu không có cả hai, bỏ qua material này
+            }
+        }
+    }
 
     protected virtual void Update()
     {
       this.ShowTowerToPlace();
+    }
+    
+    // --- Hàm vẽ vòng tròn giới hạn khoảng cách từ người chơi ---
+    protected virtual void OnDrawGizmos()
+    {
+        if (!this.showPlayerRange || PlayerCtrl.Instance == null) return;
+        
+        // Vẽ vòng tròn giới hạn khoảng cách (sử dụng DrawWireSphere)
+        Gizmos.color = Color.yellow;
+        Vector3 playerPos = PlayerCtrl.Instance.transform.position;
+        Gizmos.DrawWireSphere(playerPos, this.maxPlayerDistance);
+        
+        // Vẽ vòng tròn khoảng cách tối thiểu giữa các tower (nếu có tower prefab)
+        if (this.towerPrefab != null)
+        {
+            Gizmos.color = Color.red;
+            Vector3 towerPos = this.towerPrefab.transform.position;
+            Gizmos.DrawWireSphere(towerPos, this.minTowerDistance);
+        }
     }
 
     protected virtual void ShowTowerToPlace()
@@ -176,9 +398,16 @@ public class TowerManager : SaiSingleton<TowerManager>
 
       if(newTowerId == TowerCode.NoTower) 
       {
-        if(this.towerPrefab != null) this.towerPrefab.SetActive(false);
+        if(this.towerPrefab != null) 
+        {
+            // Reset màu sắc trước khi ẩn
+            this.ResetTowerPrefabVisual();
+            this.towerPrefab.SetActive(false);
+        }
         this.towerPrefab = null;
         this.newTowerId = TowerCode.NoTower;
+        this.canPlaceTower = true;
+        this.isOutOfRange = false;
         
         // Ẩn UI thông tin tower khi không có tower nào được chọn
         if (this.currentShowingTower != TowerCode.NoTower)
@@ -192,16 +421,17 @@ public class TowerManager : SaiSingleton<TowerManager>
       // Chỉ hiển thị thông tin tower khi thay đổi selection
       if (this.newTowerId != newTowerId)
       {
-          // Hiển thị thông tin tower mới (không ẩn tower cũ)
-          this.ShowTowerInfo(newTowerId);
-          this.newTowerId = newTowerId;
-          
-          // Cập nhật towerPrefab khi thay đổi selection
+          // Reset màu sắc tower cũ trước khi thay đổi
           if (this.towerPrefab != null)
           {
+              this.ResetTowerPrefabVisual();
               this.towerPrefab.SetActive(false);
               this.towerPrefab = null;
           }
+          
+          // Hiển thị thông tin tower mới (không ẩn tower cũ)
+          this.ShowTowerInfo(newTowerId);
+          this.newTowerId = newTowerId;
       }
 
       if(this.towerPrefab == null) 
@@ -214,7 +444,32 @@ public class TowerManager : SaiSingleton<TowerManager>
         this.towerPrefab.SetActive(true);
       }
 
-      this.towerPrefab.transform.position = PlayerCtrl.Instance.CrosshairPointer.transform.position;
+      // Lấy vị trí từ crosshair và kiểm tra phạm vi
+      Vector3 crosshairPosition = PlayerCtrl.Instance.CrosshairPointer.transform.position;
+      Vector3 playerPosition = PlayerCtrl.Instance.transform.position;
+      
+      // Kiểm tra khoảng cách từ người chơi đến crosshair
+      float distanceToCrosshair = Vector3.Distance(crosshairPosition, playerPosition);
+      
+      if (distanceToCrosshair > this.maxPlayerDistance)
+      {
+        // Nếu quá xa, đặt tower prefab ở vị trí giới hạn
+        Vector3 direction = (crosshairPosition - playerPosition).normalized;
+        Vector3 limitedPosition = playerPosition + direction * this.maxPlayerDistance;
+        Vector3 groundPosition = this.GetGroundPosition(limitedPosition);
+        this.towerPrefab.transform.position = groundPosition;
+        this.isOutOfRange = true; // Đánh dấu vượt quá tầm
+      }
+      else
+      {
+        // Nếu trong phạm vi, đặt bình thường
+        Vector3 groundPosition = this.GetGroundPosition(crosshairPosition);
+        this.towerPrefab.transform.position = groundPosition;
+        this.isOutOfRange = false; // Đánh dấu trong tầm
+      }
+      
+      // Cập nhật trạng thái có thể đặt tower dựa trên vị trí hiện tại
+      this.UpdateTowerPlacementStatus();
 
       if(InputHotkeys.Instance.IsPlaceTower)
       {
@@ -224,6 +479,49 @@ public class TowerManager : SaiSingleton<TowerManager>
 
     protected virtual void PlaceTower()
     {
+        // --- Kiểm tra vị trí đặt tower ---
+        if (!this.canPlaceTower)
+        {
+            // Kiểm tra cụ thể lý do không thể đặt
+            if (this.isOutOfRange)
+            {
+                Debug.LogWarning($"Không thể đặt tower! Vượt quá tầm cho phép (tối đa {this.maxPlayerDistance}m)!");
+            }
+            else
+            {
+                Vector3 currentPosition = this.towerPrefab.transform.position;
+                
+                if (!this.IsOnGround(currentPosition))
+                {
+                    Debug.LogWarning("Không thể đặt tower! Chỉ được đặt trên mặt đất!");
+                }
+                else if (!this.IsWithinPlayerRange(currentPosition))
+                {
+                    Debug.LogWarning($"Không thể đặt tower! Quá xa người chơi (tối đa {this.maxPlayerDistance}m)!");
+                }
+                else
+                {
+                    Debug.LogWarning($"Không thể đặt tower! Vị trí quá gần với tower khác (cần tối thiểu {this.minTowerDistance}m)");
+                }
+            }
+            
+            // Hiện UI thông báo không thể đặt
+            if (this.checkMoneyUI != null) 
+            {
+                if (this.isOutOfRange)
+                {
+                    // Hiển thị thông báo quá tầm thay vì không đủ tiền
+                    this.checkMoneyUI.ShowOutOfRangeMessage();
+                }
+                else
+                {
+                    // Hiển thị thông báo vị trí không hợp lệ
+                    this.checkMoneyUI.ShowInvalidPositionMessage();
+                }
+            }
+            return;
+        }
+        
         // --- Kiểm tra cooldown ---
         if (!this.towerPrefab.IsCooldownReady())
         {
@@ -245,7 +543,11 @@ public class TowerManager : SaiSingleton<TowerManager>
         // ---
         this.towerPlaced = true;
 
+        // Tìm vị trí chính xác trên mặt đất
+        Vector3 groundPosition = this.GetGroundPosition(this.towerPrefab.transform.position);
+        
         TowerCtrl newTower = this.Spawn(this.towerPrefab);
+        newTower.transform.position = groundPosition;
         if (newTower.TowerType == TowerType.Tower && newTower.TowerShooting != null)
         {
             newTower.TowerShooting.ResetShootingState();
@@ -265,6 +567,9 @@ public class TowerManager : SaiSingleton<TowerManager>
         {
             TowerQuestSystem.Instance.OnTowerPlaced(this.newTowerId);
         }
+        
+        // --- Reset màu sắc tower prefab sau khi đặt thành công ---
+        this.ResetTowerPrefabVisual();
         
         // --- Không ẩn thông tin tower khi đặt (để Bệ Hạ có thể xem thông tin) ---
         // this.HideTowerInfo();
@@ -348,18 +653,41 @@ public class TowerManager : SaiSingleton<TowerManager>
     
     protected virtual bool IsTowerRequiresQuest(TowerCode towerCode)
     {
-        // Chỉ các tower này cần quest để mở khóa
+        // Kiểm tra xem có phải Map 1 không - nếu là Map 1 thì unlock tất cả tower
+        if (this.IsMap1())
+        {
+            Debug.Log($"Map 1 detected - All towers unlocked! Tower: {towerCode}");
+            return false; // Không cần quest trong Map 1
+        }
+        
+        // Chỉ các tower này cần quest để mở khóa (chỉ trong Tutorial Map)
         switch (towerCode)
         {
+            case TowerCode.MachineGun:     // Cần quest "Movement Tutorial"
             case TowerCode.OneGunBarrel:  // Cần quest "Tower Builder I"
             case TowerCode.IceTrap:        // Cần quest "Tower Builder II"
             case TowerCode.FlameTrap:      // Có thể cần quest trong tương lai
                 return true;
             
-            case TowerCode.MachineGun:     // Luôn mở khóa từ đầu
             case TowerCode.Core:           // Luôn mở khóa từ đầu
             default:
                 return false;
+        }
+    }
+    
+    // Thêm phương thức kiểm tra Map 1
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            // Map 1 của Bệ Hạ là "Hai_Map"
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
+            return false;
         }
     }
 }

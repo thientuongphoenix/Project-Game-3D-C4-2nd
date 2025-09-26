@@ -146,6 +146,12 @@ public class EnemyTargeting : SaiMonoBehaviour
         // Có thể mở rộng logic tìm player gần nhất nếu có nhiều player
         // Hiện tại chỉ lấy player đầu tiên trong vùng
     }
+    
+    // Hàm public để cập nhật player từ bên ngoài
+    public virtual void UpdatePlayer()
+    {
+        this.FindPlayer();
+    }
 
     protected virtual void RemoveDeadTower()
     {
@@ -181,6 +187,12 @@ public class EnemyTargeting : SaiMonoBehaviour
             }
         }
         this.nearestTower = foundTower;
+    }
+    
+    // Hàm public để cập nhật tower gần nhất từ bên ngoài
+    public virtual void UpdateNearestTower()
+    {
+        this.FindNearestTower();
     }
 
     protected virtual void OnReborn()

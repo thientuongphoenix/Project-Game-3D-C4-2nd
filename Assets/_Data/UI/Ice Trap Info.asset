@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Ice Trap Info
   m_EditorClassIdentifier: 
   towerName: Ice Trap
-  description: Ice Trap
+  description: A frozen trap that slows down enemies with ice magic
   icon: {fileID: 21300000, guid: 77102e909f439b54d85f85353473a0c3, type: 3}
   basePrice: 100
   specialAbilities:
-  - 
-  - 
-  - 
+  - "Slow Effect: -1 movement speed"
+  - "Area Control"
+  - "Hidden Trap"
   towerType: 1

@@ -5,6 +5,7 @@ public class EnemySpawning : EnemyManagerAbstract
 {
     [SerializeField] protected float spawnSpeed = 1f;
     [SerializeField] protected int maxSpawn = 10;
+    [SerializeField] protected EnemyCtrl specificEnemyPrefab; // Prefab cụ thể để spawn
     protected List<EnemyCtrl> spawnedEnemies = new();
 
     protected override void Start()
@@ -22,7 +23,7 @@ public class EnemySpawning : EnemyManagerAbstract
     {
       Invoke(nameof(this.Spawning), this.spawnSpeed);
 
-      if(this.spawnedEnemies.Count > this.maxSpawn) return;
+      if(this.spawnedEnemies.Count >= this.maxSpawn) return;
 
       EnemyCtrl prefab = this.GetEnemyPrefab();
 
@@ -46,6 +47,13 @@ public class EnemySpawning : EnemyManagerAbstract
 
     protected virtual EnemyCtrl GetEnemyPrefab()
     {
+      // Ưu tiên sử dụng specificEnemyPrefab nếu có
+      if (specificEnemyPrefab != null)
+      {
+          return specificEnemyPrefab;
+      }
+      
+      // Fallback về random prefab nếu không có specific prefab
       return this.enemyManagerCtrl.EnemyPrefabs.GetRandom();
     }
 
@@ -59,5 +67,18 @@ public class EnemySpawning : EnemyManagerAbstract
           return;
         }
       }
+    }
+    
+    // Public properties để truy cập từ bên ngoài
+    public virtual int MaxSpawn => maxSpawn;
+    public virtual float SpawnSpeed => spawnSpeed;
+    public virtual List<EnemyCtrl> SpawnedEnemies => spawnedEnemies;
+    public virtual EnemyManagerCtrl EnemyManagerCtrl => enemyManagerCtrl;
+    
+    // Public property để gán specific enemy prefab
+    public virtual EnemyCtrl SpecificEnemyPrefab 
+    { 
+        get => specificEnemyPrefab; 
+        set => specificEnemyPrefab = value; 
     }
 }

@@ -6,8 +6,9 @@ public class EnemyDamageReceiver : DamageReceiver
     [SerializeField] protected CapsuleCollider capsuleCollider;
     [SerializeField] protected EnemyCtrl enemyCtrl;
     
-    [Header("Phần thưởng khi chết")]
-    [SerializeField] protected int gold = 10;
+    [Header("Reward Settings")]
+    [SerializeField] protected int goldReward = 10; // Số vàng rơi khi chết
+    [SerializeField] protected int expReward = 10; // Số exp rơi khi chết
     
     
     protected override void LoadComponents()
@@ -94,9 +95,9 @@ public class EnemyDamageReceiver : DamageReceiver
         //ItemsDropManager.Instance.DropMany(ItemCode.Gold, 10, transform.position);
         //ItemsDropManager.Instance.DropMany(ItemCode.Wand, 1, transform.position);
         //ItemsDropManager.Instance.DropMany(ItemCode.PlayerExp, 10, transform.position);
-        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Gold, gold, transform.position);
-        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Wand, 1, transform.position);
-        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.PlayerExp, 10, transform.position);
+        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Gold, goldReward, transform.position);
+        // ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.Wand, 1, transform.position);
+        ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.PlayerExp, expReward, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.HealthPotion, 1, transform.position);
         ItemsDropManager.Instance.DropItemWithAutoPickupCheck(ItemCode.ManaPotion, 1, transform.position);
     }

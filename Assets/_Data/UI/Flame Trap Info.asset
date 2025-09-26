@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Flame Trap Info
   m_EditorClassIdentifier: 
   towerName: Flame Trap
-  description: Flame Trap
+  description: A burning trap that ignites enemies with continuous fire damage
   icon: {fileID: 21300000, guid: bf6eedc32db26434b8d395561c9ebc2d, type: 3}
-  basePrice: 100
+  basePrice: 150
   specialAbilities:
-  - 
-  - 
-  - 
+  - "Burn Damage: 3 HP per second"
+  - "Area Effect"
+  - "Continuous Damage"
   towerType: 1

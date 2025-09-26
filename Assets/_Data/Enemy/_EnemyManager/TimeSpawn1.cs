@@ -10,6 +10,7 @@ public class TimeSpawn1 : MonoBehaviour
     [Header("Thời gian kích hoạt")]
     public float time1;
     public float time2;
+
     private float currentTime = 0f;
 
     void Start()
@@ -24,21 +25,23 @@ public class TimeSpawn1 : MonoBehaviour
 
         if (currentTime < time1) 
         {
-            SetActiveObjects(false, false);
+            SetActiveObjects(false, false);    
         }
         else if (currentTime < time2) 
         {
             SetActiveObjects(true, true);
         }
-        else // Sau 7 phút
+        else
         {
             SetActiveObjects(false, false);
         }
+        
     }
 
     void SetActiveObjects(bool a, bool b)
     {
         objectA.SetActive(a);
         objectB.SetActive(b);
+
     }
 }
