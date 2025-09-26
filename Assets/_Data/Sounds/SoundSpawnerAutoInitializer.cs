@@ -80,8 +80,11 @@ public class SoundSpawnerAutoInitializer : MonoBehaviour
             GameObject poolHolderObj = new GameObject("PoolHolder");
             poolHolderObj.transform.SetParent(soundSpawnerObj.transform);
             
-            // Đảm bảo không bị destroy khi load scene mới
-            DontDestroyOnLoad(soundSpawnerObj);
+            // Đảm bảo không bị destroy khi load scene mới (chỉ trong Play mode)
+            if (Application.isPlaying)
+            {
+                DontDestroyOnLoad(soundSpawnerObj);
+            }
             
             if (debugAutoSetup)
             {

@@ -7,6 +7,7 @@ public class MapSelectionManager : SaiSingleton<MapSelectionManager>
     {
         base.Start();
         this.ResetQuestsOnMapSelection();
+        this.EnsureBackgroundMusic();
     }
     
     /// <summary>
@@ -54,6 +55,44 @@ public class MapSelectionManager : SaiSingleton<MapSelectionManager>
     }
     
     /// <summary>
+    /// Đảm bảo background music được phát trong map selection
+    /// </summary>
+    protected virtual void EnsureBackgroundMusic()
+    {
+        try
+        {
+            Debug.Log("=== ENSURING BACKGROUND MUSIC IN MAP SELECTION ===");
+            
+            // Kiểm tra SoundManager có tồn tại không
+            if (SoundManager.Instance != null)
+            {
+                // Kiểm tra xem background music đã được khởi động chưa
+                if (SoundManager.Instance.IsBackgroundMusicNullOrInactive())
+                {
+                    Debug.Log("Background music not found or inactive, starting it...");
+                    SoundManager.Instance.StartMusicBackground();
+                }
+                else
+                {
+                    Debug.Log("Background music is already active - skipping to avoid duplicate");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("SoundManager.Instance is null! Cannot start background music.");
+            }
+            
+            Debug.Log("Background music check completed!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in EnsureBackgroundMusic: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
+    }
+    
+    /// <summary>
     /// Public method để reset quest từ bên ngoài
     /// </summary>
     public virtual void ResetAllQuests()
@@ -70,4 +109,6 @@ public class MapSelectionManager : SaiSingleton<MapSelectionManager>
         return currentSceneName.Contains("MapSelect") || currentSceneName.Contains("Map_Selection");
     }
 }
+
+
 

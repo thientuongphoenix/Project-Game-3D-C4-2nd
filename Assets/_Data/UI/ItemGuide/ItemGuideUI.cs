@@ -17,9 +17,21 @@ public class ItemGuideUI : SaiSingleton<ItemGuideUI>
     protected float showTime = 0f;
     protected static bool hasShownOnce = false; // Track if guide has been shown once
     
+    [Header("Scene Management")]
+    [SerializeField] protected bool isDestroyed = false; // Track if this instance has been destroyed
+    
     protected override void LoadComponents()
     {
         base.LoadComponents();
+        
+        // Kiểm tra scene hiện tại - chỉ hoạt động ở Hai_SampleScene
+        if (!this.IsValidScene())
+        {
+            Debug.Log("ItemGuideUI: Not in Hai_SampleScene, destroying instance");
+            this.DestroyInstance();
+            return;
+        }
+        
         this.LoadGuidePanel();
         this.LoadGuideText();
         this.LoadCloseButton();
@@ -65,11 +77,40 @@ public class ItemGuideUI : SaiSingleton<ItemGuideUI>
     protected virtual void Start()
     {
         base.Start();
+        
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
+        // Kiểm tra scene hiện tại - destroy nếu không ở Hai_SampleScene
+        if (!this.IsValidScene())
+        {
+            Debug.Log("ItemGuideUI: Not in Hai_SampleScene in Start(), destroying instance");
+            this.DestroyInstance();
+            return;
+        }
+        
         this.HideGuide();
     }
     
     protected virtual void Update()
     {
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
+        // Kiểm tra scene hiện tại - destroy nếu không ở Hai_SampleScene
+        if (!this.IsValidScene())
+        {
+            Debug.Log("ItemGuideUI: Scene changed, destroying instance");
+            this.DestroyInstance();
+            return;
+        }
+        
         if (this.isShowing)
         {
             this.showTime += Time.deltaTime;
@@ -90,6 +131,12 @@ public class ItemGuideUI : SaiSingleton<ItemGuideUI>
     
     public virtual void ShowGuide()
     {
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
         // Check if guide has already been shown once
         if (hasShownOnce)
         {
@@ -160,5 +207,72 @@ public class ItemGuideUI : SaiSingleton<ItemGuideUI>
     public virtual bool HasShownOnce()
     {
         return hasShownOnce;
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải scene hợp lệ không (chỉ Hai_SampleScene)
+    /// </summary>
+    protected virtual bool IsValidScene()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isValid = currentSceneName == "Hai_SampleScene";
+            Debug.Log($"ItemGuideUI: Current scene '{currentSceneName}', IsValid: {isValid}");
+            return isValid;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsValidScene: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// Destroy instance khi không ở scene hợp lệ
+    /// </summary>
+    protected virtual void DestroyInstance()
+    {
+        if (this.isDestroyed) return;
+        
+        Debug.Log("ItemGuideUI: Destroying instance - not in Hai_SampleScene");
+        this.isDestroyed = true;
+        
+        // Reset static variable để có thể hiển thị lại ở scene mới
+        hasShownOnce = false;
+        
+        // Hide guide panel
+        if (this.guidePanel != null)
+        {
+            this.guidePanel.SetActive(false);
+        }
+        
+        // Reset state
+        this.isShowing = false;
+        this.showTime = 0f;
+        
+        // Destroy GameObject immediately
+        if (gameObject != null)
+        {
+            Debug.Log("ItemGuideUI: Destroying GameObject completely");
+            DestroyImmediate(gameObject);
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem instance có bị destroy không
+    /// </summary>
+    public virtual bool IsDestroyed()
+    {
+        return this.isDestroyed;
+    }
+    
+    /// <summary>
+    /// Force destroy instance từ bên ngoài (có thể gọi từ script khác)
+    /// </summary>
+    public virtual void ForceDestroy()
+    {
+        Debug.Log("ItemGuideUI: Force destroy called from external script");
+        this.DestroyInstance();
     }
 }

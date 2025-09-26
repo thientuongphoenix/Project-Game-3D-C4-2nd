@@ -60,7 +60,12 @@ public class SoundSpawnerAutoSetup : SaiMonoBehaviour
         }
 
         soundSpawnerObj.name = "SoundSpawnerCtrl";
-        DontDestroyOnLoad(soundSpawnerObj);
+        
+        // Đảm bảo không bị destroy khi load scene mới (chỉ trong Play mode)
+        if (Application.isPlaying)
+        {
+            DontDestroyOnLoad(soundSpawnerObj);
+        }
         
         Debug.Log("SoundSpawnerAutoSetup: SoundSpawnerCtrl đã được tạo thành công");
     }

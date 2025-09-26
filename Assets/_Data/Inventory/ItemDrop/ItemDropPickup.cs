@@ -31,6 +31,36 @@ public class ItemDropPickup : SaiMonoBehaviour
     public virtual void AddItemToInventoryWhenPLayerPickup()
     {
         InventoryManager.Instance.AddItem(itemDropCtrl.ItemCode, itemDropCtrl.ItemCount);
+        
+        // Hiện ItemGuideUI khi nhặt vật phẩm lần đầu
+        this.ShowItemGuideIfFirstTime();
+    }
+    
+    /// <summary>
+    /// Hiện ItemGuideUI nếu chưa hiện lần nào
+    /// </summary>
+    protected virtual void ShowItemGuideIfFirstTime()
+    {
+        try
+        {
+            if (ItemGuideUI.Instance != null && !ItemGuideUI.Instance.HasShownOnce())
+            {
+                Debug.Log("First time picking up item - showing ItemGuideUI");
+                ItemGuideUI.Instance.ShowGuide();
+            }
+            else if (ItemGuideUI.Instance != null && ItemGuideUI.Instance.HasShownOnce())
+            {
+                Debug.Log("ItemGuideUI already shown once - skipping");
+            }
+            else
+            {
+                Debug.LogWarning("ItemGuideUI.Instance is null - cannot show guide");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error showing ItemGuideUI: {e.Message}");
+        }
     }
     
     // protected void OnTriggerEnter(Collider other)

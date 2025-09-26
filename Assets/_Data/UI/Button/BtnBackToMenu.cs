@@ -23,6 +23,9 @@ public class BtnBackToMenu : ButttonAbstract
             Time.timeScale = 1f;
             Debug.Log("Game resumed before loading menu");
             
+            // Tắt nhạc nền hiện tại trước khi chuyển scene
+            this.StopCurrentBackgroundMusic();
+            
             // Đóng setting UI nếu đang mở
             if (UISetting.Instance != null)
             {
@@ -73,5 +76,65 @@ public class BtnBackToMenu : ButttonAbstract
     {
         delayBeforeLoad = 0f;
         BackToMenu();
+    }
+    
+    /// <summary>
+    /// Tắt nhạc nền hiện tại trước khi chuyển scene
+    /// </summary>
+    protected virtual void StopCurrentBackgroundMusic()
+    {
+        try
+        {
+            Debug.Log("=== STOPPING CURRENT BACKGROUND MUSIC ===");
+            
+            // Kiểm tra SoundManager có tồn tại không
+            if (SoundManager.Instance != null)
+            {
+                Debug.Log("SoundManager found, stopping current background music...");
+                
+                // Tắt background music hiện tại
+                if (SoundManager.Instance.GetBackgroundMusic() != null)
+                {
+                    SoundManager.Instance.GetBackgroundMusic().gameObject.SetActive(false);
+                    Debug.Log("Current background music stopped!");
+                }
+                else
+                {
+                    Debug.Log("Current background music is already stopped or null");
+                }
+                
+                // Tắt tất cả music trong listMusic
+                if (SoundManager.Instance.GetSoundSpawnerCtrl() != null && 
+                    SoundManager.Instance.GetSoundSpawnerCtrl().Spawner != null)
+                {
+                    // Tìm tất cả MusicCtrl trong scene và tắt chúng
+                    MusicCtrl[] allMusic = FindObjectsOfType<MusicCtrl>();
+                    int stoppedCount = 0;
+                    
+                    foreach (MusicCtrl music in allMusic)
+                    {
+                        if (music != null && music.gameObject.activeSelf)
+                        {
+                            music.gameObject.SetActive(false);
+                            stoppedCount++;
+                        }
+                    }
+                    
+                    Debug.Log($"Stopped {stoppedCount} music objects in scene");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("SoundManager.Instance is null! Cannot stop background music.");
+            }
+            
+            Debug.Log("Current background music stop completed!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in StopCurrentBackgroundMusic: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
     }
 }

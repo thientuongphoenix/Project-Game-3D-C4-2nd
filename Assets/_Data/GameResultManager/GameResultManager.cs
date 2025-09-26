@@ -7,7 +7,38 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     protected override void Start()
     {
         base.Start();
+        
+        // Reset trạng thái game khi vào scene mới
+        this.ResetGameStateOnNewScene();
+        
         this.Init();
+    }
+    
+    /// <summary>
+    /// Reset trạng thái game khi vào scene mới
+    /// </summary>
+    protected virtual void ResetGameStateOnNewScene()
+    {
+        try
+        {
+            Debug.Log("=== RESET GAME STATE ON NEW SCENE ===");
+            Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            Debug.Log($"isGameEnded before reset: {isGameEnded}");
+            
+            // Reset tất cả trạng thái game
+            this.timer = 0f;
+            this.isGameEnded = false;
+            this.isLose = false;
+            this.isWin = false;
+            
+            Debug.Log($"isGameEnded after reset: {isGameEnded}");
+            Debug.Log("=== RESET GAME STATE ON NEW SCENE COMPLETED ===");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in ResetGameStateOnNewScene: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
     }
 
     // Update is called once per frame
@@ -42,8 +73,14 @@ public class GameResultManager : SaiSingleton<GameResultManager>
 
     protected virtual void Init()
     {
+        Debug.Log("=== GAMERESULTMANAGER INIT START ===");
+        Debug.Log($"Scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        Debug.Log($"isGameEnded before reset: {isGameEnded}");
+        
         // Reset trạng thái game
         this.ResetGameState();
+        
+        Debug.Log($"isGameEnded after reset: {isGameEnded}");
         
         this.player = PlayerCtrl.Instance;
         this.core = FindObjectOfType<CoreCtrl>();
@@ -67,23 +104,35 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         // Reset nhiệm vụ khi vào lại tutorial map nếu map 1 đã được unlock
         this.CheckAndResetTutorialQuests();
         
+        // Đảm bảo sound system được khởi tạo trong tutorial scene
+        this.EnsureSoundSystemInTutorialScene();
+        
         Debug.Log($"GameResultManager: Initialized for {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
         Debug.Log($"WinPanel found: {winPanel != null}");
         Debug.Log($"LosePanel found: {losePanel != null}");
+        Debug.Log($"isGameEnded final: {isGameEnded}");
+        Debug.Log("=== GAMERESULTMANAGER INIT END ===");
     }
     
     protected virtual void ResetGameState()
     {
+        Debug.Log("=== RESET GAME STATE ===");
+        Debug.Log($"isGameEnded before reset: {isGameEnded}");
+        
         this.timer = 0f;
         this.isGameEnded = false;
         this.isLose = false;
         this.isWin = false;
+        
+        Debug.Log($"isGameEnded after reset: {isGameEnded}");
         
         // Dừng tất cả coroutine fade
         this.StopAllFadeCoroutines();
         
         // Hiển thị lại TowerInfoUI khi game bắt đầu
         this.ShowTowerInfoUI();
+        
+        Debug.Log("=== RESET GAME STATE COMPLETED ===");
     }
     
     /// <summary>
@@ -588,10 +637,15 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             bool isMap1Unlocked = IsMap1Unlocked();
             Debug.Log($"Map 1 unlocked: {isMap1Unlocked}");
             
-            // Reset quest nếu:
-            // 1. Map 1 đã unlock (người chơi đã hoàn thành tutorial trước đó)
+            // Kiểm tra xem có quest nào đã hoàn thành chưa
+            bool hasCompletedQuests = HasCompletedQuests();
+            Debug.Log($"Has completed quests: {hasCompletedQuests}");
+            
+            // Reset quest chỉ khi:
+            // 1. Map 1 đã unlock VÀ chưa có quest nào hoàn thành (replay tutorial)
             // 2. Hoặc nếu không có quest nào (new game)
-            bool shouldReset = isMap1Unlocked || (TowerQuestSystem.Instance != null && TowerQuestSystem.Instance.GetAllQuests().Count == 0);
+            bool shouldReset = (isMap1Unlocked && !hasCompletedQuests) || 
+                              (TowerQuestSystem.Instance != null && TowerQuestSystem.Instance.GetAllQuests().Count == 0);
             
             if (shouldReset)
             {
@@ -601,7 +655,8 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             }
             else
             {
-                Debug.Log("Map 1 not unlocked yet and quests exist, keeping tutorial quests as is");
+                Debug.Log("Tutorial quests are already completed or in progress - no reset needed");
+                Debug.Log("Quest progress will be preserved for Map1");
             }
             
             Debug.Log("================================");
@@ -685,6 +740,100 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     public virtual void ResetTutorialQuestsPublic()
     {
         this.ResetTutorialQuests();
+    }
+    
+    /// <summary>
+    /// Dừng nhạc nền khi Win/Lose (cho SampleScene)
+    /// </summary>
+    protected virtual void StopBackgroundMusicOnWinLose()
+    {
+        try
+        {
+            Debug.Log("=== STOPPING BACKGROUND MUSIC ON WIN/LOSE (SAMPLESCENE) ===");
+            
+            if (SoundManager.Instance != null)
+            {
+                // Tắt background music chính
+                if (SoundManager.Instance.GetBackgroundMusic() != null)
+                {
+                    SoundManager.Instance.GetBackgroundMusic().gameObject.SetActive(false);
+                    Debug.Log("Main background music stopped on Win/Lose (SampleScene)");
+                }
+                
+                // Tắt tất cả music trong listMusic
+                if (SoundManager.Instance.GetSoundSpawnerCtrl() != null && 
+                    SoundManager.Instance.GetSoundSpawnerCtrl().Spawner != null)
+                {
+                    // Tìm tất cả MusicCtrl trong scene và tắt chúng
+                    MusicCtrl[] allMusic = FindObjectsOfType<MusicCtrl>();
+                    int stoppedCount = 0;
+                    
+                    foreach (MusicCtrl music in allMusic)
+                    {
+                        if (music != null && music.gameObject.activeSelf)
+                        {
+                            music.gameObject.SetActive(false);
+                            stoppedCount++;
+                        }
+                    }
+                    
+                    Debug.Log($"Stopped {stoppedCount} music objects on Win/Lose (SampleScene)");
+                }
+                
+                Debug.Log("Background music stopped successfully on Win/Lose (SampleScene)!");
+            }
+            else
+            {
+                Debug.LogWarning("SoundManager.Instance is null! Cannot stop background music.");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error stopping background music on Win/Lose (SampleScene): {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có quest nào đã hoàn thành chưa
+    /// </summary>
+    protected virtual bool HasCompletedQuests()
+    {
+        try
+        {
+            if (TowerQuestSystem.Instance == null)
+            {
+                Debug.LogWarning("TowerQuestSystem.Instance is null, assuming no completed quests");
+                return false;
+            }
+            
+            var allQuests = TowerQuestSystem.Instance.GetAllQuests();
+            if (allQuests == null || allQuests.Count == 0)
+            {
+                Debug.Log("No quests found, assuming no completed quests");
+                return false;
+            }
+            
+            // Kiểm tra xem có quest nào đã hoàn thành
+            foreach (var quest in allQuests)
+            {
+                if (quest != null && quest.isCompleted)
+                {
+                    Debug.Log($"Found completed quest: {quest.questName}");
+                    return true;
+                }
+            }
+            
+            Debug.Log("No completed quests found");
+            return false;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in HasCompletedQuests: {e.Message}");
+            return false;
+        }
     }
     
     // Method để kiểm tra xem Final Mission có đang active không
@@ -786,8 +935,11 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     {
         Debug.Log("=== ShowWinPanel() called ===");
         Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+        Debug.Log($"isGameEnded before: {isGameEnded}");
+        Debug.Log($"Stack trace: {System.Environment.StackTrace}");
         
         isGameEnded = true;
+        Debug.Log($"isGameEnded after: {isGameEnded}");
         
         // Ẩn quest panel khi hiển thị win panel
         this.HideQuestPanel();
@@ -809,6 +961,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         {
             Debug.Log("Win panel found, activating...");
             winPanel.SetActive(true);
+            
+            // Dừng nhạc nền khi win
+            this.StopBackgroundMusicOnWinLose();
             
             // Kiểm tra CanvasGroup trước khi gọi StartCoroutine
             if (winPanelCanvasGroup != null)
@@ -1028,6 +1183,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
         if (losePanel != null) 
         {
             losePanel.SetActive(true);
+            
+            // Dừng nhạc nền khi lose
+            this.StopBackgroundMusicOnWinLose();
             
             // Kiểm tra CanvasGroup trước khi gọi StartCoroutine
             if (losePanelCanvasGroup != null)
@@ -1292,6 +1450,138 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     }
     
     /// <summary>
+    /// Đảm bảo sound system được khởi tạo trong tutorial scene
+    /// </summary>
+    protected virtual void EnsureSoundSystemInTutorialScene()
+    {
+        try
+        {
+            Debug.Log("=== ENSURING SOUND SYSTEM IN TUTORIAL SCENE ===");
+            
+            // Kiểm tra xem có phải tutorial scene không
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (currentSceneName.Contains("SampleScene") || currentSceneName.Contains("Tutorial"))
+            {
+                Debug.Log($"Tutorial scene detected: {currentSceneName}");
+                
+                // Kiểm tra SoundManager có tồn tại không
+                if (SoundManager.Instance != null)
+                {
+                    Debug.Log("SoundManager found, ensuring sound system is ready...");
+                    
+                    // Đảm bảo SoundSpawnerCtrl tồn tại
+                    if (SoundManager.Instance.IsSoundSpawnerCtrlNull())
+                    {
+                        Debug.Log("SoundSpawnerCtrl is null, trying to reload...");
+                        SoundManager.Instance.LoadSoundSpawnerCtrlPublic();
+                        SoundManager.Instance.EnsureSoundSpawnerExistsPublic();
+                    }
+                    
+                    // Tắt background music trong tutorial (tutorial có hệ thống sound riêng)
+                    if (SoundManager.Instance.GetBackgroundMusic() != null)
+                    {
+                        SoundManager.Instance.GetBackgroundMusic().gameObject.SetActive(false);
+                        Debug.Log("Background music stopped in tutorial scene (tutorial has its own sound system)");
+                    }
+                    else
+                    {
+                        Debug.Log("Background music is already stopped or null in tutorial scene");
+                    }
+                    
+                    // Áp dụng lại settings để đảm bảo volume đúng
+                    SoundManager.Instance.LoadSettingsPublic();
+                    
+                    Debug.Log("Sound system initialized successfully in tutorial scene!");
+                }
+                else
+                {
+                    Debug.LogWarning("SoundManager.Instance is null! Sound system may not work in tutorial scene.");
+                }
+                
+                // Nếu tutorial cần tắt nhạc nền, có thể gọi method này
+                // this.StopBackgroundMusicInTutorialIfNeeded();
+            }
+            else
+            {
+                Debug.Log($"Not a tutorial scene: {currentSceneName}, skipping sound system check");
+            }
+            
+            Debug.Log("Sound system check in tutorial scene completed!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in EnsureSoundSystemInTutorialScene: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
+    }
+    
+    /// <summary>
+    /// Tắt background music trong tutorial nếu cần (có thể gọi từ tutorial logic)
+    /// </summary>
+    public virtual void StopBackgroundMusicInTutorialIfNeeded()
+    {
+        try
+        {
+            Debug.Log("=== STOPPING BACKGROUND MUSIC IN TUTORIAL (IF NEEDED) ===");
+            
+            // Kiểm tra xem có phải tutorial scene không
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (currentSceneName.Contains("SampleScene") || currentSceneName.Contains("Tutorial"))
+            {
+                if (SoundManager.Instance != null && SoundManager.Instance.GetBackgroundMusic() != null)
+                {
+                    SoundManager.Instance.GetBackgroundMusic().gameObject.SetActive(false);
+                    Debug.Log("Background music stopped in tutorial scene (tutorial has its own sound system)");
+                }
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in StopBackgroundMusicInTutorialIfNeeded: {e.Message}");
+        }
+    }
+    
+    /// <summary>
+    /// Khởi động background music riêng cho tutorial (có thể gọi từ tutorial logic)
+    /// </summary>
+    public virtual void StartTutorialBackgroundMusic()
+    {
+        try
+        {
+            Debug.Log("=== STARTING TUTORIAL BACKGROUND MUSIC ===");
+            
+            // Kiểm tra xem có phải tutorial scene không
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (currentSceneName.Contains("SampleScene") || currentSceneName.Contains("Tutorial"))
+            {
+                if (SoundManager.Instance != null)
+                {
+                    // Tạo nhạc nền riêng cho tutorial
+                    var tutorialMusic = SoundManager.Instance.CreateMusic(SoundName.Tutorial);
+                    if (tutorialMusic != null)
+                    {
+                        tutorialMusic.gameObject.SetActive(true);
+                        Debug.Log("Tutorial background music started successfully!");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Failed to create tutorial background music");
+                    }
+                }
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in StartTutorialBackgroundMusic: {e.Message}");
+        }
+    }
+    
+    /// <summary>
     /// Hiển thị lại TowerInfoUI và TowerQuestUI khi game bắt đầu
     /// </summary>
     protected virtual void ShowTowerInfoUI()
@@ -1465,6 +1755,29 @@ public class GameResultManager : SaiSingleton<GameResultManager>
     }
     
     /// <summary>
+    /// Reset trạng thái game (được gọi từ bên ngoài)
+    /// </summary>
+    public virtual void ResetGameStatePublic()
+    {
+        try
+        {
+            Debug.Log("=== RESET GAME STATE PUBLIC ===");
+            Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            Debug.Log($"isGameEnded before reset: {isGameEnded}");
+            
+            this.ResetGameState();
+            
+            Debug.Log($"isGameEnded after reset: {isGameEnded}");
+            Debug.Log("=== RESET GAME STATE PUBLIC COMPLETED ===");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in ResetGameStatePublic: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
+    }
+    
+    /// <summary>
     /// Được gọi khi hoàn thành tất cả enemy waves
     /// </summary>
     public virtual void OnAllWavesCompleted()
@@ -1474,8 +1787,9 @@ public class GameResultManager : SaiSingleton<GameResultManager>
             Debug.Log("=== ALL WAVES COMPLETED ===");
             Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
             Debug.Log($"IsMap1(): {IsMap1()}");
-            Debug.Log($"isGameEnded: {isGameEnded}");
+            Debug.Log($"isGameEnded before: {isGameEnded}");
             Debug.Log($"isWin: {isWin}");
+            Debug.Log($"Stack trace: {System.Environment.StackTrace}");
             
             // Chỉ hiển thị win panel cho map 1 (Hai_Map)
             if (IsMap1())

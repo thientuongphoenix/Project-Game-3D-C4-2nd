@@ -19,10 +19,39 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     [Header("Auto Hide")]
     [SerializeField] protected bool isAutoHideScheduled = false;
     
+    [Header("Scene Management")]
+    [SerializeField] protected bool isDestroyed = false; // Track if this instance has been destroyed
+    
     protected override void LoadComponents()
     {
         base.LoadComponents();
+        
+        // Kiểm tra scene hiện tại - chỉ hoạt động ở Hai_SampleScene
+        if (!this.IsValidScene())
+        {
+            Debug.Log("TowerQuestUI: Not in Hai_SampleScene, destroying instance");
+            this.DestroyInstance();
+            return;
+        }
+        
         this.LoadQuestUI();
+    }
+    
+    protected override void Start()
+    {
+        base.Start();
+        
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
+        // Ẩn QuestPanel nếu đang ở Map1 (Hai_Map)
+        if (this.IsMap1())
+        {
+            this.HideQuestPanelForMap1();
+        }
     }
     
     protected virtual void LoadQuestUI()
@@ -61,11 +90,23 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
     
     protected virtual void Update()
     {
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
         this.UpdateQuestDisplay();
     }
     
     public virtual void UpdateQuestDisplay()
     {
+        // Kiểm tra nếu instance đã bị destroy
+        if (this.isDestroyed)
+        {
+            return;
+        }
+        
         if (TowerQuestSystem.Instance == null)
         {
             Debug.LogWarning("TowerQuestSystem.Instance is null!");
@@ -194,6 +235,41 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
         }
     }
     
+    /// <summary>
+    /// Ẩn QuestPanel khi vào Map1 (Hai_Map) để tránh hiện UI nhiệm vụ từ SampleScene
+    /// </summary>
+    protected virtual void HideQuestPanelForMap1()
+    {
+        try
+        {
+            Debug.Log("=== HIDING QUEST PANEL FOR MAP1 ===");
+            Debug.Log($"Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+            
+            if (this.questPanel != null)
+            {
+                this.questPanel.SetActive(false);
+                Debug.Log("QuestPanel hidden for Map1 - preventing SampleScene quest UI from showing");
+            }
+            else
+            {
+                Debug.LogWarning("QuestPanel is null - cannot hide for Map1");
+            }
+            
+            // Ẩn notification panel nếu có
+            if (this.notificationPanel != null)
+            {
+                this.notificationPanel.SetActive(false);
+                Debug.Log("NotificationPanel hidden for Map1");
+            }
+            
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error hiding QuestPanel for Map1: {e.Message}");
+        }
+    }
+    
     public virtual void ShowQuestPanel()
     {
         if (this.questPanel != null)
@@ -269,5 +345,60 @@ public class TowerQuestUI : SaiSingleton<TowerQuestUI>
             Debug.LogError($"Lỗi trong IsMap1: {e.Message}");
             return false;
         }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải scene hợp lệ không (chỉ Hai_SampleScene)
+    /// </summary>
+    protected virtual bool IsValidScene()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isValid = currentSceneName == "Hai_SampleScene";
+            Debug.Log($"TowerQuestUI: Current scene '{currentSceneName}', IsValid: {isValid}");
+            return isValid;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsValidScene: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// Destroy instance khi không ở scene hợp lệ
+    /// </summary>
+    protected virtual void DestroyInstance()
+    {
+        if (this.isDestroyed) return;
+        
+        Debug.Log("TowerQuestUI: Destroying instance - not in Hai_SampleScene");
+        this.isDestroyed = true;
+        
+        // Hide all UI elements
+        if (this.questPanel != null)
+        {
+            this.questPanel.SetActive(false);
+        }
+        
+        if (this.notificationPanel != null)
+        {
+            this.notificationPanel.SetActive(false);
+        }
+        
+        // Destroy GameObject
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem instance có bị destroy không
+    /// </summary>
+    public virtual bool IsDestroyed()
+    {
+        return this.isDestroyed;
     }
 } 

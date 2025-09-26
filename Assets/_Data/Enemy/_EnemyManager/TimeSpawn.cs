@@ -438,7 +438,14 @@ public class TimeSpawn : MonoBehaviour
         }
         
         // Gọi GameResultManager để thông báo thắng
-        if (GameResultManager.Instance != null)
+        // Ưu tiên sử dụng Map1GameResultManager nếu đang ở Map 1
+        if (IsMap1() && Map1GameResultManager.Instance != null)
+        {
+            Debug.Log("📢 Calling Map1GameResultManager.OnAllWavesCompleted()...");
+            Map1GameResultManager.Instance.OnAllWavesCompleted();
+            Debug.Log("✅ Map1GameResultManager.OnAllWavesCompleted() called successfully!");
+        }
+        else if (GameResultManager.Instance != null)
         {
             Debug.Log("📢 Calling GameResultManager.OnAllWavesCompleted()...");
             // Sử dụng OnAllWavesCompleted() thay vì Win()
@@ -447,12 +454,29 @@ public class TimeSpawn : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ GameResultManager.Instance is null! Cannot trigger win condition!");
+            Debug.LogError("❌ No GameResultManager found! Cannot trigger win condition!");
         }
         
         // Reset reference
         finalBoss = null;
         Debug.Log("🎉 === FINAL BOSS DEATH PROCESSING COMPLETED === 🎉");
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải Map 1 không
+    /// </summary>
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong TimeSpawn.IsMap1: {e.Message}");
+            return false;
+        }
     }
     
     /// <summary>

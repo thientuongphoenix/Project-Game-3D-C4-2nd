@@ -614,14 +614,37 @@ public class EnemyWaveManager : SaiSingleton<EnemyWaveManager>
     /// </summary>
     protected virtual void NotifyGameResultManager()
     {
-        if (GameResultManager.Instance != null)
+        // Ưu tiên sử dụng Map1GameResultManager nếu đang ở Map 1
+        if (IsMap1() && Map1GameResultManager.Instance != null)
+        {
+            Debug.Log("Notifying Map1GameResultManager: All waves completed!");
+            Map1GameResultManager.Instance.OnAllWavesCompleted();
+        }
+        else if (GameResultManager.Instance != null)
         {
             Debug.Log("Notifying GameResultManager: All waves completed!");
             GameResultManager.Instance.OnAllWavesCompleted();
         }
         else
         {
-            Debug.LogWarning("GameResultManager.Instance is null! Cannot notify wave completion.");
+            Debug.LogWarning("No GameResultManager found! Cannot notify wave completion.");
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem có phải Map 1 không
+    /// </summary>
+    protected virtual bool IsMap1()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            return currentSceneName == "Hai_Map";
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong EnemyWaveManager.IsMap1: {e.Message}");
+            return false;
         }
     }
     

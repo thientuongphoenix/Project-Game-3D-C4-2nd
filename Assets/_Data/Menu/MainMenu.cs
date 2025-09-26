@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
 {
     [Header("Scene Names")]
     public string mapSelectionSceneName = "MapSelect_Hai";
+    public string cutsceneSceneName = "Hai_Cutscene";
     
     [Header("New Game Button")]
     [SerializeField] protected GameObject newGameButton;
@@ -60,6 +61,7 @@ public class MainMenu : MonoBehaviour
         this.EnsureMapProgressManagerExists();
         // Sử dụng Invoke để đảm bảo MapProgressManager đã được khởi tạo
         Invoke(nameof(CheckNewGameButtonVisibility), 0.1f);
+        
     }
     
     // Thêm phương thức đảm bảo MapProgressManager tồn tại
@@ -71,6 +73,46 @@ public class MainMenu : MonoBehaviour
             GameObject mapProgressObj = new GameObject("MapProgressManager");
             mapProgressObj.AddComponent<MapProgressManager>();
             Debug.Log("MapProgressManager created successfully!");
+        }
+    }
+    
+    /// <summary>
+    /// Tắt background music khi hiển thị cutscene
+    /// </summary>
+    protected virtual void StopBackgroundMusicOnCutscene()
+    {
+        try
+        {
+            Debug.Log("=== STOPPING BACKGROUND MUSIC ON CUTSCENE ===");
+            
+            // Kiểm tra SoundManager có tồn tại không
+            if (SoundManager.Instance != null)
+            {
+                Debug.Log("SoundManager found, stopping background music for cutscene...");
+                
+                // Tắt background music
+                if (SoundManager.Instance.GetBackgroundMusic() != null)
+                {
+                    SoundManager.Instance.GetBackgroundMusic().gameObject.SetActive(false);
+                    Debug.Log("Background music stopped for cutscene!");
+                }
+                else
+                {
+                    Debug.Log("Background music is already stopped or null");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("SoundManager.Instance is null! Cannot stop background music for cutscene.");
+            }
+            
+            Debug.Log("Background music stop for cutscene completed!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in StopBackgroundMusicOnCutscene: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
         }
     }
     
@@ -584,6 +626,10 @@ public class MainMenu : MonoBehaviour
         Debug.Log($"cutsceneCanvas: {(this.cutsceneCanvas != null ? "Found" : "NULL")}");
         Debug.Log($"videoPlayer: {(this.videoPlayer != null ? "Found" : "NULL")}");
         
+        // Kiểm tra xem player đã hoàn thành tutorial chưa
+        bool hasCompletedTutorial = this.CheckTutorialCompletion();
+        Debug.Log($"Tutorial completed: {hasCompletedTutorial}");
+        
         // Nếu cutscene được bật nhưng thiếu components, thử tạo lại
         if (this.enableCutscene && this.cutsceneCanvas != null && this.videoPlayer == null)
         {
@@ -591,20 +637,47 @@ public class MainMenu : MonoBehaviour
             this.RecreateVideoPlayer();
         }
         
-        // Kiểm tra xem có bật cutscene không
-        if (this.enableCutscene && this.cutsceneCanvas != null && this.videoPlayer != null)
+        // Kiểm tra xem có bật cutscene và chưa hoàn thành tutorial không
+        if (this.enableCutscene && !hasCompletedTutorial)
         {
-            Debug.Log("All cutscene components found! Showing cutscene...");
-            // Hiển thị cutscene trước khi load map selection
-            this.ShowCutscene();
+            Debug.Log("Cutscene enabled and tutorial not completed! Loading cutscene scene...");
+            // Load cutscene scene thay vì hiển thị cutscene trong cùng scene
+            this.LoadCutsceneScene();
         }
         else
         {
-            Debug.Log("Cutscene components missing or disabled! Loading map selection directly...");
+            Debug.Log("Cutscene disabled or tutorial already completed! Loading map selection directly...");
             // Reset quest trước khi load map selection scene
             this.ResetQuestsBeforeMapSelection();
-            // Load map selection scene trực tiếp nếu không có cutscene
+            // Load map selection scene trực tiếp nếu không có cutscene hoặc đã hoàn thành tutorial
             SceneManager.LoadScene(mapSelectionSceneName);
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem player đã hoàn thành tutorial chưa
+    /// </summary>
+    protected virtual bool CheckTutorialCompletion()
+    {
+        try
+        {
+            // Kiểm tra MapProgressManager có tồn tại không
+            if (MapProgressManager.Instance == null)
+            {
+                Debug.LogWarning("MapProgressManager.Instance is null, assuming tutorial not completed.");
+                return false;
+            }
+            
+            // Kiểm tra xem player đã hoàn thành tutorial chưa
+            bool hasCompletedTutorial = MapProgressManager.Instance.IsMapCompleted(tutorialMapName);
+            Debug.Log($"Tutorial completion check: {hasCompletedTutorial}");
+            
+            return hasCompletedTutorial;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in CheckTutorialCompletion: {e.Message}");
+            return false;
         }
     }
     
@@ -724,6 +797,24 @@ public class MainMenu : MonoBehaviour
     
     // ========== CUTSCENE METHODS ==========
     
+    /// <summary>
+    /// Load cutscene scene thay vì hiển thị cutscene trong cùng scene
+    /// </summary>
+    protected virtual void LoadCutsceneScene()
+    {
+        Debug.Log("=== LOADING CUTSCENE SCENE ===");
+        Debug.Log($"Cutscene scene name: {this.cutsceneSceneName}");
+        
+        // Reset quest trước khi load cutscene scene
+        this.ResetQuestsBeforeMapSelection();
+        
+        // Load cutscene scene
+        SceneManager.LoadScene(this.cutsceneSceneName);
+        
+        Debug.Log("Cutscene scene loading completed!");
+        Debug.Log("================================");
+    }
+    
     protected virtual void ShowCutscene()
     {
         Debug.Log("ShowCutscene() called!");
@@ -738,6 +829,9 @@ public class MainMenu : MonoBehaviour
             SceneManager.LoadScene(mapSelectionSceneName);
             return;
         }
+        
+        // Tắt background music khi hiển thị cutscene
+        this.StopBackgroundMusicOnCutscene();
         
         Debug.Log("Activating cutscene canvas...");
         // Hiển thị cutscene canvas
@@ -812,10 +906,52 @@ public class MainMenu : MonoBehaviour
         // Reset quest trước khi load map selection scene
         this.ResetQuestsBeforeMapSelection();
         
+        // Không cần khởi động background music trước khi chuyển scene
+        // MapSelectionManager sẽ tự động khởi động nhạc nền khi vào scene
+        Debug.Log("Skipping background music start - MapSelectionManager will handle it");
+        
         // Load map selection scene
         SceneManager.LoadScene(mapSelectionSceneName);
         
         Debug.Log("Loading map selection scene: " + mapSelectionSceneName);
+    }
+    
+    /// <summary>
+    /// Đảm bảo background music được khởi động trước khi chuyển scene
+    /// </summary>
+    protected virtual void EnsureBackgroundMusicBeforeSceneChange()
+    {
+        try
+        {
+            Debug.Log("=== ENSURING BACKGROUND MUSIC BEFORE SCENE CHANGE ===");
+            
+            // Kiểm tra SoundManager có tồn tại không
+            if (SoundManager.Instance != null)
+            {
+                // Kiểm tra xem background music đã được khởi động chưa
+                if (SoundManager.Instance.IsBackgroundMusicNullOrInactive())
+                {
+                    Debug.Log("Background music not found or inactive, starting it before scene change...");
+                    SoundManager.Instance.StartMusicBackground();
+                }
+                else
+                {
+                    Debug.Log("Background music is already active before scene change");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("SoundManager.Instance is null! Cannot start background music before scene change.");
+            }
+            
+            Debug.Log("Background music check before scene change completed!");
+            Debug.Log("================================");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in EnsureBackgroundMusicBeforeSceneChange: {e.Message}");
+            Debug.LogError($"Stack trace: {e.StackTrace}");
+        }
     }
     
     /// <summary>

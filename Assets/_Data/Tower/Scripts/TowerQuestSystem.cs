@@ -25,6 +25,9 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     [Header("UI")]
     [SerializeField] protected GameObject questNotificationPrefab;
     
+    [Header("Scene Management")]
+    [SerializeField] protected bool isDestroyed = false; // Track if this instance has been destroyed
+    
     protected override void LoadComponents()
     {
         try
@@ -32,6 +35,14 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
             base.LoadComponents();
             
             Debug.Log("TowerQuestSystem: Starting LoadComponents");
+            
+            // Kiểm tra scene hiện tại - chỉ hoạt động ở Hai_SampleScene
+            if (!this.IsValidScene())
+            {
+                Debug.Log("TowerQuestSystem: Not in Hai_SampleScene, destroying instance");
+                this.DestroyInstance();
+                return;
+            }
             
             // DON'T delete old quests anymore - only create new quests if needed
             // this.CleanupOldQuests();
@@ -197,6 +208,13 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
     
     public virtual void OnTowerPlaced(TowerCode towerType = TowerCode.NoTower)
     {
+        // Kiểm tra nếu instance đã bị destroy hoặc không ở scene hợp lệ
+        if (this.isDestroyed || !this.IsValidScene())
+        {
+            Debug.LogWarning("TowerQuestSystem: Instance destroyed or not in valid scene, ignoring OnTowerPlaced");
+            return;
+        }
+        
         Debug.Log($"=== ON TOWER PLACED CALLED ===");
         Debug.Log($"TowerType được truyền vào: {towerType}");
         
@@ -995,5 +1013,56 @@ public class TowerQuestSystem : SaiSingleton<TowerQuestSystem>
         Debug.Log("================================");
     }
     
+    /// <summary>
+    /// Kiểm tra xem có phải scene hợp lệ không (chỉ Hai_SampleScene)
+    /// </summary>
+    protected virtual bool IsValidScene()
+    {
+        try
+        {
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            bool isValid = currentSceneName == "Hai_SampleScene";
+            Debug.Log($"TowerQuestSystem: Current scene '{currentSceneName}', IsValid: {isValid}");
+            return isValid;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Lỗi trong IsValidScene: {e.Message}");
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// Destroy instance khi không ở scene hợp lệ
+    /// </summary>
+    protected virtual void DestroyInstance()
+    {
+        if (this.isDestroyed) return;
+        
+        Debug.Log("TowerQuestSystem: Destroying instance - not in Hai_SampleScene");
+        this.isDestroyed = true;
+        
+        // Clear all data
+        towerQuests.Clear();
+        totalTowersPlaced = 0;
+        oneGunBarrelTowersPlaced = 0;
+        iceTrapTowersPlaced = 0;
+        movementTutorialCompleted = 0;
+        finalMissionCompleted = false;
+        
+        // Destroy GameObject
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+    }
+    
+    /// <summary>
+    /// Kiểm tra xem instance có bị destroy không
+    /// </summary>
+    public virtual bool IsDestroyed()
+    {
+        return this.isDestroyed;
+    }
 
 } 
